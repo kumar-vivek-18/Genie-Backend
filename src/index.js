@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import connectDB from './db/db.js';
 import userRoutes from './routes/userRoutes.js';
 import retailerRoutes from './routes/retailerRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 
 dotenv.config({ path: './.env' });
 const app = express();
@@ -28,4 +29,4 @@ app.get('/', (req, res) => {
 
 app.use('/user', userRoutes);
 app.use('/retailer', retailerRoutes);
-// app.use('/chat', chatRoutes);
+app.use('/chat', chatRoutes);

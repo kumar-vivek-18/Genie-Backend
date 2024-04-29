@@ -3,7 +3,6 @@ import { User } from '../models/user.model.js';
 import { UserRequest } from '../models/userRequest.model.js';
 import { Message } from '../models/message.model.js';
 import { Chat } from '../models/chat.model.js';
-import { RetailerRequest } from '../models/retailerRequest.model.js';
 import { response } from 'express';
 
 
@@ -26,16 +25,44 @@ export const createChat = async (req, res) => {
 
 // getRetailerNewChats and getRetailerOngoingChats are different chats
 
-export const getRetailerChats = async (req, res) => {
+export const getRetailerNewChats = async (req, res) => {
     try {
         const data = req.body;
         const RetailerChats = await Chat.find({
-            'users': {
-                $elemMatch: {
-                    'refId': data.id,
-                    'type': 'Retailer' // If you want to filter only Retailer type users
+            $and: [{
+                'users': {
+                    $elemMatch: {
+                        'refId': data.id,
+                        'type': 'Retailer' // If you want to filter only Retailer type users
+                    }
                 }
-            }
+            }, {
+                requestType: "new"
+            }]
+        })
+        if (RetailerChats.length > 0)
+            return res.status(200).json(RetailerChats);
+        else
+            return res.status(404).json({ message: "Retailer Chat not found" });
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+export const getRetailerOngoingChats = async (req, res) => {
+    try {
+        const data = req.body;
+        const RetailerChats = await Chat.find({
+            $and: [{
+                'users': {
+                    $elemMatch: {
+                        'refId': data.id,
+                        'type': 'Retailer' // If you want to filter only Retailer type users
+                    }
+                }
+            }, {
+                requestType: "ongoing"
+            }]
         })
         if (RetailerChats.length > 0)
             return res.status(200).json(RetailerChats);
