@@ -1,8 +1,8 @@
+import { Chat } from '../models/chat.model.js';
 import { User } from '../models/user.model.js';
-// import { Retailer } from '../models/retailer.model.js';
+import { Retailer } from '../models/retailer.model.js';
 import { UserRequest } from '../models/userRequest.model.js';
-// import { Message } from '../models/message.model.js';
-// import { Chat } from '../models/chat.model.js';
+import { Message } from '../models/message.model.js';
 
 export const getUser = async (req, res) => {
     try {
@@ -13,7 +13,6 @@ export const getUser = async (req, res) => {
         }
         else {
             return res.status(404).json({ message: 'User not found' });
-
         }
     } catch (error) {
         res.status(500);
@@ -43,8 +42,39 @@ export const createRequest = async (req, res) => {
 
         const createdRequest = await UserRequest.create({ customer: customerID, request: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice });
 
+
+
         if (createdRequest) {
-            return res.status(201).json(createdRequest);
+            const retailers = await Retailer.find({ storeCategory: requestCategory });
+            const retailerRequests = [];
+            if (retailers) {
+                for (let i = 0; i < retailers.length; i++) {
+                    const createdChat = await Chat.create({ requestId: createdRequest._id, requestType: "new", users: [retailers[i]._id] });
+                    // also add the first bid send by retailer
+                    if (expectedPrice > 0 && createdChat) {
+                        const firstBid = await Message.create({ sender: createdRequest._id, message: request, bidType: true, bidPrice: expectedPrice, bidImages: requestImages, bidAccepted: "new", chat: createdChat });
+                        if (firstBid) {
+                            retailerRequests.push(createdChat);
+                        }
+                        else {
+                            return res.status(404).json({ message: 'Request not created' });
+                        }
+
+                    }
+                    else if (createdChat) {
+                        retailerRequests.push(createdChat);
+                    }
+                }
+                if (retailerRequests.length > 0) {
+                    return res.status(201).json(createdRequest);
+                }
+                else {
+                    return res.status(404).json({ message: 'Request not created due to no reatailer found of particular category' });
+                }
+            }
+            else {
+                return res.status(404).json({ message: 'Request not created due to no reatailer found of particular category' });
+            }
         }
         else {
             return res.status(404).json({ message: 'Request not created' });

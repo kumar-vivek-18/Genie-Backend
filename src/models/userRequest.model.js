@@ -25,8 +25,10 @@ const userRequestSchema = new Schema({
         default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     }],
     expectedPrice: {
-        type: String,
-    }
+        type: Number,
+        default: 0,
+    },
+
 
 
 }, {

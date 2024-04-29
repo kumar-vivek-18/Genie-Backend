@@ -19,24 +19,28 @@ const messageModel = mongoose.Schema({
         required: true,
         trim: true
     },
-    type_Bid: {
+    bidType: {
         type: Boolean,
         required: true,
         default: false,
     },
     bidPrice: {
         type: Number,
-
     },
     bidImages: [
         {
             type: String,
         }
     ],
-    bidCondition: {
-        type: Boolean,
+    bidAccepted: {
+        type: String,
+        enum: ["new", "accepted", "rejected"],
+        default: "new",
     },
-    chat: { type: mongoose.Schema.Types.ObjectId, ref: "Chat" },
+    chat: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Chat"
+    },
 },
     {
         timestamps: true,

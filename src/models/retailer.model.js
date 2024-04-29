@@ -11,8 +11,8 @@ const RetailerSchema = new Schema({
     },
     storeName: {
         type: String,
-        required: true,
         lowercase: true,
+        required: true,
         trim: true,
         index: true
     },
@@ -24,11 +24,9 @@ const RetailerSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-
     },
     email: {
         type: String,
-        unique: true,
         lowercase: true,
         trim: true,
         index: true
