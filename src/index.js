@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import connectDB from './db/db.js';
 import userRoutes from './routes/userRoutes.js';
 import retailerRoutes from './routes/retailerRoutes.js';
-import chatRoutes from './routes/chatRoutes.js';
+import chatRoutes from './routes/chatroutes.js';
 
 dotenv.config({ path: './.env' });
 const app = express();
