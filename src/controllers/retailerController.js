@@ -10,6 +10,10 @@ export const createNewRetailer = async (req, res) => {
     try {
         const data = req.body;
         console.log('retailer data', data);
+        const prevRetailer = await Retailer.find({ storeMobileNo: data.storeMobileNo });
+        if (prevRetailer)
+            return res.status(201).json({ message: "User already registered" });
+
         const retailer = await Retailer.create({
             storeMobileNo: data.storeMobileNo, storeName: data.storeName,
             storeOwnerName: data.storeOwnerName, storeCategory: data.storeCategory,
