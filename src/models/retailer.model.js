@@ -29,7 +29,6 @@ const RetailerSchema = new Schema({
         type: String,
         lowercase: true,
         trim: true,
-        index: true
     },
     storeImages: [{
         type: String,

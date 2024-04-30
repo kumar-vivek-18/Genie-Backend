@@ -29,4 +29,4 @@ app.get('/', (req, res) => {
 
 app.use('/user', userRoutes);
 app.use('/retailer', retailerRoutes);
-app.use('/chat', chatRoutes);
+app.use('/chat', chatRoutes);  

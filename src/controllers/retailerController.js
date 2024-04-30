@@ -20,6 +20,7 @@ export const createNewRetailer = async (req, res) => {
         else
             return res.status(404).json({ message: "Error Occured" });
     } catch (error) {
+        res.status(500);
         throw new Error(error.message);
     }
 }
