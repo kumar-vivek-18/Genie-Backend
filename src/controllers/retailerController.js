@@ -34,7 +34,7 @@ export const getRetailer = async (req, res) => {
         if (retailer)
             return res.status(200).json(retailer);
         else
-            return res.status(404).json({ message: "User Not Found!" });
+            return res.status(200).json({ status: 404, message: "User Not Found!" });
     } catch (error) {
         res.status(500);
         throw new Error(error.message);
