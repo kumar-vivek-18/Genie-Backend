@@ -6,7 +6,7 @@ import { Message } from '../models/message.model.js';
 
 export const getUser = async (req, res) => {
     try {
-        const { mobileNo } = req.body;
+        const { mobileNo } = req.query;
         const user = await User.findOne({ mobileNo });
         if (user) {
             return res.status(200).json(user);

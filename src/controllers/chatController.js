@@ -27,7 +27,7 @@ export const createChat = async (req, res) => {
 
 export const getRetailerNewChats = async (req, res) => {
     try {
-        const data = req.body;
+        const data = req.query;
         const RetailerChats = await Chat.find({
             $and: [{
                 'users': {
@@ -51,7 +51,7 @@ export const getRetailerNewChats = async (req, res) => {
 
 export const getRetailerOngoingChats = async (req, res) => {
     try {
-        const data = req.body;
+        const data = req.query;
         const RetailerChats = await Chat.find({
             $and: [{
                 'users': {
@@ -75,7 +75,7 @@ export const getRetailerOngoingChats = async (req, res) => {
 
 export const getUserChats = async (req, res) => {
     try {
-        const data = req.body;
+        const data = req.query;
         const RetailerChats = await Chat.find({
             'users': {
                 $elemMatch: {
