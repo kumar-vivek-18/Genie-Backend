@@ -5,11 +5,17 @@ import connectDB from './db/db.js';
 import userRoutes from './routes/userRoutes.js';
 import retailerRoutes from './routes/retailerRoutes.js';
 import chatRoutes from './routes/chatroutes.js';
+import cors from 'cors';
 
 dotenv.config({ path: './.env' });
 const app = express();
 
 app.use(express.json());
+
+app.use(cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true
+}))
 
 const PORT = process.env.PORT || 5000;
 

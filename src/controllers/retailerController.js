@@ -10,9 +10,7 @@ export const createNewRetailer = async (req, res) => {
     try {
         const data = req.body;
         console.log('retailer data', data);
-        const prevRetailer = await Retailer.findOne({ storeMobileNo: data.storeMobileNo });
-        if (prevRetailer)
-            return res.status(201).json({ message: "User already registered" });
+
 
         const retailer = await Retailer.create({
             storeMobileNo: data.storeMobileNo, storeName: data.storeName,
@@ -22,7 +20,7 @@ export const createNewRetailer = async (req, res) => {
         if (retailer)
             return res.status(201).json(retailer);
         else
-            return res.status(404).json({ message: "Error Occured" });
+            return res.status(500).json({ message: "Error Occured" });
     } catch (error) {
         res.status(500);
         throw new Error(error.message);
@@ -36,6 +34,7 @@ export const getRetailer = async (req, res) => {
         if (retailer)
             return res.status(200).json(retailer);
     } catch (error) {
+        res.status(500);
         throw new Error(error.message);
     }
 }
