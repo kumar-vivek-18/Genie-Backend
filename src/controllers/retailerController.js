@@ -29,7 +29,7 @@ export const createNewRetailer = async (req, res) => {
 
 export const getRetailer = async (req, res) => {
     try {
-        const data = req.body;
+        const data = req.query;
         const retailer = await Retailer.findOne({ storeMobileNo: data.storeMobileNo });
         if (retailer)
             return res.status(200).json(retailer);
