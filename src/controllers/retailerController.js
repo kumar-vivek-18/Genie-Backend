@@ -49,9 +49,10 @@ export const editRetailerDetails = async (req, res) => {
             return res.status(200).json(user);
         }
         else {
-            return res.status(404).json({ message: 'Retailer not found' });
+            return res.json({ status: 404, message: 'Retailer not found' });
         }
     } catch (error) {
+        res.status(500);
         throw new Error(error.message);
     }
 }
