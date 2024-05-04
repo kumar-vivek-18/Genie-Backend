@@ -22,7 +22,7 @@ export const getUser = async (req, res) => {
 
 export const registerUser = async (req, res) => {
     try {
-        // console.log('first', req.body);
+        console.log('first', req.body);
         const { userName, mobileNo } = req.body;
         const user = await User.create({ userName: userName, mobileNo: mobileNo });
         if (user)
