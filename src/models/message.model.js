@@ -17,7 +17,8 @@ const messageModel = mongoose.Schema({
     message: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        default: ""
     },
     bidType: {
         type: Boolean,
@@ -25,7 +26,8 @@ const messageModel = mongoose.Schema({
         default: false,
     },
     bidPrice: {
-        type: Number,
+        type: String,
+        default: "",
     },
     bidImages: [
         {

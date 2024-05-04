@@ -36,6 +36,7 @@ export const registerUser = async (req, res) => {
 }
 
 
+
 // export const createRequest = async (req, res) => {
 //     try {
 //         const { customerID, request, requestCategory, requestImages, expectedPrice } = req.body;

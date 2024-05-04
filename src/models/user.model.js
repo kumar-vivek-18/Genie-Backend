@@ -7,17 +7,20 @@ const UserSchema = new Schema({
         required: true,
         lowercase: true,
         trim: true,
-        index: true
+        default: "",
     },
     mobileNo: {
         type: String,
         required: true,
         unique: true,
+        index: true,
+        default: "",
     },
     email: {
         type: String,
         lowercase: true,
         trim: true,
+        default: "",
     },
     pic: {
         type: String,
@@ -26,6 +29,7 @@ const UserSchema = new Schema({
     location: {
         type: String,
         trim: true,
+        default: "",
     }
 
 },

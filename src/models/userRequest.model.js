@@ -13,12 +13,14 @@ const userRequestSchema = new Schema({
         lowercase: true,
         trim: true,
         index: true,
+        default: "",
     },
     requestCategory: {
         type: String,
         lowercase: true,
         required: true,
         trim: true,
+        default: "",
     },
     requestImages: [{
         type: String,
@@ -35,4 +37,4 @@ const userRequestSchema = new Schema({
     timestamps: true
 })
 
-export const UserRequest = mongoose.model('UserRequest', userRequestSchema);
+export const UserRequest = mongoose.model("UserRequest", userRequestSchema);

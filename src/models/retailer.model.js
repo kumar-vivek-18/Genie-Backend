@@ -7,28 +7,32 @@ const RetailerSchema = new Schema({
         required: true,
         lowercase: true,
         trim: true,
-        index: true
+        default: "",
     },
     storeName: {
         type: String,
         lowercase: true,
         required: true,
         trim: true,
-        index: true
+        default: "",
     },
     storeDescription: {
         type: String,
         trim: true,
+        default: "",
     },
     storeMobileNo: {
         type: String,
         required: true,
         unique: true,
+        index: true,
+        default: "",
     },
     email: {
         type: String,
         lowercase: true,
         trim: true,
+        default: "",
     },
     storeImages: [{
         type: String,
@@ -39,11 +43,13 @@ const RetailerSchema = new Schema({
         lowercase: true,
         required: true,
         trim: true,
+        default: "",
     },
     location: {
         type: String,
         lowercase: true,
         trim: true,
+        default: "",
     },
     storeApproved: {
         type: Boolean,
@@ -57,6 +63,7 @@ const RetailerSchema = new Schema({
         type: String,
         lowercase: true,
         trim: true,
+        default: "",
     }
 
 }, {
