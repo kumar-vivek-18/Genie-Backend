@@ -15,7 +15,7 @@ export const createNewRetailer = async (req, res) => {
         const retailer = await Retailer.create({
             storeMobileNo: data.storeMobileNo, storeName: data.storeName,
             storeOwnerName: data.storeOwnerName, storeCategory: data.storeCategory,
-            panCard: `${data?.pandcard ? data.panCard : ""}`, homeDelivery: data.homeDelivery
+            panCard: `${data?.panCard ? data.panCard : ""}`, homeDelivery: data.homeDelivery
         });
         if (retailer)
             return res.status(201).json(retailer);
