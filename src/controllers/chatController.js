@@ -30,25 +30,16 @@ export const getRetailerNewChats = async (req, res) => {
         const data = req.query;
         console.log('data', data);
         const RetailerChats = await Chat.find({
-            // "users": {
-            //     $elemMatch: {
-            //     'refId': data.id,
-            //     'type': 'Retailer' // If you want to filter only Retailer type users
-            //     }
-            // },
-
-            // "users[0].refId": data.id
             $and: [
                 {
-                    requestType: "new"
-                },
-                {
-                    "users[0].refId": data.id
+                    requestType: "new",
+
+                    users: { $elemMatch: { refId: data.id } }
                 }
 
             ]
 
-            // "requestType": "new" // Filter based on requestType
+
         });
 
         console.log('chats', RetailerChats);
@@ -66,31 +57,17 @@ export const getRetailerOngoingChats = async (req, res) => {
     try {
         const data = req.query;
         const RetailerChats = await Chat.find({
-            // $and: [{
-            //     // 'users': {
-            //     //     $elemMatch: {
-            //     //         'refId': data.id,
-            //     //         'type': 'Retailer' // If you want to filter only Retailer type users
-            //     //     }
-            //     // }
-
-            // }, {
-            //     requestType: "ongoing"
-            // }]
             $and: [
                 {
-                    requestType: "ongoing"
-                },
-                {
-                    $or: [{
-                        "users[0].refId": data.id
-                    }, {
-                        "users[1].refId": data.id
-                    }]
+                    requestType: "ongoing",
+
+                    users: { $elemMatch: { refId: data.id } }
                 }
 
             ]
-        })
+
+
+        });
         if (RetailerChats.length > 0)
             return res.status(200).json(RetailerChats);
         else
