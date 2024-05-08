@@ -24,7 +24,6 @@ const ChatSchema = mongoose.Schema({
         required: true,
         enum: ["new", "ongoing"],
         default: "new"
-
     },
     users: [usersSchema]
 },
