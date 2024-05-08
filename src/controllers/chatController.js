@@ -80,16 +80,18 @@ export const getRetailerOngoingChats = async (req, res) => {
 export const getUserChats = async (req, res) => {
     try {
         const data = req.query;
-        const RetailerChats = await Chat.find({
-            'users': {
-                $elemMatch: {
-                    'refId': data.id,
-                    'type': 'UserRequest' // If you want to filter only Retailer type users
+        const UserChats = await Chat.find({
+            $and: [
+                {
+                    users: { $elemMatch: { refId: data.id } }
                 }
-            }
-        })
-        if (RetailerChats.length > 0)
-            return res.status(200).json(RetailerChats);
+
+            ]
+
+
+        });
+        if (UserChats.length > 0)
+            return res.status(200).json(UserChats);
         else
             return res.status(404).json({ message: "Retailer Chat not found" });
     } catch (error) {
