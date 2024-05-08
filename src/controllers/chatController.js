@@ -40,7 +40,7 @@ export const getRetailerNewChats = async (req, res) => {
             ]
 
 
-        });
+        }).populate('requestId');
 
         console.log('chats', RetailerChats);
 
