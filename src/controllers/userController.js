@@ -37,53 +37,6 @@ export const registerUser = async (req, res) => {
 
 
 
-// export const createRequest = async (req, res) => {
-//     try {
-//         const { customerID, request, requestCategory, requestImages, expectedPrice } = req.body;
-
-//         const createdRequest = await UserRequest.create({ customer: customerID, request: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice });
-
-
-
-//         if (createdRequest) {
-//             const retailers = await Retailer.find({ storeCategory: requestCategory });
-//             const retailerRequests = [];
-//             if (retailers) {
-//                 for (let i = 0; i < retailers.length; i++) {
-//                     const createdChat = await Chat.create({ requestId: createdRequest._id, requestType: "new", users: [retailers[i]._id] });
-//                     // also add the first bid send by retailer
-//                     if (expectedPrice > 0 && createdChat) {
-//                         const firstBid = await Message.create({ sender: createdRequest._id, message: request, bidType: true, bidPrice: expectedPrice, bidImages: requestImages, bidAccepted: "new", chat: createdChat });
-//                         if (firstBid) {
-//                             retailerRequests.push(createdChat);
-//                         }
-//                         else {
-//                             return res.status(404).json({ message: 'Request not created' });
-//                         }
-
-//                     }
-//                     else if (createdChat) {
-//                         retailerRequests.push(createdChat);
-//                     }
-//                 }
-//                 if (retailerRequests.length > 0) {
-//                     return res.status(201).json(createdRequest);
-//                 }
-//                 else {
-//                     return res.status(404).json({ message: 'Request not created due to no reatailer found of particular category' });
-//                 }
-//             }
-//             else {
-//                 return res.status(404).json({ message: 'Request not created due to no reatailer found of particular category' });
-//             }
-//         }
-//         else {
-//             return res.status(404).json({ message: 'Request not created' });
-//         }
-//     } catch (error) {
-//         throw new Error(error.message);
-//     }
-// }
 
 export const createRequest = async (req, res) => {
     try {
@@ -145,3 +98,21 @@ export const editProfile = async (req, res) => {
 }
 
 
+export const getSpades = async (req, res) => {
+    try {
+        const data = req.query;
+        const spades = await UserRequest.find({
+            customer: data.id
+        })
+
+        if (spades.length > 0) {
+            return res.status(200).json(spades);
+        }
+        else {
+            return res.status(404).json({ message: 'No spades found' });
+        }
+
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}

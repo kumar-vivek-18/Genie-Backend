@@ -3,11 +3,11 @@ import { createChat, getRetailerNewChats, getRetailerOngoingChats, getUserChats,
 
 const router = express.Router();
 
-router.route('/createchat').post(createChat);
-router.route('/retailernewchats').get(getRetailerNewChats);
-router.route('/retailerongoingchats').get(getRetailerOngoingChats);
-router.route('/userchats').get(getUserChats);
-router.route('/send').post(sendMessage);
+router.route('/createspade').post(createChat);
+router.route('/retailernewspades').get(getRetailerNewChats);
+router.route('/retailerongoingspades').get(getRetailerOngoingChats);
+router.route('/userspaderetailers').get(getUserChats);
+router.route('/sendmessage').post(sendMessage);
 router.route('/updatemessage').patch(updateMessage);
 
 export default router;
