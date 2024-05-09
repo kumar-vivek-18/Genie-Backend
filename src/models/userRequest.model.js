@@ -30,6 +30,10 @@ const userRequestSchema = new Schema({
         type: Number,
         default: 0,
     },
+    requestActive: {
+        type: Boolean,
+        default: true,
+    }
 
 
 

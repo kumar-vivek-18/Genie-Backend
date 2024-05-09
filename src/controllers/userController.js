@@ -101,10 +101,12 @@ export const editProfile = async (req, res) => {
 export const getSpades = async (req, res) => {
     try {
         const data = req.query;
+        console.log('spades data', data);
         const spades = await UserRequest.find({
             customer: data.id
         })
 
+        console.log('spades', spades);
         if (spades.length > 0) {
             return res.status(200).json(spades);
         }
