@@ -123,12 +123,21 @@ export const getSpades = async (req, res) => {
     }
 }
 
-export const closeRequest = (req, res) => {
+export const closeRequest = async (req, res) => {
     try {
         const data = req.body;
-        const updateRequest = axios
-    } catch (error) {
+        const updateRequest = await UserRequest.findById({ _id: data.id });
 
+        if (updateRequest) {
+            updateRequest.requestActive = false;
+            updateRequest.save();
+            return res.status(200).json(updateRequest);
+        }
+        else {
+            return res.status(502).json({ message: 'Request not found' });
+        }
+    } catch (error) {
+        throw new Error(error.message);
     }
 }
 
