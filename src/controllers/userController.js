@@ -141,20 +141,24 @@ export const closeRequest = async (req, res) => {
     }
 }
 
-// export const updateRequests = async (req, res) => {
-//     try {
-//         // Find all documents that don't have the requestActive field set
-//         const requestsToUpdate = await UserRequest.find({ requestActive: { $exists: false } });
-
-//         // Update each document to add the requestActive field
-//         await Promise.all(requestsToUpdate.map(async (request) => {
-//             request.requestActive = true;
-//             await request.save();
-//         }));
-
-//         return res.status(200).json(requestsToUpdate);
-//         console.log('Requests updated successfully.',);
-//     } catch (error) {
-//         console.error('Error updating requests:', error);
-//     }
-// }
+export const getSpadesHistory = async (req, res) => {
+    try {
+        const data = req.query;
+        console.log('spades data', data);
+        const spades = await UserRequest.find({
+            $and: [{
+                customer: data.id
+            }, {
+                requestActive: false
+            }]
+        })
+        if (spades.length > 0) {
+            return res.status(200).json(spades);
+        }
+        else {
+            return res.status(404).json({ message: 'No spades found' });
+        }
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
