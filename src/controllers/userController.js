@@ -125,8 +125,8 @@ export const getSpades = async (req, res) => {
 
 export const closeRequest = async (req, res) => {
     try {
-        const data = req.body;
-        const updateRequest = await UserRequest.findById({ _id: data.id });
+        const id = req.params.id;
+        const updateRequest = await UserRequest.findById({ _id: id });
 
         if (updateRequest) {
             updateRequest.requestActive = false;
