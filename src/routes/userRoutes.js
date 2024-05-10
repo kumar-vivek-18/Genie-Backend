@@ -8,6 +8,7 @@ router.route('/').post(registerUser);
 router.route('/createrequest').post(createRequest);
 router.route('/editprofile').patch(editProfile);
 router.route('/getspades').get(getSpades);
+// router.route('/update').patch(updateRequests);
 
 
 export default router;

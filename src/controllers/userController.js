@@ -103,7 +103,11 @@ export const getSpades = async (req, res) => {
         const data = req.query;
         console.log('spades data', data);
         const spades = await UserRequest.find({
-            customer: data.id
+            $and: [{
+                customer: data.id
+            }, {
+                requestActive: true
+            }]
         })
 
         console.log('spades', spades);
@@ -118,3 +122,30 @@ export const getSpades = async (req, res) => {
         throw new Error(error.message);
     }
 }
+
+export const closeRequest = (req, res) => {
+    try {
+        const data = req.body;
+        const updateRequest = axios
+    } catch (error) {
+
+    }
+}
+
+// export const updateRequests = async (req, res) => {
+//     try {
+//         // Find all documents that don't have the requestActive field set
+//         const requestsToUpdate = await UserRequest.find({ requestActive: { $exists: false } });
+
+//         // Update each document to add the requestActive field
+//         await Promise.all(requestsToUpdate.map(async (request) => {
+//             request.requestActive = true;
+//             await request.save();
+//         }));
+
+//         return res.status(200).json(requestsToUpdate);
+//         console.log('Requests updated successfully.',);
+//     } catch (error) {
+//         console.error('Error updating requests:', error);
+//     }
+// }
