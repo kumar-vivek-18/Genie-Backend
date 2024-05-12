@@ -42,7 +42,7 @@ export const createRequest = async (req, res) => {
     try {
         const { customerID, request, requestCategory, requestImages, expectedPrice } = req.body;
 
-        const retailers = await Retailer.find({ storeCategory: requestCategory });
+        const retailers = await Retailer.find({ $and: [{ storeCategory: requestCategory }, { storeApproved: true }] });
 
         if (!retailers || !retailers.length) {
             return res.status(404).json({ message: 'No retailers found for the requested category' });
