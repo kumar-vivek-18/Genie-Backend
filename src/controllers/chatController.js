@@ -77,7 +77,7 @@ export const getRetailerOngoingChats = async (req, res) => {
     }
 }
 
-export const getUserChats = async (req, res) => {
+export const getChats = async (req, res) => {
     try {
         const data = req.query;
         const UserChats = await Chat.find({
@@ -120,12 +120,29 @@ export const updateMessage = async (req, res) => {
         const message = await Message.findById({ _id: data.id });
         if (message) {
             message.bidAccepted = data.type;
-            message.save();
+            await message.save();
+            return res.status(200).json(message);
         }
         else {
             return res.status(404).json({ message: 'Error occured while updating message' });
         }
     } catch (error) {
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
 
+export const getSpadeMessages = async (req, res) => {
+    try {
+        const data = req.query;
+        console.log('chat', data);
+        const mess = await Message.find({ chat: data.id });
+        if (mess.length > 0) {
+            return res.status(200).json(mess);
+        }
+        else {
+            return res.status(404).json({ message: 'No messages found' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
