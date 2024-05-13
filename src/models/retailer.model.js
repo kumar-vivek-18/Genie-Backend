@@ -51,6 +51,14 @@ const RetailerSchema = new Schema({
         trim: true,
         default: "",
     },
+    longitude: {
+        type: Number,
+        default: 0,
+    },
+    lattitude: {
+        type: Number,
+        default: 0,
+    },
     storeApproved: {
         type: Boolean,
         default: false,

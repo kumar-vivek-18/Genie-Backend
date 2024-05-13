@@ -1,9 +1,9 @@
 import express from 'express';
-import { createChat, getRetailerNewChats, getRetailerOngoingChats, getChats, sendMessage, updateMessage, getSpadeMessages } from '../controllers/chatController.js';
+import { getRetailerNewChats, getRetailerOngoingChats, getChats, sendMessage, updateMessage, getSpadeMessages, modifyChat } from '../controllers/chatController.js';
 
 const router = express.Router();
 
-router.route('/createspade').post(createChat);
+router.route('/createspade').patch(modifyChat);
 router.route('/retailernewspades').get(getRetailerNewChats);
 router.route('/retailerongoingspades').get(getRetailerOngoingChats);
 router.route('/spade-chat').get(getChats);

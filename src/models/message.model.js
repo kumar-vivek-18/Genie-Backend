@@ -26,8 +26,8 @@ const messageModel = mongoose.Schema({
         default: false,
     },
     bidPrice: {
-        type: String,
-        default: "",
+        type: Number,
+        default: 0
     },
     bidImages: [
         {

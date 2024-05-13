@@ -6,7 +6,7 @@ import { Chat } from '../models/chat.model.js';
 import { response } from 'express';
 
 
-export const createChat = async (req, res) => {
+export const modifyChat = async (req, res) => {
     try {
         const data = req.body;
         const createdChat = await Chat.findOne({ _id: data.id });
