@@ -11,6 +11,7 @@ export const createChat = async (req, res) => {
         const data = req.body;
         const createdChat = await Chat.findOne({ _id: data.id });
         if (createdChat) {
+            createChat.users.push({ refId: createdChat.requestId });
             createdChat.requestType = "ongoing";
             createdChat.save();
             return res.status(201).json(createdChat);
