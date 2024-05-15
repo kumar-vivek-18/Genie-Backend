@@ -8,6 +8,7 @@ export const getUser = async (req, res) => {
     try {
         const { mobileNo } = req.query;
         const user = await User.findOne({ mobileNo });
+        // console.log('user', user);
         if (user) {
             return res.status(200).json(user);
         }

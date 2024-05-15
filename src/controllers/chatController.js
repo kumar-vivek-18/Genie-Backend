@@ -17,7 +17,7 @@ export const modifyChat = async (req, res) => {
             createdChat.users.push({ type: 'Retailer', refId: createdChat.requestId });
             createdChat.requestType = "ongoing";
             createdChat.save();
-            return res.status(201).json(createdChat);
+            return res.status(200).json(createdChat);
         }
         else {
             return res.status(404).json({ message: 'Request not found' });
@@ -44,8 +44,17 @@ export const getRetailerNewChats = async (req, res) => {
             ]
 
 
-        }).populate('requestId');
+        }).lean();
 
+        await Promise.all(RetailerChats.map(async chat => {
+            // Populate each user in the users array
+            await Promise.all(chat.users.map(async user => {
+                const model = user.type === 'UserRequest' ? UserRequest : Retailer;
+                console.log('model', model);
+                user.populatedUser = await model.findById(user.refId);
+                console.log('user.populatedUser', user.populatedUser);
+            }));
+        }));
         console.log('chats', RetailerChats);
 
         if (RetailerChats.length > 0)
