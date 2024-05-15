@@ -4,11 +4,11 @@ import { getRetailerNewChats, getRetailerOngoingChats, getChats, sendMessage, up
 const router = express.Router();
 
 router.route('/modify-spade-retailer').patch(modifyChat);
-router.route('/retailernewspades').get(getRetailerNewChats);
-router.route('/retailerongoingspades').get(getRetailerOngoingChats);
-router.route('/spade-chat').get(getChats);
-router.route('/sendmessage').post(sendMessage);
-router.route('/updatemessage').patch(updateMessage);
+router.route('/00retailer-new-spades').get(getRetailerNewChats);
+router.route('/retailer-ongoing-spades').get(getRetailerOngoingChats);
+router.route('/spade-chats').get(getChats);
+router.route('/send-message').post(sendMessage);
+router.route('/update-message').patch(updateMessage);
 router.route('/get-spade-messages').get(getSpadeMessages);
 
 export default router;
