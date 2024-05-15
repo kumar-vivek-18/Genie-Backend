@@ -14,7 +14,7 @@ export const modifyChat = async (req, res) => {
         const createdChat = await Chat.findOne({ _id: data.id });
         // console.log('createdChat', createdChat);
         if (createdChat) {
-            createdChat.users.push({ type: 'Retailer', refId: createdChat.requestId });
+            createdChat.users.push({ type: 'UserRequest', refId: createdChat.requestId });
             createdChat.requestType = "ongoing";
             createdChat.save();
             return res.status(200).json(createdChat);
