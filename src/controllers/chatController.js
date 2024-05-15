@@ -4,6 +4,7 @@ import { UserRequest } from '../models/userRequest.model.js';
 import { Message } from '../models/message.model.js';
 import { Chat } from '../models/chat.model.js';
 import { response } from 'express';
+import { populate } from 'dotenv';
 
 
 export const modifyChat = async (req, res) => {
@@ -13,7 +14,7 @@ export const modifyChat = async (req, res) => {
         const createdChat = await Chat.findOne({ _id: data.id });
         // console.log('createdChat', createdChat);
         if (createdChat) {
-            createdChat.users.push({ refId: createdChat.requestId });
+            createdChat.users.push({ type: 'Retailer', refId: createdChat.requestId });
             createdChat.requestType = "ongoing";
             createdChat.save();
             return res.status(201).json(createdChat);
@@ -70,7 +71,7 @@ export const getRetailerOngoingChats = async (req, res) => {
             ]
 
 
-        });
+        }).populate('requestId');
         if (RetailerChats.length > 0)
             return res.status(200).json(RetailerChats);
         else
@@ -80,20 +81,67 @@ export const getRetailerOngoingChats = async (req, res) => {
     }
 }
 
+// export const getChats = async (req, res) => {
+//     try {
+//         const data = req.query;
+//         const UserChats = await Chat.find({
+//             $and: [
+//                 {
+//                     requestType: "ongoing",
+//                     users: { $elemMatch: { refId: data.id } }
+//                 }
+
+//             ]
+
+
+//         }).populate({ path: 'users' })
+//         if (UserChats.length > 0)
+//             return res.status(200).json(UserChats);
+//         else
+//             return res.status(404).json({ message: "Retailer Chat not found" });
+//     } catch (error) {
+//         throw new Error(error.message);
+//     }
+// }
+
 export const getChats = async (req, res) => {
     try {
         const data = req.query;
+        // const UserChats = await Chat.find({
+        //     $and: [
+        //         {
+        //             requestType: "ongoing",
+        //             "users.refId": { $in: data.id } // Assuming data.ids is an array of ObjectIds
+        //         }
+        //     ]
+        // }).populate('users').populate({ path: 'users', populate: { path: 'refId' } }); // Populate the refId field within the users array
         const UserChats = await Chat.find({
             $and: [
                 {
                     requestType: "ongoing",
-                    users: { $elemMatch: { refId: data.id } }
+                    "users.refId": { $in: data.id } // Assuming data.ids is an array of ObjectIds
                 }
-
             ]
+        }).lean();
+
+        // Iterate through each chat and populate users
+        await Promise.all(UserChats.map(async chat => {
+            // Populate each user in the users array
+            await Promise.all(chat.users.map(async user => {
+                const model = user.type === 'UserRequest' ? UserRequest : Retailer;
+                console.log('model', model);
+                user.populatedUser = await model.findById(user.refId);
+            }));
+        }));
+
+        // Now UserChats contains the populated users within the users array
 
 
-        });
+        // Now UserChats contains the populated users within the users array
+
+
+
+
         if (UserChats.length > 0)
             return res.status(200).json(UserChats);
         else
@@ -102,6 +150,8 @@ export const getChats = async (req, res) => {
         throw new Error(error.message);
     }
 }
+
+
 
 export const sendMessage = async (req, res) => {
     try {
