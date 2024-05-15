@@ -107,14 +107,6 @@ export const getRetailerOngoingChats = async (req, res) => {
 export const getChats = async (req, res) => {
     try {
         const data = req.query;
-        // const UserChats = await Chat.find({
-        //     $and: [
-        //         {
-        //             requestType: "ongoing",
-        //             "users.refId": { $in: data.id } // Assuming data.ids is an array of ObjectIds
-        //         }
-        //     ]
-        // }).populate('users').populate({ path: 'users', populate: { path: 'refId' } }); // Populate the refId field within the users array
         const UserChats = await Chat.find({
             $and: [
                 {
@@ -134,12 +126,6 @@ export const getChats = async (req, res) => {
             }));
         }));
 
-        // Now UserChats contains the populated users within the users array
-
-
-        // Now UserChats contains the populated users within the users array
-
-
 
 
         if (UserChats.length > 0)
@@ -156,7 +142,8 @@ export const getChats = async (req, res) => {
 export const sendMessage = async (req, res) => {
     try {
         const data = req.body;
-        const createdMessage = await Message.create(data);
+        console.log('messData', data);
+        const createdMessage = await Message.create({ sender: data.sender, message: data.message, bidType: data.bidType, bidPrice: data.bidPrice, bidImages: data.bidImages, bidAccepted: data.bidAccepted, chat: data.chatId });
         if (createdMessage) {
             return res.status(201).json(createdMessage);
         }
