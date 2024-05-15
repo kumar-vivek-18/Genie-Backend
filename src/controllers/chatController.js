@@ -8,8 +8,10 @@ import { response } from 'express';
 
 export const modifyChat = async (req, res) => {
     try {
-        const data = req.body;
+        const data = req.query;
+        // console.log('data', data);
         const createdChat = await Chat.findOne({ _id: data.id });
+        // console.log('createdChat', createdChat);
         if (createdChat) {
             createdChat.users.push({ refId: createdChat.requestId });
             createdChat.requestType = "ongoing";
@@ -84,6 +86,7 @@ export const getChats = async (req, res) => {
         const UserChats = await Chat.find({
             $and: [
                 {
+                    requestType: "ongoing",
                     users: { $elemMatch: { refId: data.id } }
                 }
 
