@@ -3,7 +3,7 @@ import { getRetailerNewChats, getRetailerOngoingChats, getChats, sendMessage, up
 
 const router = express.Router();
 
-router.route('/createspade').patch(modifyChat);
+router.route('/modify-spade-retailer').patch(modifyChat);
 router.route('/retailernewspades').get(getRetailerNewChats);
 router.route('/retailerongoingspades').get(getRetailerOngoingChats);
 router.route('/spade-chat').get(getChats);
