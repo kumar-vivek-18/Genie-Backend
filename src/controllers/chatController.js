@@ -27,6 +27,25 @@ export const modifyChat = async (req, res) => {
     }
 }
 
+export const accetptBid = async (req, res) => {
+    try {
+        const data = req.query;
+        // console.log('data', data);
+        const createdChat = await Chat.findOne({ _id: data.id });
+        // console.log('createdChat', createdChat);
+        if (createdChat) {
+
+            createdChat.bidCompleted = true;
+            createdChat.save();
+            return res.status(200).json(createdChat);
+        }
+        else {
+            return res.status(404).json({ message: 'Request not found' });
+        }
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 // getRetailerNewChats and getRetailerOngoingChats are different chats
 
 export const getRetailerNewChats = async (req, res) => {
