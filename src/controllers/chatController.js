@@ -160,7 +160,7 @@ export const sendMessage = async (req, res) => {
     try {
         const data = req.body;
         console.log('messData', data);
-        const createdMessage = await Message.create({ sender: data.sender, message: data.message, bidType: data.bidType, bidPrice: data.bidPrice, bidImages: data.bidImages, bidAccepted: data.bidAccepted, chat: data.chatId });
+        const createdMessage = await Message.create({ sender: data.sender, message: data.message, bidType: data.bidType, bidPrice: data.bidPrice, bidImages: data.bidImages, bidAccepted: data.bidAccepted, chat: data.chat });
         if (createdMessage) {
             return res.status(201).json(createdMessage);
         }

@@ -41,7 +41,8 @@ const messageModel = mongoose.Schema({
     },
     chat: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Chat"
+        ref: "Chat",
+        required: true,
     },
 },
     {
