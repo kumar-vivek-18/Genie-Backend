@@ -44,6 +44,10 @@ const messageModel = mongoose.Schema({
         ref: "Chat",
         required: true,
     },
+    warranty: {
+        type: Number,
+        default: 0,
+    }
 },
     {
         timestamps: true,

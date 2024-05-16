@@ -28,6 +28,10 @@ const ChatSchema = mongoose.Schema({
         enum: ["new", "ongoing"],
         default: "new"
     },
+    bidCompleted: {
+        type: Boolean,
+        default: false,
+    },
     users: [
         {
             type: {
