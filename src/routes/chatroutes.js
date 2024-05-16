@@ -10,5 +10,5 @@ router.route('/spade-chats').get(getChats);
 router.route('/send-message').post(sendMessage);
 router.route('/update-message').patch(updateMessage);
 router.route('/get-spade-messages').get(getSpadeMessages);
-router.route('accept-bid').patch(accetptBid);
+router.route('/accept-bid').patch(accetptBid);
 export default router;
