@@ -2,17 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import { UserRequest } from './userRequest.model.js';
 import { Retailer } from './retailer.model.js';
 
-// const usersSchema = new mongoose.Schema({
-//     type: {
-//         type: String,
-//         enum: ['UserRequest', 'Retailer']
-//     },
-//     refId: {
-//         type: mongoose.Schema.Types.ObjectId,
-//         required: true,
-//         refPath: 'users.type'
-//     }
-// });
+
 
 const ChatSchema = mongoose.Schema({
     requestId: {
