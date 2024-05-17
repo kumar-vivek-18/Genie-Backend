@@ -36,7 +36,7 @@ const messageModel = mongoose.Schema({
     ],
     bidAccepted: {
         type: String,
-        enum: ["new", "accepted", "rejected"],
+        enum: ["new", "accepted", "rejected", "image"],
         default: "new",
     },
     chat: {
