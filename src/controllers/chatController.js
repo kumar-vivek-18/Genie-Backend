@@ -27,7 +27,7 @@ export const modifyChat = async (req, res) => {
     }
 }
 
-export const accetptBid = async (req, res) => {
+export const acceptBid = async (req, res) => {
     try {
         const data = req.query;
         // console.log('data', data);
