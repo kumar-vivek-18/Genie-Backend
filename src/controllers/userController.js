@@ -150,7 +150,7 @@ export const getSpadesHistory = async (req, res) => {
             $and: [{
                 customer: data.id
             }, {
-                requestActive: false
+                requestActive: "completed"
             }]
         })
         if (spades.length > 0) {
