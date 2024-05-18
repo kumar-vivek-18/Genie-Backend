@@ -193,7 +193,7 @@ export const sendMessage = async (req, res) => {
 
 export const updateMessage = async (req, res) => {
     try {
-        const data = req.body;
+        const data = req.query;
         const message = await Message.findById({ _id: data.id });
         if (message) {
             message.bidAccepted = data.type;
