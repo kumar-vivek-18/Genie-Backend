@@ -31,7 +31,7 @@ export const acceptBid = async (req, res) => {
     try {
         const data = req.query;
         // console.log('data', data);
-        const request = await UserRequest.findOne({ _id: data.id });
+        const request = await UserRequest.findById(data.id);
         // console.log('createdChat', createdChat);
         if (request) {
 
@@ -193,21 +193,40 @@ export const sendMessage = async (req, res) => {
 
 export const updateMessage = async (req, res) => {
     try {
-        const data = req.query;
-        const message = await Message.findById({ _id: data.id });
-        if (message) {
-            message.bidAccepted = data.type;
+        const { id, type } = req.query;
 
-            await message.save();
-            return res.status(200).json(message);
+        if (!id || !type) {
+            return res.status(400).json({ message: 'Missing id or type parameter' });
         }
-        else {
-            return res.status(404).json({ message: 'Error occured while updating message' });
+
+        console.log('update-data', { id, type });
+
+        const message = await Message.findById(id);
+
+        if (!message) {
+            return res.status(404).json({ message: 'Message not found' });
         }
+
+        console.log('message', message);
+
+        // Validate type
+        if (!["new", "accepted", "rejected", "image"].includes(type)) {
+            return res.status(400).json({ message: 'Invalid type parameter' });
+        }
+
+        message.bidAccepted = type;
+
+        await message.save();
+
+        console.log('update-message', message);
+
+        return res.status(200).json(message);
     } catch (error) {
+        console.error('Error updating message:', error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
 
 export const getSpadeMessages = async (req, res) => {
     try {
