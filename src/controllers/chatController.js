@@ -31,13 +31,13 @@ export const accetptBid = async (req, res) => {
     try {
         const data = req.query;
         // console.log('data', data);
-        const createdChat = await Chat.findOne({ _id: data.id });
+        const request = await UserRequest.findOne({ _id: data.id });
         // console.log('createdChat', createdChat);
-        if (createdChat) {
+        if (request) {
 
-            createdChat.bidCompleted = true;
-            createdChat.save();
-            return res.status(200).json(createdChat);
+            request.requestActive = data.type;
+            request.save();
+            return res.status(200).json(request);
         }
         else {
             return res.status(404).json({ message: 'Request not found' });
@@ -197,6 +197,7 @@ export const updateMessage = async (req, res) => {
         const message = await Message.findById({ _id: data.id });
         if (message) {
             message.bidAccepted = data.type;
+
             await message.save();
             return res.status(200).json(message);
         }

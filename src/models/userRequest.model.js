@@ -31,8 +31,9 @@ const userRequestSchema = new Schema({
         default: 0,
     },
     requestActive: {
-        type: Boolean,
-        default: true,
+        type: String,
+        enum: ["active", "completed", "closed"],
+        default: "active",
     }
 
 
