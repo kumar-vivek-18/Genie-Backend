@@ -107,7 +107,7 @@ export const getSpades = async (req, res) => {
             $and: [{
                 customer: data.id
             }, {
-                requestActive: true
+                requestActive: "active"
             }]
         })
 
