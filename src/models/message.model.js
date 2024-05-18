@@ -21,9 +21,9 @@ const messageModel = mongoose.Schema({
         default: ""
     },
     bidType: {
-        type: Boolean,
-        required: true,
-        default: false,
+        type: String,
+        enum: ["false", "true", "image"],
+        default: "false",
     },
     bidPrice: {
         type: Number,
