@@ -23,7 +23,7 @@ export const getUser = async (req, res) => {
 
 export const registerUser = async (req, res) => {
     try {
-        console.log('first', req.body);
+        // console.log('first', req.body);
         const { userName, mobileNo } = req.body;
         const user = await User.create({ userName: userName, mobileNo: mobileNo });
         if (user)
@@ -77,7 +77,7 @@ export const createRequest = async (req, res) => {
 
         return res.status(201).json(userRequest);
     } catch (error) {
-        console.error('Error in createRequest:', error);
+        // console.error('Error in createRequest:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -102,7 +102,7 @@ export const editProfile = async (req, res) => {
 export const getSpades = async (req, res) => {
     try {
         const data = req.query;
-        console.log('spades data', data);
+        // console.log('spades data', data);
 
         const spades = await UserRequest.find({
             $and: [
@@ -116,7 +116,7 @@ export const getSpades = async (req, res) => {
             ]
         });
 
-        console.log('spades', spades);
+        // console.log('spades', spades);
         if (spades.length > 0) {
             return res.status(200).json(spades);
         } else {
@@ -150,7 +150,7 @@ export const closeRequest = async (req, res) => {
 export const getSpadesHistory = async (req, res) => {
     try {
         const data = req.query;
-        console.log('spades data', data);
+        // console.log('spades data', data);
         const spades = await UserRequest.find({
             $and: [{
                 customer: data.id

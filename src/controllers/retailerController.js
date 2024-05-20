@@ -9,7 +9,7 @@ import { UserRequest } from '../models/userRequest.model.js';
 export const createNewRetailer = async (req, res) => {
     try {
         const data = req.body;
-        console.log('retailer data', data);
+        // console.log('retailer data', data);
 
 
         const retailer = await Retailer.create({

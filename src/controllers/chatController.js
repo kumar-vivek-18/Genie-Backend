@@ -51,7 +51,7 @@ export const acceptBid = async (req, res) => {
 export const getRetailerNewChats = async (req, res) => {
     try {
         const data = req.query;
-        console.log('data', data);
+        // console.log('data', data);
         const RetailerChats = await Chat.find({
             $and: [
                 {
@@ -74,7 +74,7 @@ export const getRetailerNewChats = async (req, res) => {
         //         console.log('user.populatedUser', user.populatedUser);
         //     }));
         // }));
-        console.log('chats', RetailerChats);
+        // console.log('chats', RetailerChats);
 
         if (RetailerChats.length > 0)
             return res.status(200).json(RetailerChats);
@@ -157,7 +157,7 @@ export const getChats = async (req, res) => {
             // Populate each user in the users array
             await Promise.all(chat.users.map(async user => {
                 const model = user.type === 'UserRequest' ? UserRequest : Retailer;
-                console.log('model', model);
+                // console.log('model', model);
                 user.populatedUser = await model.findById(user.refId);
             }));
         }));
@@ -178,7 +178,7 @@ export const getChats = async (req, res) => {
 export const sendMessage = async (req, res) => {
     try {
         const data = req.body;
-        console.log('messData', data);
+        // console.log('messData', data);
         const createdMessage = await Message.create({ sender: data.sender, message: data.message, bidType: data.bidType, bidPrice: data.bidPrice, bidImages: data.bidImages, bidAccepted: data.bidAccepted, chat: data.chat, warranty: data.warranty });
         if (createdMessage) {
             return res.status(201).json(createdMessage);
@@ -199,7 +199,7 @@ export const updateMessage = async (req, res) => {
             return res.status(400).json({ message: 'Missing id or type parameter' });
         }
 
-        console.log('update-data', data.id, data.type);
+        // console.log('update-data', data.id, data.type);
 
         const message = await Message.findById(data.id).populate('chat', '_id');
 
@@ -221,7 +221,7 @@ export const updateMessage = async (req, res) => {
 
         return res.status(200).json(message);
     } catch (error) {
-        console.error('Error updating message:', error);
+        // console.error('Error updating message:', error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
@@ -230,7 +230,7 @@ export const updateMessage = async (req, res) => {
 export const getSpadeMessages = async (req, res) => {
     try {
         const data = req.query;
-        console.log('chat', data);
+        // console.log('chat', data);
         const mess = await Message.find({ chat: data.id }).populate('chat', '_id');
 
         if (mess.length > 0) {
