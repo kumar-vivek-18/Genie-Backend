@@ -178,18 +178,33 @@ export const getChats = async (req, res) => {
 export const sendMessage = async (req, res) => {
     try {
         const data = req.body;
-        // console.log('messData', data);
-        const createdMessage = await Message.create({ sender: data.sender, message: data.message, bidType: data.bidType, bidPrice: data.bidPrice, bidImages: data.bidImages, bidAccepted: data.bidAccepted, chat: data.chat, warranty: data.warranty }).populate('chat', '_id users');
-        if (createdMessage) {
-            return res.status(201).json(createdMessage);
-        }
-        else {
+
+        // Create the message
+        const createdMessage = await Message.create({
+            sender: data.sender,
+            message: data.message,
+            bidType: data.bidType,
+            bidPrice: data.bidPrice,
+            bidImages: data.bidImages,
+            bidAccepted: data.bidAccepted,
+            chat: data.chat,
+            warranty: data.warranty
+        });
+
+        if (!createdMessage) {
             return res.status(404).json({ message: 'Message not created' });
         }
+
+        // Populate the chat field
+        const populatedMessage = await createdMessage.populate('chat', '_id users').execPopulate();
+
+        return res.status(201).json(populatedMessage);
     } catch (error) {
-        throw new Error(error.message);
+        console.error('Error creating message:', error); // Improved error logging
+        return res.status(500).json({ message: 'Internal server error', error: error.message }); // Improved error response
     }
-}
+};
+
 
 export const updateMessage = async (req, res) => {
     try {
