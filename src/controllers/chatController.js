@@ -193,15 +193,15 @@ export const sendMessage = async (req, res) => {
 
 export const updateMessage = async (req, res) => {
     try {
-        const { id, type } = req.query;
+        const data = req.query;
 
-        // if (!id || !type) {
-        //     return res.status(400).json({ message: 'Missing id or type parameter' });
-        // }
+        if (!data.id || !data.type) {
+            return res.status(400).json({ message: 'Missing id or type parameter' });
+        }
 
-        console.log('update-data', { id, type });
+        console.log('update-data', data.id, data.type);
 
-        const message = await Message.findById(id);
+        const message = await Message.findById(data.id);
 
         if (!message) {
             return res.status(404).json({ message: 'Message not found' });
@@ -210,11 +210,11 @@ export const updateMessage = async (req, res) => {
         console.log('message', message);
 
         // Validate type
-        if (!["new", "accepted", "rejected", "image"].includes(type)) {
+        if (!["new", "accepted", "rejected", "image"].includes(data.type)) {
             return res.status(400).json({ message: 'Invalid type parameter' });
         }
 
-        message.bidAccepted = type;
+        message.bidAccepted = data.type;
 
         await message.save();
 
