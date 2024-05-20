@@ -195,9 +195,9 @@ export const updateMessage = async (req, res) => {
     try {
         const { id, type } = req.query;
 
-        if (!id || !type) {
-            return res.status(400).json({ message: 'Missing id or type parameter' });
-        }
+        // if (!id || !type) {
+        //     return res.status(400).json({ message: 'Missing id or type parameter' });
+        // }
 
         console.log('update-data', { id, type });
 
