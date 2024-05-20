@@ -87,9 +87,9 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     console.log("Connected to socket.io");
 
-    socket.on("setup", (userData) => {
-        socket.join(userData._id);
-        console.log(userData._id);
+    socket.on("setup", (userId) => {
+        socket.join(userId);
+        console.log(userId);
         socket.emit("connected");
     });
 
@@ -109,12 +109,12 @@ io.on("connection", (socket) => {
         });
     });
 
-    socket.on("typing", (room) => socket.to(room).emit("typing"));
-    socket.on("stop typing", (room) => socket.to(room).emit("stop typing"));
+    // socket.on("typing", (room) => socket.to(room).emit("typing"));
+    // socket.on("stop typing", (room) => socket.to(room).emit("stop typing"));
 
     socket.on("disconnect", () => {
         console.log("USER DISCONNECTED");
-        socket.leave(userData._id);
+        socket.leave(userId);
     });
 });
 

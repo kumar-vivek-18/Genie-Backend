@@ -201,7 +201,7 @@ export const updateMessage = async (req, res) => {
 
         // console.log('update-data', data.id, data.type);
 
-        const message = await Message.findById(data.id).populate('chat', '_id');
+        const message = await Message.findById(data.id).populate('chat', '_id users');
 
         if (!message) {
             return res.status(404).json({ message: 'Message not found' });
@@ -231,7 +231,7 @@ export const getSpadeMessages = async (req, res) => {
     try {
         const data = req.query;
         // console.log('chat', data);
-        const mess = await Message.find({ chat: data.id }).populate('chat', '_id');
+        const mess = await Message.find({ chat: data.id }).populate('chat', '_id users');
 
         if (mess.length > 0) {
 
