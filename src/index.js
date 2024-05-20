@@ -100,6 +100,7 @@ io.on("connection", (socket) => {
 
     socket.on("new message", (newMessageReceived) => {
         const chat = newMessageReceived.chat;
+        console.log('new message received', newMessageReceived);
         if (!chat.users) return console.log("chat.users not defined");
 
         chat.users.forEach((user) => {
