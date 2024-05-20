@@ -103,19 +103,23 @@ export const getSpades = async (req, res) => {
     try {
         const data = req.query;
         console.log('spades data', data);
+
         const spades = await UserRequest.find({
-            $and: [{
-                customer: data.id
-            }, {
-                requestActive: "active"
-            }]
-        })
+            $and: [
+                { customer: data.id },
+                {
+                    $or: [
+                        { requestActive: "active" },
+                        { requestActive: "completed" }
+                    ]
+                }
+            ]
+        });
 
         console.log('spades', spades);
         if (spades.length > 0) {
             return res.status(200).json(spades);
-        }
-        else {
+        } else {
             return res.status(404).json({ message: 'No spades found' });
         }
 
@@ -123,6 +127,7 @@ export const getSpades = async (req, res) => {
         throw new Error(error.message);
     }
 }
+
 
 export const closeRequest = async (req, res) => {
     try {
