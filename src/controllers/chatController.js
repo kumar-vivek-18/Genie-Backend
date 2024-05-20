@@ -29,7 +29,7 @@ export const modifyChat = async (req, res) => {
 
 export const acceptBid = async (req, res) => {
     try {
-        const data = req.query;
+        const data = req.body;
         // console.log('data', data);
         const request = await UserRequest.findById(data.id);
         // console.log('createdChat', createdChat);
@@ -193,7 +193,7 @@ export const sendMessage = async (req, res) => {
 
 export const updateMessage = async (req, res) => {
     try {
-        const data = req.query;
+        const data = req.body;
 
         if (!data.id || !data.type) {
             return res.status(400).json({ message: 'Missing id or type parameter' });
