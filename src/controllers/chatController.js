@@ -201,15 +201,15 @@ export const updateMessage = async (req, res) => {
 
         console.log('update-data', data.id, data.type);
 
-        const message = await Message.findById(data.id);
+        const message = await Message.findById(data.id).populate('chat', '_id');
 
         if (!message) {
             return res.status(404).json({ message: 'Message not found' });
         }
 
-        console.log('message', message);
+        // console.log('message', message);
 
-        // Validate type
+
         if (!["new", "accepted", "rejected", "image"].includes(data.type)) {
             return res.status(400).json({ message: 'Invalid type parameter' });
         }
@@ -217,8 +217,7 @@ export const updateMessage = async (req, res) => {
         message.bidAccepted = data.type;
 
         await message.save();
-
-        console.log('update-message', message);
+        // console.log('update-message', message);
 
         return res.status(200).json(message);
     } catch (error) {
@@ -232,8 +231,10 @@ export const getSpadeMessages = async (req, res) => {
     try {
         const data = req.query;
         console.log('chat', data);
-        const mess = await Message.find({ chat: data.id });
+        const mess = await Message.find({ chat: data.id }).populate('chat', '_id');
+
         if (mess.length > 0) {
+
             return res.status(200).json(mess);
         }
         else {
