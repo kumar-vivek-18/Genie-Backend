@@ -89,7 +89,7 @@ io.on("connection", (socket) => {
 
     socket.on("setup", (userId) => {
         socket.join(userId);
-        console.log(userId);
+        console.log(`User with ID ${userId} has joined their personal room.`);
         socket.emit("connected");
     });
 
