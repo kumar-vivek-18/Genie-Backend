@@ -191,7 +191,7 @@ export const sendMessage = async (req, res) => {
         });
 
         // Populate the chat field
-        const populatedMessage = await createdMessage.populate('chat', '_id users').execPopulate();
+        const populatedMessage = await createdMessage.populate('chat', '_id users');
 
         if (!createdMessage) {
             return res.status(404).json({ message: 'Message not created' });
