@@ -131,16 +131,16 @@ export const getSpades = async (req, res) => {
 
 export const closeRequest = async (req, res) => {
     try {
-        const id = req.params.id;
-        const updateRequest = await UserRequest.findById({ _id: id });
+        const id = req.body.id;
+        const updateRequest = await UserRequest.findById(id);
 
         if (updateRequest) {
-            updateRequest.requestActive = false;
+            updateRequest.requestActive = "closed";
             updateRequest.save();
             return res.status(200).json(updateRequest);
         }
         else {
-            return res.status(502).json({ message: 'Request not found' });
+            return res.status(404).json({ message: 'Request not found' });
         }
     } catch (error) {
         throw new Error(error.message);
