@@ -90,6 +90,7 @@ io.on("connection", (socket) => {
 
     socket.on("setup", (userId) => {
         socket.join(userId);
+        socket.userId = userId;
         console.log(`User with ID ${userId} has joined their personal room.`);
         socket.emit("connected");
     });
@@ -117,7 +118,9 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         console.log("USER DISCONNECTED");
-        // socket.leave(userId);
+        if (socket.userId) {
+            socket.leave(socket.userId);
+        }
     });
     // socket.off("setup", (userId) => {
     //     console.log("USER DISCONNECTED");
