@@ -190,12 +190,14 @@ export const sendMessage = async (req, res) => {
             warranty: data.warranty
         });
 
+        // Populate the chat field
+        const populatedMessage = await createdMessage.populate('chat', '_id users').execPopulate();
+
         if (!createdMessage) {
             return res.status(404).json({ message: 'Message not created' });
         }
 
-        // Populate the chat field
-        const populatedMessage = await createdMessage.populate('chat', '_id users').execPopulate();
+
 
         return res.status(201).json(populatedMessage);
     } catch (error) {
