@@ -162,7 +162,7 @@ export const getChats = async (req, res) => {
             }));
         }));
 
-        console.log('chats data', UserChats);
+        // console.log('chats data', UserChats);
 
 
         if (UserChats.length > 0)
