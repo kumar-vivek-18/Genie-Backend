@@ -114,10 +114,10 @@ io.on("connection", (socket) => {
     // socket.on("typing", (room) => socket.to(room).emit("typing"));
     // socket.on("stop typing", (room) => socket.to(room).emit("stop typing"));
 
-    // socket.on("disconnect", (userId) => {
-    //     console.log("USER DISCONNECTED");
-    //     socket.leave(userId);
-    // });
+    socket.on("disconnect", () => {
+        console.log("USER DISCONNECTED");
+        // socket.leave(userId);
+    });
     socket.off("setup", (userId) => {
         console.log("USER DISCONNECTED");
         socket.leave(userId);
