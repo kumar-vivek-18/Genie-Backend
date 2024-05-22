@@ -181,14 +181,13 @@ export const sendMessage = async (req, res) => {
 
         // Create the message
         const createdMessage = await Message.create({
-            sender: data?.sender,
-            message: data?.message,
-            bidType: data?.bidType,
-            bidPrice: data?.bidPrice,
-            bidImages: data?.bidImages,
-            bidAccepted: data?.bidAccepted,
-            chat: data?.chat,
-            warranty: data?.warranty
+            sender: data.sender,
+            message: data.message,
+            bidType: data.bidType,
+            bidPrice: data.bidPrice,
+            bidImages: data.bidImages,
+            chat: data.chat,
+            warranty: data.warranty
         });
 
         if (!createdMessage) {
