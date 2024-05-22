@@ -77,6 +77,7 @@ app.use('/chat', chatRoutes);
 // Create HTTP server and integrate Socket.IO
 const server = http.createServer(app);
 const io = new Server(server, {
+    pingTimeout: 6000,
     cors: {
         origin: process.env.CORS_ORIGIN,
         methods: ["GET", "POST", "PATCH"],
