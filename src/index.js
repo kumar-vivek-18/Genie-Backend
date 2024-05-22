@@ -108,7 +108,7 @@ io.on("connection", (socket) => {
             // if (user._id === newMessageReceived.sender._id) return;
 
             // socket.to(newMessageReceived.chat._id).emit("message received", newMessageReceived);
-            socket.to(user._id).emit("message received", newMessageReceived);
+            socket.in(user._id).emit("message received", newMessageReceived);
         });
     });
 
