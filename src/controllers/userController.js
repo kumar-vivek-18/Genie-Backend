@@ -102,7 +102,7 @@ export const editProfile = async (req, res) => {
 export const getSpades = async (req, res) => {
     try {
         const data = req.query;
-        // console.log('spades data', data);
+        console.log('spades data', data);
 
         const spades = await UserRequest.find({
             $and: [
