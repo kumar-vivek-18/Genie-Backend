@@ -119,10 +119,10 @@ io.on("connection", (socket) => {
         console.log("USER DISCONNECTED");
         // socket.leave(userId);
     });
-    socket.off("setup", (userId) => {
-        console.log("USER DISCONNECTED");
-        socket.leave(userId);
-    });
+    // socket.off("setup", (userId) => {
+    //     console.log("USER DISCONNECTED");
+    //     socket.leave(userId);
+    // });
 });
 
 
@@ -170,9 +170,10 @@ io.on("connection", (socket) => {
 // Connect to the database and start the server
 connectDB()
     .then(() => {
-        server.listen(process.env.PORT || 8000, () => {
-            console.log(`⚙️  Server is running at port: ${process.env.PORT}`.yellow.bold);
+        server.listen(5000, '0.0.0.0', () => {
+            console.log('Server is running on port 5000');
         });
+
     })
     .catch((err) => {
         console.log("MONGO db connection failed !!! ", err);
