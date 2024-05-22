@@ -9,13 +9,13 @@ import { populate } from 'dotenv';
 
 export const modifyChat = async (req, res) => {
     try {
-        const data = req.query;
+        const data = req.body;
         // console.log('data', data);
-        const createdChat = await Chat.findOne({ _id: data.id });
+        const createdChat = await Chat.findById(data.id);
         // console.log('createdChat', createdChat);
         if (createdChat) {
             createdChat.users.push({ type: 'UserRequest', refId: createdChat.requestId });
-            createdChat.requestType = "ongoing";
+            createdChat.requestType = data.type;
             createdChat.save();
             return res.status(200).json(createdChat);
         }
@@ -259,3 +259,19 @@ export const getSpadeMessages = async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
+
+// const confirmProductAvailability = async (req, res) => {
+//     try {
+//         const data = req.body;
+
+//         const chat = await Chat.findById(data.id);
+//         if (!chat) {
+//             return res.status(404).json({ message: 'Chat not found' });
+//         }
+
+
+//     } catch (error) {
+
+//     }
+// }
