@@ -116,7 +116,7 @@ export const getSpades = async (req, res) => {
             ]
         });
 
-        console.log('spades', spades);
+        // console.log('spades', spades);
         if (spades.length > 0) {
             return res.status(200).json(spades);
         } else {

@@ -34,6 +34,10 @@ const userRequestSchema = new Schema({
         type: String,
         enum: ["active", "completed", "closed"],
         default: "active",
+    },
+    requestAcceptedChat: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Chat",
     }
 
 
