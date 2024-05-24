@@ -22,7 +22,7 @@ const messageModel = mongoose.Schema({
     },
     bidType: {
         type: String,
-        enum: ["false", "true", "image"],
+        enum: ["false", "true", "image", "update"],
         default: "false",
     },
     bidPrice: {

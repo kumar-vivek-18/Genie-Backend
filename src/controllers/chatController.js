@@ -5,7 +5,7 @@ import { Message } from '../models/message.model.js';
 import { Chat } from '../models/chat.model.js';
 import { response } from 'express';
 import { populate } from 'dotenv';
-
+import mongoose from 'mongoose';
 
 export const modifyChat = async (req, res) => {
     try {
@@ -27,25 +27,25 @@ export const modifyChat = async (req, res) => {
     }
 }
 
-export const acceptBid = async (req, res) => {
-    try {
-        const data = req.body;
-        // console.log('data', data);
-        const request = await UserRequest.findById(data.id);
-        // console.log('createdChat', createdChat);
-        if (request) {
+// export const acceptBid = async (req, res) => {
+//     try {
+//         const data = req.body;
+//         // console.log('data', data);
+//         const request = await UserRequest.findById(data.id);
+//         // console.log('createdChat', createdChat);
+//         if (request) {
 
-            request.requestActive = data.type;
-            request.save();
-            return res.status(200).json(request);
-        }
-        else {
-            return res.status(404).json({ message: 'Request not found' });
-        }
-    } catch (error) {
-        throw new Error(error.message);
-    }
-}
+//             request.requestActive = data.type;
+//             request.save();
+//             return res.status(200).json(request);
+//         }
+//         else {
+//             return res.status(404).json({ message: 'Request not found' });
+//         }
+//     } catch (error) {
+//         throw new Error(error.message);
+//     }
+// }
 // getRetailerNewChats and getRetailerOngoingChats are different chats
 
 export const getRetailerNewChats = async (req, res) => {
@@ -242,6 +242,134 @@ export const updateMessage = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
+
+// export const acceptBidRequest = async (req, res) => {
+//     try {
+//         const data = req.body;
+//         // required fields messageId to fetch message
+//         // userRequestId to fetch and update request
+
+//         if (!data.messageId || !data.userRequestId) {
+//             return res.status(400).json({ message: 'Missing id or type parameter' });
+//         }
+
+
+//         const message = await Message.findByIdAndUpdate({ _id: data.messageId }, { bidAccepted: "accepted" }, { session }).populate('chat', '_id users');
+//         // const chat = await Chat.findByIdAndUpdate({ _id: data.chatId }, { bidCompleted: true }, { session });
+//         const userRequest = await UserRequest.findByIdAndUpdate({ _id: data.userRequestId }, { requestActive: "completed" }, { session });
+
+//         const chats = await Chat.find({ requestId: data.userRequestId });
+
+//         await Promise.all(chats.map(async (chat) => {
+//             chat.bidCompleted = true;
+//             await chat.save();
+//             if (chat._id !== data.chatId) {
+//                 const firstBid = await Message.create({ sender: { type: 'Retailer', refId: chat.users[0]._id }, message: `Bid closed with other seller at a price of ${message.expectedPrice} Rs. Try next time with better pricing.`, bidType: "update", chat: chat._id });
+//             }
+//         }));
+
+//         await session.commitTransaction();
+//         session.endSession();
+//         res.status(200).send({ message: message });
+//     } catch (error) {
+//         await session.abortTransaction();
+//         session.endSession();
+//         return res.status(500).json({ message: "Internal Server Error" });
+//     }
+// }
+
+
+export const acceptBidRequest = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const data = req.body;
+
+        if (!data.messageId || !data.userRequestId) {
+            return res.status(400).json({ message: 'Missing id or type parameter' });
+        }
+
+        const message = await Message.findByIdAndUpdate(
+            { _id: data.messageId },
+            { bidAccepted: "accepted" },
+            { session, new: true }
+        ).populate('chat', '_id users');
+
+        if (!message) {
+            throw new Error('Message not found');
+        }
+
+        const userRequest = await UserRequest.findByIdAndUpdate(
+            { _id: data.userRequestId },
+            { requestActive: "completed", requestAcceptedChat: message.chat._id },
+            { session, new: true }
+        );
+
+        if (!userRequest) {
+            throw new Error('User request not found');
+        }
+
+        const chats = await Chat.find({ requestId: data.userRequestId }).session(session);
+
+        await Promise.all(chats.map(async (chat) => {
+            chat.bidCompleted = true;
+            await chat.save({ session });
+
+            if (chat._id.toString() !== data.chatId) {
+                await Message.create([{
+                    sender: { type: 'Retailer', refId: chat.users[0]._id },
+                    message: `Bid closed with other seller at a price of ${message.expectedPrice} Rs. Try next time with better pricing.`,
+                    bidType: "update",
+                    chat: chat._id
+                }], { session });
+            }
+        }));
+
+        await session.commitTransaction();
+        session.endSession();
+        res.status(200).send({ message });
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+};
+
+
+export const rejectBidRequest = async (req, res) => {
+    try {
+        const data = req.body;
+
+        if (!data.messageId) {
+            return res.status(400).json({ message: 'Missing id or type parameter' });
+        }
+
+
+        const message = await Message.findById(data.messageId).populate('chat', '_id users');
+
+        if (!message) {
+            return res.status(404).json({ message: 'Message not found' });
+        }
+
+        // console.log('message', message);
+
+
+
+        message.bidAccepted = "rejected";
+
+        await message.save();
+        // console.log('update-message', message);
+
+        return res.status(200).json(message);
+    } catch (error) {
+        // console.error('Error updating message:', error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+
 
 
 export const getSpadeMessages = async (req, res) => {

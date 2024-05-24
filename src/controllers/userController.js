@@ -129,7 +129,7 @@ export const getSpades = async (req, res) => {
 }
 
 
-export const closeRequest = async (req, res) => {
+export const closeSpade = async (req, res) => {
     try {
         const id = req.body.id;
         const updateRequest = await UserRequest.findById(id);
