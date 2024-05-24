@@ -1,17 +1,13 @@
-import { Retailer } from '../models/retailer.model.js';
-import { User } from '../models/user.model.js';
-import { UserRequest } from '../models/userRequest.model.js';
-import { Message } from '../models/message.model.js';
-import { Chat } from '../models/chat.model.js';
-import { response } from 'express';
-import { populate } from 'dotenv';
+import { RatingAndFeedback } from '../models/feedback.model.js';
 import mongoose from 'mongoose';
 
 export const createRatingAndFeedback = async (req, res) => {
     try {
-        const data = res.body;
+        const data = req.body;
 
-        const createdRating = await Rating.create({
+        console.log('data', data);
+
+        const createdRating = await RatingAndFeedback.create({
             user: data.user,
             retailer: data.retailer,
             rating: data.rating,

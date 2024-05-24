@@ -24,4 +24,6 @@ const feedbackSchema = new Schema({
         required: true,
     }
 
-})
+});
+
+export const RatingAndFeedback = mongoose.model('RatingAndFeedbac', feedbackSchema);

@@ -317,7 +317,8 @@ export const acceptBidRequest = async (req, res) => {
             chat.bidCompleted = true;
             await chat.save({ session });
 
-            if (chat._id.toString() !== data.chatId) {
+            if (chat._id.toString() !== message.chat._id.toString()) {
+                console.log('chats', chat._id, message.chat._id);
                 await Message.create([{
                     sender: { type: 'Retailer', refId: chat.users[0]._id },
                     message: `Bid closed with other seller at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
