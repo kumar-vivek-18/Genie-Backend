@@ -5,7 +5,7 @@ export const createRatingAndFeedback = async (req, res) => {
     try {
         const data = req.body;
 
-        console.log('data', data);
+        // console.log('data', data);
 
         const createdRating = await RatingAndFeedback.create({
             user: data.user,

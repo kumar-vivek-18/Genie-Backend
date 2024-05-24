@@ -392,17 +392,4 @@ export const getSpadeMessages = async (req, res) => {
 }
 
 
-// const confirmProductAvailability = async (req, res) => {
-//     try {
-//         const data = req.body;
 
-//         const chat = await Chat.findById(data.id);
-//         if (!chat) {
-//             return res.status(404).json({ message: 'Chat not found' });
-//         }
-
-
-//     } catch (error) {
-
-//     }
-// }
