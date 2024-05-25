@@ -330,7 +330,7 @@ export const acceptBidRequest = async (req, res) => {
 
         await session.commitTransaction();
         session.endSession();
-        res.status(200).send({ message });
+        res.status(200).json(message);
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
