@@ -152,9 +152,17 @@ export const getChats = async (req, res) => {
         const UserChats = await Chat.find({
             $and: [
                 {
-                    requestType: "ongoing",
-                    "users.refId": { $in: data.id } // Assuming data.ids is an array of ObjectIds
+                    $or: [
+                        { requestType: "ongoing" },
+                        { requestType: "completed" }
+                    ],
+
+
+                },
+                {
+                    users: { $elemMatch: { refId: data.id } }
                 }
+
             ]
         }).lean();
 
