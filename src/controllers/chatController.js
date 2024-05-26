@@ -315,7 +315,7 @@ export const acceptBidRequest = async (req, res) => {
 
         await Promise.all(chats.map(async (chat) => {
 
-            if (chat.bidType === "new") {
+            if (chat.requestType === "new") {
                 await Chat.findByIdAndDelete(chat._id).session(session);
             }
             else if (chat._id === message.chat._id) {
