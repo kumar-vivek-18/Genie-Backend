@@ -330,7 +330,7 @@ export const acceptBidRequest = async (req, res) => {
             }
 
 
-            if (chat._id.toString() !== message.chat._id.toString()) {
+            if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "ongoing") {
                 console.log('chats', chat._id, message.chat._id);
                 await Message.create([{
                     sender: { type: 'Retailer', refId: chat.users[0]._id },
