@@ -314,8 +314,21 @@ export const acceptBidRequest = async (req, res) => {
         const chats = await Chat.find({ requestId: data.userRequestId }).session(session);
 
         await Promise.all(chats.map(async (chat) => {
-            chat.bidCompleted = true;
-            await chat.save({ session });
+
+            if (chat.bidType === "new") {
+                await Chat.findByIdAndDelete(chat._id).session(session);
+            }
+            else if (chat._id === message.chat._id) {
+                chat.bidCompleted = true;
+                chat.requestType = "completed";
+                await chat.save({ session });
+            }
+            else {
+                chat.bidAccepted = true;
+                chat.requestType = "closed";
+                await chat.save({ session });
+            }
+
 
             if (chat._id.toString() !== message.chat._id.toString()) {
                 console.log('chats', chat._id, message.chat._id);
