@@ -85,18 +85,19 @@ export const createRequest = async (req, res) => {
 
 export const editProfile = async (req, res) => {
     try {
-        const data = req.body;
-        const user = await User.findByIdAndUpdate(data._id, data, { new: true });
+        const { _id, updateData } = req.body;
+        console.log('data', updateData);
+        const user = await User.findByIdAndUpdate(_id, updateData, { new: true });
         if (user) {
             return res.status(200).json(user);
-        }
-        else {
+        } else {
             return res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
-        throw new Error(error.message);
+        return res.status(500).json({ message: error.message });
     }
 }
+
 
 
 export const getSpades = async (req, res) => {

@@ -6,7 +6,7 @@ import { getUser, registerUser, createRequest, editProfile, getSpades, getSpades
 router.route('/').get(getUser);
 router.route('/').post(registerUser);
 router.route('/createrequest').post(createRequest);
-router.route('/editprofile').patch(editProfile);
+router.route('/edit-profile').patch(editProfile);
 router.route('/getspades').get(getSpades);
 router.route('/closespade').patch(closeSpade);
 router.route('/history').get(getSpadesHistory);
