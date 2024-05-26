@@ -318,13 +318,13 @@ export const acceptBidRequest = async (req, res) => {
             if (chat.requestType === "new") {
                 await Chat.findByIdAndDelete(chat._id).session(session);
             }
-            else if (chat._id === message.chat._id && chat.requestType === "ongoing") {
+            else if (chat._id.toString() === message.chat._id.toString() && chat.requestType === "ongoing") {
                 chat.bidCompleted = true;
                 chat.requestType = "completed";
                 await chat.save({ session });
             }
             else {
-                chat.bidAccepted = true;
+                chat.bidCompleted = true;
                 chat.requestType = "closed";
                 await chat.save({ session });
             }
