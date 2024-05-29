@@ -72,6 +72,10 @@ const RetailerSchema = new Schema({
         lowercase: true,
         trim: true,
         default: "",
+    },
+    uniqueToken: {
+        type: String,
+        default: "",
     }
 
 }, {

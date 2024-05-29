@@ -30,6 +30,10 @@ const UserSchema = new Schema({
         type: String,
         trim: true,
         default: "",
+    },
+    uniqueToken: {
+        type: String,
+        default: "",
     }
 
 },
