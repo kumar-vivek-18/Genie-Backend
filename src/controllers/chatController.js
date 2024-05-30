@@ -95,17 +95,15 @@ export const getRetailerOngoingChats = async (req, res) => {
                         { requestType: "ongoing" },
                         { requestType: "completed" }
                     ],
-
-
                 },
                 {
                     users: { $elemMatch: { refId: data.id } }
                 }
 
             ]
-        }).populate('requestId');
+        }).populate('requestId').lean();
 
-        await Promise.all(UserChats.map(async chat => {
+        await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
             await Promise.all(chat.users.map(async user => {
                 const model = user.type === 'UserRequest' ? UserRequest : Retailer;
