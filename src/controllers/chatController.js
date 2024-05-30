@@ -54,7 +54,7 @@ export const getRetailerNewChats = async (req, res) => {
         const RetailerChats = await Chat.find({
             $and: [
                 {
-                    requestType: "ongoing"
+                    requestType: "new"
                 },
                 {
                     users: { $elemMatch: { refId: data.id } }
