@@ -105,6 +105,15 @@ export const getRetailerOngoingChats = async (req, res) => {
             ]
         }).populate('requestId');
 
+        await Promise.all(UserChats.map(async chat => {
+            // Populate each user in the users array
+            await Promise.all(chat.users.map(async user => {
+                const model = user.type === 'UserRequest' ? UserRequest : Retailer;
+                // console.log('model', model);
+                user.populatedUser = await model.findById(user.refId);
+            }));
+        }));
+
         // await Promise.all(RetailerChats.map(async chat => {
         //     // Populate each user in the users array
         //     await Promise.all(chat.users.map(async user => {
