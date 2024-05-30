@@ -58,7 +58,7 @@ export const createRequest = async (req, res) => {
 
 
         const retailerRequests = await Promise.all(retailers.map(async retailer => {
-            const retailerChat = await Chat.create({ requestId: userRequest._id, customerId: userRequest.customer, requestType: 'new', users: [{ type: 'Retailer', refId: retailer._id }] });
+            const retailerChat = await Chat.create({ requestId: userRequest._id, customerId: customerID, requestType: 'new', users: [{ type: 'Retailer', refId: retailer._id }] });
 
             if (expectedPrice > 0 && retailerChat) {
                 const firstBid = await Message.create({ sender: { type: 'UserRequest', refId: userRequest._id }, message: request, bidType: "false", bidPrice: expectedPrice, bidImages: requestImages, bidAccepted: 'new', chat: retailerChat._id });
