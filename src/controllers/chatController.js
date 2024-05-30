@@ -51,30 +51,26 @@ export const modifyChat = async (req, res) => {
 export const getRetailerNewChats = async (req, res) => {
     try {
         const data = req.query;
-        // console.log('data', data);
         const RetailerChats = await Chat.find({
             $and: [
                 {
-                    requestType: "new",
-
+                    requestType: "ongoing"
+                },
+                {
                     users: { $elemMatch: { refId: data.id } }
                 }
 
             ]
+        }).populate('requestId').populate('customerId').lean();
 
-
-        }).populate('requestId');
-
-        // await Promise.all(RetailerChats.map(async chat => {
-        //     // Populate each user in the users array
-        //     await Promise.all(chat.users.map(async user => {
-        //         const model = user.type === 'UserRequest' ? UserRequest : Retailer;
-        //         console.log('model', model);
-        //         user.populatedUser = await model.findById(user.refId);
-        //         console.log('user.populatedUser', user.populatedUser);
-        //     }));
-        // }));
-        // console.log('chats', RetailerChats);
+        await Promise.all(RetailerChats.map(async chat => {
+            // Populate each user in the users array
+            await Promise.all(chat.users.map(async user => {
+                const model = user.type === 'UserRequest' ? UserRequest : Retailer;
+                // console.log('model', model);
+                user.populatedUser = await model.findById(user.refId);
+            }));
+        }));
 
         if (RetailerChats.length > 0)
             return res.status(200).json(RetailerChats);
@@ -101,7 +97,7 @@ export const getRetailerOngoingChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').lean();
+        }).populate('requestId').populate('customerId').lean();
 
         await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
