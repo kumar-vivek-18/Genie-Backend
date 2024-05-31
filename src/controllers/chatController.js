@@ -158,7 +158,7 @@ export const getChats = async (req, res) => {
                 }
 
             ]
-        }).lean();
+        }).populate('requestId').populate('customerId').lean();
 
         // Iterate through each chat and populate users
         await Promise.all(UserChats.map(async chat => {
