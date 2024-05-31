@@ -45,9 +45,15 @@ export const createRequest = async (req, res) => {
 
         const retailers = await Retailer.find({ $and: [{ storeCategory: requestCategory }, { storeApproved: true }] });
 
-        if (!retailers || !retailers.length) {
+        const uniqueTokens = [];
+
+        if (!retailers || retailers.length < 5) {
             return res.status(404).json({ message: 'No retailers found for the requested category' });
         }
+
+        retailers.map(retailer => {
+            uniqueTokens.push(retailer.uniqueToken);
+        });
 
         const userRequest = await UserRequest.create({ customer: customerID, requestDescription: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice });
 
@@ -75,7 +81,7 @@ export const createRequest = async (req, res) => {
             return res.status(404).json({ message: 'Request not created due to no retailer found of particular category' });
         }
 
-        return res.status(201).json(userRequest);
+        return res.status(201).json({ userRequest, uniqueTokens });
     } catch (error) {
         // console.error('Error in createRequest:', error);
         return res.status(500).json({ message: 'Internal server error' });
