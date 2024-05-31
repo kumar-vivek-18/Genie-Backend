@@ -47,7 +47,7 @@ export const createRequest = async (req, res) => {
 
         const uniqueTokens = [];
 
-        if (!retailers || retailers.length) {
+        if (!retailers || !retailers.length) {
             return res.status(404).json({ message: 'No retailers found for the requested category' });
         }
 
