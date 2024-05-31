@@ -319,8 +319,9 @@ export const acceptBidRequest = async (req, res) => {
             throw new Error('User request not found');
         }
 
-        const chats = await Chat.find({ requestId: data.userRequestId }).session(session);
+        const chats = await Chat.find({ requestId: data.userRequestId }).populate('retailerId', 'uniqueToken').session(session);
 
+        const uniqueTokens = [];
         await Promise.all(chats.map(async (chat) => {
 
             if (chat.requestType === "new") {
@@ -329,6 +330,7 @@ export const acceptBidRequest = async (req, res) => {
             else if (chat._id.toString() === message.chat._id.toString() && chat.requestType === "ongoing") {
                 chat.bidCompleted = true;
                 chat.requestType = "completed";
+                // uniqueTokens.push(chat.users[0].populatedUser.uniqueToken);
                 await chat.save({ session });
             }
             else {
@@ -351,7 +353,7 @@ export const acceptBidRequest = async (req, res) => {
 
         await session.commitTransaction();
         session.endSession();
-        res.status(200).json(message);
+        res.status(200).json({ message, chats });
     } catch (error) {
         await session.abortTransaction();
         session.endSession();

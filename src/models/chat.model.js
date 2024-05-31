@@ -15,6 +15,11 @@ const ChatSchema = mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    retailerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Retailer',
+        required: true,
+    },
     requestType: {
         type: String,
         lowercase: true,
