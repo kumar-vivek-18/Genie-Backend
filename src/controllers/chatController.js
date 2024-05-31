@@ -322,26 +322,29 @@ export const acceptBidRequest = async (req, res) => {
         const chats = await Chat.find({ requestId: data.userRequestId }).populate('retailerId', 'uniqueToken').session(session);
 
         const uniqueTokens = [];
+        uniqueTokens.push(chats[0].retailerId.uniqueToken);
         await Promise.all(chats.map(async (chat) => {
-
+            // console.log('chat token', chat._id, message.chat._id);
             if (chat.requestType === "new") {
                 await Chat.findByIdAndDelete(chat._id).session(session);
             }
             else if (chat._id.toString() === message.chat._id.toString() && chat.requestType === "ongoing") {
+                uniqueTokens.push(chat.retailerId.uniqueToken);
                 chat.bidCompleted = true;
                 chat.requestType = "completed";
-                // uniqueTokens.push(chat.users[0].populatedUser.uniqueToken);
                 await chat.save({ session });
             }
             else {
+                uniqueTokens.push(chat.retailerId.uniqueToken);
                 chat.bidCompleted = true;
                 chat.requestType = "closed";
                 await chat.save({ session });
             }
 
 
+
             if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "ongoing") {
-                console.log('chats', chat._id, message.chat._id);
+                // console.log('chats', chat._id, message.chat._id);
                 await Message.create([{
                     sender: { type: 'Retailer', refId: chat.users[0]._id },
                     message: `Bid closed with other seller at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
@@ -353,7 +356,7 @@ export const acceptBidRequest = async (req, res) => {
 
         await session.commitTransaction();
         session.endSession();
-        res.status(200).json({ message, chats });
+        res.status(200).json({ message, uniqueTokens });
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
