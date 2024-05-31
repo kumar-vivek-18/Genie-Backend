@@ -324,15 +324,16 @@ export const acceptBidRequest = async (req, res) => {
         const uniqueTokens = [];
         uniqueTokens.push(chats[0].retailerId.uniqueToken);
         await Promise.all(chats.map(async (chat) => {
-            // console.log('chat token', chat._id, message.chat._id);
+            console.log('chat token', chat._id, message.chat._id);
             if (chat.requestType === "new") {
                 await Chat.findByIdAndDelete(chat._id).session(session);
             }
             else if (chat._id.toString() === message.chat._id.toString() && chat.requestType === "ongoing") {
-                uniqueTokens.push(chat.retailerId.uniqueToken);
+
                 chat.bidCompleted = true;
                 chat.requestType = "completed";
                 await chat.save({ session });
+                uniqueTokens.push(chat.retailerId.uniqueToken);
             }
             else {
                 uniqueTokens.push(chat.retailerId.uniqueToken);
