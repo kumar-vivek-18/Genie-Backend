@@ -35,7 +35,7 @@ const UserSchema = new Schema({
         type: Number,
         default: 0,
     },
-    lattitude: {
+    latitude: {
         type: Number,
         default: 0,
     },
