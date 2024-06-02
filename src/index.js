@@ -58,6 +58,8 @@ import { Server } from 'socket.io';
 import { Message } from './models/message.model.js';
 import { Chat } from './models/chat.model.js';
 import { User } from './models/user.model.js';
+import { UserRequest } from './models/userRequest.model.js';
+import { Retailer } from './models/retailer.model.js';
 
 dotenv.config({ path: './.env' });
 const app = express();
@@ -129,14 +131,26 @@ io.on("connection", (socket) => {
                 console.log('User is currently online');
             }
             else {
+
                 const receiver = await Chat.findOneAndUpdate(
                     { _id: newMessageReceived.chat },
                     { latestMessage: newMessageReceived._id, $inc: { unreadCount: 1 } },
                     { new: true }
-                ).populate('latestMessage');
-                console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
-                console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
-                socket.to(receiver.requestId.toString()).emit('updated retailer', receiver);
+                ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();;
+                // await Promise.all(receiver.map(async chat => {
+                // Populate each user in the users array
+                await Promise.all(receiver.users.map(async user => {
+                    const model = user.type === 'UserRequest' ? UserRequest : Retailer;
+                    // console.log('model', model);
+                    user.populatedUser = await model.findById(user.refId);
+                }));
+                // }));
+
+                console.log('Send to chat id is ', io.sockets.adapter.rooms.has(receiver.requestId._id.toString()));
+                console.log('receiver', receiver.requestId.toString());
+                // console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
+                // console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
+                socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
             }
         });
     });
