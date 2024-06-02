@@ -55,6 +55,9 @@ import chatRoutes from './routes/chatroutes.js';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
+import { Message } from './models/message.model.js';
+import { Chat } from './models/chat.model.js';
+import { User } from './models/user.model.js';
 
 dotenv.config({ path: './.env' });
 const app = express();
@@ -102,25 +105,75 @@ io.on("connection", (socket) => {
 
     socket.on("new message", (newMessageReceived) => {
         const chat = newMessageReceived.chat;
-        console.log('new message received', newMessageReceived);
+        console.log('new message received', newMessageReceived._id);
         if (!chat.users) return console.log("chat.users not defined");
+        const activeRooms = io.sockets.adapter.rooms;
 
-        chat.users.forEach((user) => {
+        console.log("List of active rooms:");
+        activeRooms.forEach((value, roomName) => {
+            console.log(roomName);
+        });
+
+        chat.users.forEach(async (user) => {
             if (user._id === newMessageReceived.sender._id) return;
+            const isOnline = await io.in(user._id).fetchSockets();
 
-            // socket.to(newMessageReceived.chat._id).emit("message received", newMessageReceived);
-            socket.to(user._id).emit("message received", newMessageReceived);
+            const retailer = await Chat.findOneAndUpdate(
+                { _id: newMessageReceived.chat },
+                { latestMessage: newMessageReceived._id },
+                { new: true }
+            );
+
+            if (io.sockets.adapter.rooms.has(user._id)) {
+                socket.to(user._id).emit("message received", newMessageReceived);
+                console.log('User is currently online');
+            }
+            else {
+                const receiver = await Chat.findOneAndUpdate(
+                    { _id: newMessageReceived.chat },
+                    { latestMessage: newMessageReceived._id, $inc: { unreadCount: 1 } },
+                    { new: true }
+                ).populate('latestMessage');
+                console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
+                console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
+                socket.to(receiver.requestId.toString()).emit('updated retailer', receiver);
+            }
         });
     });
+
+    socket.on('read message', async (chatId) => {
+        // await Chat.fi
+        await Message.updateMany({ chat: chatId, read: false }, { read: true });
+        await Chat.findOneAndUpdate(
+            { _id: chatId },
+            { $set: { "latestMessages.$.unreadCount": 0 } }
+        );
+    })
 
     // socket.on("typing", (room) => socket.to(room).emit("typing"));
     // socket.on("stop typing", (room) => socket.to(room).emit("stop typing"));
 
+    socket.on("leave room", (roomToLeave) => {
+        // Leave the specified room
+        socket.leave(roomToLeave);
+        console.log(`User lwith ID ${roomToLeave} has leaved their personal room`);
+    });
+
     socket.on("disconnect", () => {
-        console.log("USER DISCONNECTED");
+
         if (socket.userId) {
+            console.log("USER DISCONNECTED with id: ", socket.userId);
             socket.leave(socket.userId);
+
         }
+        // if (socket.rooms) {
+        //     for (let room in socket.rooms) {
+        //         if (room !== socket.id) { // Avoid leaving the socket's own ID room
+        //             socket.leave(room);
+        //             console.log(`User left room: ${room}`);
+        //         }
+        //     }
+        // }
     });
     // socket.off("setup", (userId) => {
     //     console.log("USER DISCONNECTED");

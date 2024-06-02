@@ -32,6 +32,14 @@ const ChatSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    latestMessage: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message',
+    },
+    unreadCount: {
+        type: Number,
+        default: 0
+    },
     users: [
         {
             type: {

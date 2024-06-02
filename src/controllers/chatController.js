@@ -61,7 +61,7 @@ export const getRetailerNewChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();
 
         await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
@@ -97,7 +97,7 @@ export const getRetailerOngoingChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();
 
         await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
@@ -158,7 +158,7 @@ export const getChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();
 
         // Iterate through each chat and populate users
         await Promise.all(UserChats.map(async chat => {
@@ -199,8 +199,11 @@ export const sendMessage = async (req, res) => {
             warranty: data.warranty
         });
 
+
+
         // Populate the chat field
         const populatedMessage = await createdMessage.populate('chat', '_id users');
+        const updateLatestMessage = await Chat.findOneAndUpdate({ _id: createdMessage.chat }, { latestMessage: createdMessage._id });
 
         if (!createdMessage) {
             return res.status(404).json({ message: 'Message not created' });
@@ -251,6 +254,19 @@ export const updateMessage = async (req, res) => {
     }
 }
 
+export const setChatMessageMarkAsRead = async (req, res) => {
+
+    try {
+
+        const data = req.body;
+        console.log('data', data);
+        const response = await Chat.findByIdAndUpdate({ _id: data.id }, { unreadCount: 0 });
+
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+}
 
 // export const acceptBidRequest = async (req, res) => {
 //     try {

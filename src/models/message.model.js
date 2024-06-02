@@ -47,6 +47,10 @@ const messageModel = mongoose.Schema({
     warranty: {
         type: Number,
         default: 0,
+    },
+    read: {
+        type: Boolean,
+        default: false
     }
 },
     {
