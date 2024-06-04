@@ -76,6 +76,11 @@ const RetailerSchema = new Schema({
     uniqueToken: {
         type: String,
         default: "",
+    },
+    serviceProvider: {
+        type: String,
+        enum: ["true", "false", "unknown"],
+        default: "unknown",
     }
 
 }, {
