@@ -81,6 +81,14 @@ const RetailerSchema = new Schema({
         type: String,
         enum: ["true", "false", "unknown"],
         default: "unknown",
+    },
+    totalRating: {
+        type: Number,
+        default: 0,
+    },
+    totalReview: {
+        type: Number,
+        default: 0,
     }
 
 }, {
