@@ -3,8 +3,7 @@ import { Retailer } from '../models/retailer.model.js';
 import { User } from '../models/user.model.js';
 import { UserRequest } from '../models/userRequest.model.js';
 // import { Message } from '../models/message.model.js';
-// import { Chat } from '../models/chat.model.js';
-// import { RetailerRequest } from '../models/retailerRequest.model.js';
+import { Chat } from '../models/chat.model.js';
 
 export const createNewRetailer = async (req, res) => {
     try {
@@ -58,6 +57,48 @@ export const editRetailerDetails = async (req, res) => {
     }
 }
 
+
+export const getRetailerHistory = async (req, res) => {
+    try {
+        const data = req.query;
+        const UserChats = await Chat.find({
+            $and: [
+                {
+                    $or: [
+                        { requestType: "closed" },
+                        { requestType: "cancelled" }
+                    ],
+
+
+                },
+                {
+                    users: { $elemMatch: { refId: data.id } }
+                }
+
+            ]
+        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();
+
+        // Iterate through each chat and populate users
+        await Promise.all(UserChats.map(async chat => {
+            // Populate each user in the users array
+            await Promise.all(chat.users.map(async user => {
+                const model = user.type === 'UserRequest' ? UserRequest : Retailer;
+                // console.log('model', model);
+                user.populatedUser = await model.findById(user.refId);
+            }));
+        }));
+
+        // console.log('chats data', UserChats);
+
+
+        if (UserChats.length > 0)
+            return res.status(200).json(UserChats);
+        else
+            return res.status(404).json({ message: "Retailer Chat not found" });
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 
 
 // export const ongoingRequests = async (req, res) => {
