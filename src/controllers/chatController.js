@@ -61,7 +61,7 @@ export const getRetailerNewChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName totalReview totalRating').populate('latestMessage', 'message').lean();
 
         await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
@@ -97,7 +97,7 @@ export const getRetailerOngoingChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName totalReview totalRating').populate('latestMessage', 'message').lean();
 
         await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
@@ -159,7 +159,7 @@ export const getChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName totalReview totalRating').populate('latestMessage', 'message').lean();
 
         // Iterate through each chat and populate users
         await Promise.all(UserChats.map(async chat => {
