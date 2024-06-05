@@ -148,7 +148,8 @@ export const getChats = async (req, res) => {
                 {
                     $or: [
                         { requestType: "ongoing" },
-                        { requestType: "completed" }
+                        { requestType: "completed" },
+                        { requestType: "closed" },
                     ],
 
 
