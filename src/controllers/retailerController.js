@@ -100,34 +100,12 @@ export const getRetailerHistory = async (req, res) => {
     }
 }
 
-
-// export const ongoingRequests = async (req, res) => {
-//     try {
-//         const data = req.body;
-//         const requests = await RetailerRequest.findById({ _id: data.id, requestType: "ongoing" });
-
-//         if (requests)
-//             return res.status(200).json(requests);
-//         else
-//             return res.status(404).json({ message: "No ongoing requests found" });
-//     } catch (error) {
-//         throw new Error(error.message);
-//     }
-// }
-
-// export const newRequest = async (req, res) => {
-//     try {
-//         const data = req.body;
-//         const requests = await RetailerRequest.findById({ _id: data.id, requestType: "new" });
-
-//         if (requests)
-//             return res.status(200).json(requests);
-//         else
-//             return res.status(404).json({ message: "No new request found" });
-//     } catch (error) {
-
-//     }
-// }
-
-
-
+export const getUniqueToken = async (req, res) => {
+    try {
+        const data = req.query;
+        const uniqueToken = await Retailer.findById(data.id);
+        return res.status(200).json(uniqueToken.uniqueToken);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
