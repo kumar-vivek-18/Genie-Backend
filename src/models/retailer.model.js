@@ -36,7 +36,7 @@ const RetailerSchema = new Schema({
     },
     storeImages: [{
         type: String,
-        default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+        default: "https://res.cloudinary.com/kumarvivek/image/upload/v1718021385/fddizqqnbuj9xft9pbl6.jpg",
     }],
     storeCategory: {
         type: String,

@@ -260,7 +260,7 @@ export const setChatMessageMarkAsRead = async (req, res) => {
     try {
 
         const data = req.body;
-        console.log('data', data);
+        // console.log('data', data);
         const response = await Chat.findByIdAndUpdate({ _id: data.id }, { unreadCount: 0 });
 
         return res.status(200).json(response);

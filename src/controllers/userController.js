@@ -175,3 +175,13 @@ export const getSpadesHistory = async (req, res) => {
         throw new Error(error.message);
     }
 }
+
+export const getUniqueToken = async (req, res) => {
+    const data = req.query;
+    try {
+        const token = await User.findById(data.id);
+        return res.status(200).json(token.uniqueToken);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
