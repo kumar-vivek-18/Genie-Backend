@@ -41,7 +41,7 @@ export const registerUser = async (req, res) => {
 // Remaining Transaction process i.e. Acid Properties setup
 export const createRequest = async (req, res) => {
     try {
-        const { customerID, request, requestCategory, requestImages, expectedPrice } = req.body;
+        const { customerID, request, requestCategory, requestImages, expectedPrice, lastSpadePrice } = req.body;
 
         const retailers = await Retailer.find({ $and: [{ storeCategory: requestCategory }, { storeApproved: true }] });
 
@@ -77,11 +77,23 @@ export const createRequest = async (req, res) => {
             return retailerChat;
         }));
 
+        console.log(userRequest._id);
+
+        await User.findByIdAndUpdate(
+            { _id: customerID },
+            {
+                lastSpade: userRequest._id,
+                lastSpadePrice: lastSpadePrice,
+                lastPaymentStatus: "unpaid"
+            }
+        );
+
+        const userDetails = await User.findById(customerID).populate('lastSpade');
         if (!retailerRequests.length) {
             return res.status(404).json({ message: 'Request not created due to no retailer found of particular category' });
         }
 
-        return res.status(201).json({ userRequest, uniqueTokens });
+        return res.status(201).json({ userRequest, uniqueTokens, userDetails });
     } catch (error) {
         // console.error('Error in createRequest:', error);
         return res.status(500).json({ message: 'Internal server error' });

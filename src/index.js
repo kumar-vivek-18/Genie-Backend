@@ -52,6 +52,7 @@ import connectDB from './db/db.js';
 import userRoutes from './routes/userRoutes.js';
 import retailerRoutes from './routes/retailerRoutes.js';
 import chatRoutes from './routes/chatroutes.js';
+import couponRoutes from './routes/couponRoutes.js';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -78,6 +79,7 @@ app.get('/', (req, res) => {
 app.use('/user', userRoutes);
 app.use('/retailer', retailerRoutes);
 app.use('/chat', chatRoutes);
+app.use('/coupon', couponRoutes);
 
 // Create HTTP server and integrate Socket.IO
 const server = http.createServer(app);
@@ -136,7 +138,7 @@ io.on("connection", (socket) => {
                     { _id: newMessageReceived.chat },
                     { latestMessage: newMessageReceived._id, $inc: { unreadCount: 1 } },
                     { new: true }
-                ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();;
+                ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message bidType bidAccepted').lean();;
                 // await Promise.all(receiver.map(async chat => {
                 // Populate each user in the users array
                 await Promise.all(receiver.users.map(async user => {

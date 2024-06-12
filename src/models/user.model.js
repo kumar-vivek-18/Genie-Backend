@@ -42,7 +42,22 @@ const UserSchema = new Schema({
     uniqueToken: {
         type: String,
         default: "",
+    },
+    lastSpade: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UserRequest',
+        default: null,
+    },
+    lastSpadePrice: {
+        type: Number,
+        default: 0,
+    },
+    lastPaymentStatus: {
+        type: String,
+        enum: ["paid", "unpaid"],
+        default: "paid",
     }
+
 
 },
     {
