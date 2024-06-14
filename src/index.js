@@ -62,6 +62,7 @@ import { User } from './models/user.model.js';
 import { UserRequest } from './models/userRequest.model.js';
 import { Retailer } from './models/retailer.model.js';
 import https from 'https';
+import fs from 'fs';
 
 dotenv.config({ path: './.env' });
 const app = express();
@@ -83,7 +84,13 @@ app.use('/chat', chatRoutes);
 app.use('/coupon', couponRoutes);
 
 // Create HTTP server and integrate Socket.IO
-const server = http.createServer(app);
+const options = {
+    key: fs.readFileSync('C:/Users/vivek/OneDrive/Desktop/Genie-App-Backend/privkey.pem'),
+    cert: fs.readFileSync('C:/Users/vivek/OneDrive/Desktop/Genie-App-Backend/fullchain.pem'),
+    // ca: fs.readFileSync('/path/to/your/ca_bundle.crt') // if needed
+};
+
+const server = https.createServer(options, app);
 const io = new Server(server, {
     pingTimeout: 6000,
     cors: {
