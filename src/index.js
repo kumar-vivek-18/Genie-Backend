@@ -61,6 +61,7 @@ import { Chat } from './models/chat.model.js';
 import { User } from './models/user.model.js';
 import { UserRequest } from './models/userRequest.model.js';
 import { Retailer } from './models/retailer.model.js';
+import https from 'https';
 
 dotenv.config({ path: './.env' });
 const app = express();
@@ -86,7 +87,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     pingTimeout: 6000,
     cors: {
-        origin: process.env.CORS_ORIGIN,
+        origin: "https://culturtap.com/api",
         methods: ["GET", "POST", "PATCH"],
         credentials: true
     }
