@@ -63,6 +63,12 @@ import { UserRequest } from './models/userRequest.model.js';
 import { Retailer } from './models/retailer.model.js';
 import https from 'https';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config({ path: './.env' });
 const app = express();
@@ -84,10 +90,16 @@ app.use('/chat', chatRoutes);
 app.use('/coupon', couponRoutes);
 
 // Create HTTP server and integrate Socket.IO
+// const options = {
+//     key: fs.readFileSync('C:/Users/vivek/OneDrive/Desktop/Genie-App-Backend/privkey.pem'),
+//     cert: fs.readFileSync('C:/Users/vivek/OneDrive/Desktop/Genie-App-Backend/fullchain.pem'),
+//     // ca: fs.readFileSync('/path/to/your/ca_bundle.crt') // if needed
+// };
 const options = {
-    key: fs.readFileSync('C:/Users/vivek/OneDrive/Desktop/Genie-App-Backend/privkey.pem'),
-    cert: fs.readFileSync('C:/Users/vivek/OneDrive/Desktop/Genie-App-Backend/fullchain.pem'),
-    // ca: fs.readFileSync('/path/to/your/ca_bundle.crt') // if needed
+    key: fs.readFileSync(path.join(__dirname, '../privkey.pem')),
+    cert: fs.readFileSync(path.join(__dirname, '../fullchain.pem'))
+    // Update the path if there is a CA bundle
+    // ca: fs.readFileSync(path.join(__dirname, 'relative/path/to/ca_bundle.pem'))
 };
 
 const server = https.createServer(options, app);
