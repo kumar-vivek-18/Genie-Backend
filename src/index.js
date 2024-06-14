@@ -104,8 +104,8 @@ const options = {
 
 // console.log('options', options);
 
-// const server = https.createServer(options, app);
-const server = http.createServer(app);
+const server = https.createServer(options, app);
+// const server = http.createServer(app);
 // console.log('server', server);
 
 const io = new Server(server, {
