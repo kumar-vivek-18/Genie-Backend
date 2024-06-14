@@ -69,7 +69,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: "https://culturtap.com/api",
+    origin: process.env.CORS_ORIGIN,
     credentials: true
 }));
 
@@ -87,7 +87,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     pingTimeout: 6000,
     cors: {
-        origin: "https://culturtap.com/api",
+        origin: process.env.CORS_ORIGIN,
         methods: ["GET", "POST", "PATCH"],
         credentials: true
     }
