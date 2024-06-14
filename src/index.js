@@ -102,7 +102,12 @@ const options = {
     // ca: fs.readFileSync(path.join(__dirname, 'relative/path/to/ca_bundle.pem'))
 };
 
-const server = https.createServer(options, app);
+// console.log('options', options);
+
+// const server = https.createServer(options, app);
+const server = http.createServer(app);
+// console.log('server', server);
+
 const io = new Server(server, {
     pingTimeout: 6000,
     cors: {
