@@ -30,7 +30,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: process.env.CORS_ORIGIN || 'https://culturtap.com',
     credentials: true
 }));
 
@@ -53,11 +53,12 @@ console.log('options', options);
 // const server = https.createServer(options, app);
 
 const server = http.createServer(app);
-console.log('server', server);
+
 const io = new Server(server, {
     pingTimeout: 6000,
     cors: {
-        origin: process.env.CORS_ORIGIN,
+        origin: process.env.CORS_ORIGIN || 'https://culturtap.com',
+        transports: ['websocket', 'polling'],
         methods: ["GET", "POST", "PATCH"],
         credentials: true
     }
