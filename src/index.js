@@ -44,14 +44,13 @@ app.use('/chat', chatRoutes);
 app.use('/coupon', couponRoutes);
 
 const options = {
-    key: fs.readFileSync(path.join(__dirname, '../privkey.pem')),
-    cert: fs.readFileSync(path.join(__dirname, '../fullchain.pem'))
+    key: fs.readFileSync(path.join(__dirname, '../key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, '../cert.pem'))
     // ca: fs.readFileSync(path.join(__dirname, 'relative/path/to/ca_bundle.pem'))
 };
 
 const server = https.createServer(options, app);
 // const server = http.createServer(app);
-
 
 const io = new Server(server, {
     pingTimeout: 6000,
