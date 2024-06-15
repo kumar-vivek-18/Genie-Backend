@@ -1,49 +1,3 @@
-// import express from 'express';
-// import colors from 'colors';
-// import dotenv from 'dotenv';
-// import connectDB from './db/db.js';
-// import userRoutes from './routes/userRoutes.js';
-// import retailerRoutes from './routes/retailerRoutes.js';
-// import chatRoutes from './routes/chatroutes.js';
-// import cors from 'cors';
-
-// dotenv.config({ path: './.env' });
-// const app = express();
-
-// app.use(express.json());
-
-// app.use(cors({
-//     origin: process.env.CORS_ORIGIN,
-//     credentials: true
-// }))
-
-// const PORT = process.env.PORT || 5000;
-
-// connectDB().
-//     then(() => {
-//         app.listen(process.env.PORT || 8000, () => {
-//             console.log(`⚙️  Server is running at port : ${process.env.PORT}`.yellow.bold);
-//         })
-//     })
-//     .catch((err) => {
-//         console.log("MONGO db connection failed !!! ", err);
-//     })
-
-// app.get('/', (req, res) => {
-//     res.send('Welcome to CulturTap');
-// });
-
-// app.use('/user', userRoutes);
-// app.use('/retailer', retailerRoutes);
-// app.use('/chat', chatRoutes);
-
-
-
-
-
-
-
-
 
 import express from 'express';
 import colors from 'colors';
@@ -89,24 +43,15 @@ app.use('/retailer', retailerRoutes);
 app.use('/chat', chatRoutes);
 app.use('/coupon', couponRoutes);
 
-// Create HTTP server and integrate Socket.IO
-// const options = {
-//     key: fs.readFileSync('C:/Users/vivek/OneDrive/Desktop/Genie-App-Backend/privkey.pem'),
-//     cert: fs.readFileSync('C:/Users/vivek/OneDrive/Desktop/Genie-App-Backend/fullchain.pem'),
-//     // ca: fs.readFileSync('/path/to/your/ca_bundle.crt') // if needed
-// };
 const options = {
     key: fs.readFileSync(path.join(__dirname, '../privkey.pem')),
     cert: fs.readFileSync(path.join(__dirname, '../fullchain.pem'))
-    // Update the path if there is a CA bundle
     // ca: fs.readFileSync(path.join(__dirname, 'relative/path/to/ca_bundle.pem'))
 };
 
-// console.log('options', options);
-
 const server = https.createServer(options, app);
 // const server = http.createServer(app);
-// console.log('server', server);
+
 
 const io = new Server(server, {
     pingTimeout: 6000,
@@ -267,7 +212,7 @@ io.on("connection", (socket) => {
 // Connect to the database and start the server
 connectDB()
     .then(() => {
-        server.listen(443, '0.0.0.0', () => {
+        server.listen(5000, '0.0.0.0', () => {
             console.log('Server is running on port 443');
         });
 
