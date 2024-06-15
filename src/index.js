@@ -44,14 +44,16 @@ app.use('/chat', chatRoutes);
 app.use('/coupon', couponRoutes);
 
 const options = {
-    key: fs.readFileSync(path.join(__dirname, '../key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, '../cert.pem'))
+    key: fs.readFileSync(path.join(__dirname, '../privkey.pem')),
+    cert: fs.readFileSync(path.join(__dirname, '../fullchain.pem'))
     // ca: fs.readFileSync(path.join(__dirname, 'relative/path/to/ca_bundle.pem'))
 };
 
-const server = https.createServer(options, app);
-// const server = http.createServer(app);
+console.log('options', options);
+// const server = https.createServer(options, app);
 
+const server = http.createServer(app);
+console.log('server', server);
 const io = new Server(server, {
     pingTimeout: 6000,
     cors: {
@@ -167,44 +169,6 @@ io.on("connection", (socket) => {
 });
 
 
-// io.on("connection", (socket) => {
-//     console.log("Connected to socket.io");
-
-//     socket.on("setup", (userId) => {
-//         socket.join(userId);
-//         socket.userId = userId; // Store the userId in the socket object
-//         console.log(`User with ID ${userId} has joined their personal room.`);
-//         socket.emit("connected");
-//     });
-
-//     socket.on("join chat", (room) => {
-//         socket.join(room);
-//         console.log("User joined room: " + room);
-//     });
-
-//     socket.on("new message", (newMessageReceived) => {
-//         const chat = newMessageReceived.chat;
-//         console.log('new message received', newMessageReceived);
-//         if (!chat.users) return console.log("chat.users not defined");
-
-//         chat.users.forEach((user) => {
-//             if (user._id === newMessageReceived.sender._id) return;
-
-//             socket.to(user._id).emit("message received", newMessageReceived);
-//         });
-//     });
-
-//     // socket.on("typing", (room) => socket.to(room).emit("typing"));
-//     // socket.on("stop typing", (room) => socket.to(room).emit("stop typing"));
-
-//     socket.on("disconnect", () => {
-//         console.log("USER DISCONNECTED");
-//         if (socket.userId) {
-//             socket.leave(socket.userId);
-//         }
-//     });
-// });
-
 
 
 
@@ -212,7 +176,7 @@ io.on("connection", (socket) => {
 connectDB()
     .then(() => {
         server.listen(5000, '0.0.0.0', () => {
-            console.log('Server is running on port 443');
+            console.log('Server is running on port 5000');
         });
 
     })
