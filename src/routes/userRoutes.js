@@ -8,7 +8,7 @@ router.route('/').post(registerUser);
 router.route('/createrequest').post(createRequest);
 router.route('/edit-profile').patch(editProfile);
 router.route('/getspades').get(getSpades);
-router.route('/closespade').patch(closeSpade);
+router.route('/close-spade').patch(closeSpade);
 router.route('/history').get(getSpadesHistory);
 // router.route('/update').patch(updateRequests);
 router.route('/unique-token').get(getUniqueToken);

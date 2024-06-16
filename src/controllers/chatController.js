@@ -270,40 +270,7 @@ export const setChatMessageMarkAsRead = async (req, res) => {
     }
 }
 
-// export const acceptBidRequest = async (req, res) => {
-//     try {
-//         const data = req.body;
-//         // required fields messageId to fetch message
-//         // userRequestId to fetch and update request
 
-//         if (!data.messageId || !data.userRequestId) {
-//             return res.status(400).json({ message: 'Missing id or type parameter' });
-//         }
-
-
-//         const message = await Message.findByIdAndUpdate({ _id: data.messageId }, { bidAccepted: "accepted" }, { session }).populate('chat', '_id users');
-//         // const chat = await Chat.findByIdAndUpdate({ _id: data.chatId }, { bidCompleted: true }, { session });
-//         const userRequest = await UserRequest.findByIdAndUpdate({ _id: data.userRequestId }, { requestActive: "completed" }, { session });
-
-//         const chats = await Chat.find({ requestId: data.userRequestId });
-
-//         await Promise.all(chats.map(async (chat) => {
-//             chat.bidCompleted = true;
-//             await chat.save();
-//             if (chat._id !== data.chatId) {
-//                 const firstBid = await Message.create({ sender: { type: 'Retailer', refId: chat.users[0]._id }, message: `Bid closed with other seller at a price of ${message.expectedPrice} Rs. Try next time with better pricing.`, bidType: "update", chat: chat._id });
-//             }
-//         }));
-
-//         await session.commitTransaction();
-//         session.endSession();
-//         res.status(200).send({ message: message });
-//     } catch (error) {
-//         await session.abortTransaction();
-//         session.endSession();
-//         return res.status(500).json({ message: "Internal Server Error" });
-//     }
-// }
 
 
 export const acceptBidRequest = async (req, res) => {
@@ -312,7 +279,7 @@ export const acceptBidRequest = async (req, res) => {
 
     try {
         const data = req.body;
-
+        // console.log('data of acceptBidRequest', data);
         if (!data.messageId || !data.userRequestId) {
             return res.status(400).json({ message: 'Missing id or type parameter' });
         }
@@ -327,11 +294,15 @@ export const acceptBidRequest = async (req, res) => {
             throw new Error('Message not found');
         }
 
+        // console.log('mess', message);
+
         const userRequest = await UserRequest.findByIdAndUpdate(
             { _id: data.userRequestId },
             { requestActive: "completed", requestAcceptedChat: message.chat._id },
             { session, new: true }
         );
+
+        // console.log('userRequest', userRequest);
 
         if (!userRequest) {
             throw new Error('User request not found');
@@ -362,16 +333,17 @@ export const acceptBidRequest = async (req, res) => {
 
 
 
-            if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "closed") {
-                // console.log('chats', chat._id, message.chat._id);
-                await Message.create([{
-                    sender: { type: 'Retailer', refId: chat.users[0]._id },
-                    message: `Bid closed with other seller at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
-                    bidType: "update",
-                    chat: chat._id
-                }], { session });
-            }
+            // if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "closed") {
+            //     // console.log('chats', chat._id, message.chat._id);
+            //     await Message.create([{
+            //         sender: { type: 'Retailer', refId: chat.users[0]._id },
+            //         message: `Bid closed with other seller at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
+            //         bidType: "update",
+            //         chat: chat._id
+            //     }], { session });
+            // }
         }));
+
 
         await session.commitTransaction();
         session.endSession();
