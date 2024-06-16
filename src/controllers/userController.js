@@ -7,7 +7,7 @@ import { Message } from '../models/message.model.js';
 export const getUser = async (req, res) => {
     try {
         const { mobileNo } = req.query;
-        const user = await User.findOne({ mobileNo });
+        const user = await User.findOne({ mobileNo }).populate('lastSpade');
         // console.log('user', user);
         if (user) {
             return res.status(200).json(user);
