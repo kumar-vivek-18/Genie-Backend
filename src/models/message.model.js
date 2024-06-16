@@ -14,6 +14,11 @@ const senderSchema = new mongoose.Schema({
 
 const messageModel = mongoose.Schema({
     sender: senderSchema, // Reference the common sender schema
+    userRequest: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "UserRequest",
+        required: true,
+    },
     message: {
         type: String,
         required: true,

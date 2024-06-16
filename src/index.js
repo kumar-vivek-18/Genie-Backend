@@ -43,13 +43,13 @@ app.use('/retailer', retailerRoutes);
 app.use('/chat', chatRoutes);
 app.use('/coupon', couponRoutes);
 
-const options = {
-    key: fs.readFileSync(path.join(__dirname, '../privkey.pem')),
-    cert: fs.readFileSync(path.join(__dirname, '../fullchain.pem'))
-    // ca: fs.readFileSync(path.join(__dirname, 'relative/path/to/ca_bundle.pem'))
-};
+// const options = {
+//     key: fs.readFileSync(path.join(__dirname, '../privkey.pem')),
+//     cert: fs.readFileSync(path.join(__dirname, '../fullchain.pem'))
+//     // ca: fs.readFileSync(path.join(__dirname, 'relative/path/to/ca_bundle.pem'))
+// };
 
-console.log('options', options);
+// console.log('options', options);
 // const server = https.createServer(options, app);
 
 const server = http.createServer(app);
@@ -90,6 +90,10 @@ io.on("connection", (socket) => {
             console.log(roomName);
         });
 
+        if (newMessageReceived.bidType === "true" && newMessageReceived.bidAccepted === "accepted") {
+
+        }
+
         chat.users.forEach(async (user) => {
             if (user._id === newMessageReceived.sender._id) return;
             const isOnline = await io.in(user._id).fetchSockets();
@@ -127,6 +131,7 @@ io.on("connection", (socket) => {
                 socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
             }
         });
+
     });
 
     socket.on('read message', async (chatId) => {

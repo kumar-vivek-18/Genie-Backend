@@ -192,6 +192,7 @@ export const sendMessage = async (req, res) => {
         // Create the message
         const createdMessage = await Message.create({
             sender: data.sender,
+            userRequest: data.userRequest,
             message: data.message,
             bidType: data.bidType,
             bidPrice: data.bidPrice,
@@ -361,7 +362,7 @@ export const acceptBidRequest = async (req, res) => {
 
 
 
-            if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "ongoing") {
+            if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "closed") {
                 // console.log('chats', chat._id, message.chat._id);
                 await Message.create([{
                     sender: { type: 'Retailer', refId: chat.users[0]._id },
