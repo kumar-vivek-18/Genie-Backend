@@ -105,7 +105,7 @@ export const editProfile = async (req, res) => {
     try {
         const { _id, updateData } = req.body;
         console.log('data', updateData);
-        const user = await User.findByIdAndUpdate(_id, updateData, { new: true });
+        const user = await User.findByIdAndUpdate(_id, updateData, { new: true }).populate('lastSpade');
         if (user) {
             return res.status(200).json(user);
         } else {
