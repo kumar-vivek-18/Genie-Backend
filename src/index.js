@@ -89,8 +89,15 @@ io.on("connection", (socket) => {
         activeRooms.forEach((value, roomName) => {
             console.log(roomName);
         });
+        const fetchMessage = async () => {
+            const updateMessages = await Message.find({ bidType: "update", userRequest: newMessageReceived.userRequest }).populate('chat', '_id');
+        }
 
         if (newMessageReceived.bidType === "true" && newMessageReceived.bidAccepted === "accepted") {
+            const updateMessages = fetchMessage();
+            updateMessages.forEach(async (message) => {
+                socket.to(message.chat._id).emit("message received", message);
+            });
 
         }
 

@@ -109,3 +109,23 @@ export const getUniqueToken = async (req, res) => {
         throw new Error(error.message);
     }
 }
+
+export const getStoreCategoriesNearMe = async (req, res) => {
+    try {
+        const { latitude, longitude } = req.query;
+        if (!latitude || !longitude) return res.status(404).json("Invalid latitude or longitude");
+
+        const storeCategories = await Retailer.distinct('storeCategory', {
+            coords: {
+                $geoWithin: {
+                    $centerSphere: [
+                        [longitude, latitude], 10 / 6371
+                    ]
+                }
+            }
+        })
+        return res.status(200).json(storeCategories);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}

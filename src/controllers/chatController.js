@@ -333,15 +333,16 @@ export const acceptBidRequest = async (req, res) => {
 
 
 
-            // if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "closed") {
-            //     // console.log('chats', chat._id, message.chat._id);
-            //     await Message.create([{
-            //         sender: { type: 'Retailer', refId: chat.users[0]._id },
-            //         message: `Bid closed with other seller at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
-            //         bidType: "update",
-            //         chat: chat._id
-            //     }], { session });
-            // }
+            if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "closed") {
+                // console.log('chats', chat._id, message.chat._id);
+                await Message.create([{
+                    sender: { type: 'Retailer', refId: chat.users[0]._id },
+                    userRequest: data.userRequestId,
+                    message: `Bid closed with other seller at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
+                    bidType: "update",
+                    chat: chat._id
+                }], { session });
+            }
         }));
 
 

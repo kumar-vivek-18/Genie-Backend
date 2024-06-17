@@ -31,6 +31,18 @@ const UserSchema = new Schema({
         trim: true,
         default: "",
     },
+    coords: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true,
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+        }
+    },
     longitude: {
         type: Number,
         default: 0,

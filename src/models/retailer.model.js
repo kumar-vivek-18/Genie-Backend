@@ -59,6 +59,18 @@ const RetailerSchema = new Schema({
         type: Number,
         default: 0,
     },
+    coords: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true,
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+        }
+    },
     storeApproved: {
         type: Boolean,
         default: false,
