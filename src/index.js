@@ -95,17 +95,18 @@ io.on("connection", (socket) => {
         // console.log('messType', newMessageReceived.bidType, newMessageReceived.bidAccepted);
 
         if (newMessageReceived.bidType === "true" && newMessageReceived.bidAccepted === "accepted") {
-            // const updateMessages = async () => {
-            //     const messages = await Message.find({ bidType: "update", userRequest: newMessageReceived.userRequest }).populate('chat', '_id');
+            const updateMessages = async () => {
+                const messages = await Message.find({ bidType: "update", userRequest: newMessageReceived.userRequest }).populate('chat', '_id users');
 
-            //     console.log('hii', messages);
-            //     await Promise.all(messages.map(async (message) => {
-            //         console.log('Message send successfully ', message.chat._id);
-            //         socket.to(message.chat._id).emit("message received", message);
-            //     }));
-            // }
-            // updateMessages();
-            // console.log("updateMessages send successfully ", updateMessages);
+                // console.log('hii', messages);
+                await Promise.all(messages.map(async (message) => {
+                    console.log('Message send successfully ', message.chat.users[0]._id);
+
+                    socket.to(message.chat.users[0]._id.toString()).emit("message received", message);
+                }));
+            }
+            updateMessages();
+            console.log("updateMessages send successfully ", updateMessages);
             // sendUpdateMessage(updateMessages);
             // updateMessages.forEach(async (message) => {
             //     console.log('Message send successfully ', message.chat._id);
