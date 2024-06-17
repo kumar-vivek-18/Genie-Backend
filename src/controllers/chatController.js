@@ -139,6 +139,25 @@ export const getRetailerOngoingChats = async (req, res) => {
 //         throw new Error(error.message);
 //     }
 // }
+export const getParticularChat = async (req, res) => {
+    try {
+        const data = req.query;
+        const UserChat = await Chat.find({
+            $and: [
+                {
+                    requestId: data.requestId,
+
+                }, {
+                    retailerId: data.retailerId,
+                }
+            ]
+        })
+        if (!UserChat) return res.status(404).json({ message: "User not found" });
+        return res.status(200).json(UserChat);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 
 export const getChats = async (req, res) => {
     try {
