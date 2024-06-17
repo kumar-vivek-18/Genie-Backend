@@ -85,19 +85,33 @@ io.on("connection", (socket) => {
         if (!chat.users) return console.log("chat.users not defined");
         const activeRooms = io.sockets.adapter.rooms;
 
-        console.log("List of active rooms:");
-        activeRooms.forEach((value, roomName) => {
-            console.log(roomName);
-        });
-        const fetchMessage = async () => {
-            const updateMessages = await Message.find({ bidType: "update", userRequest: newMessageReceived.userRequest }).populate('chat', '_id');
-        }
+        // console.log("List of active rooms:");
+        // activeRooms.forEach((value, roomName) => {
+        //     console.log(roomName);
+        // });
+
+
+
+        // console.log('messType', newMessageReceived.bidType, newMessageReceived.bidAccepted);
 
         if (newMessageReceived.bidType === "true" && newMessageReceived.bidAccepted === "accepted") {
-            const updateMessages = fetchMessage();
-            updateMessages.forEach(async (message) => {
-                socket.to(message.chat._id).emit("message received", message);
-            });
+            // const updateMessages = async () => {
+            //     const messages = await Message.find({ bidType: "update", userRequest: newMessageReceived.userRequest }).populate('chat', '_id');
+
+            //     console.log('hii', messages);
+            //     await Promise.all(messages.map(async (message) => {
+            //         console.log('Message send successfully ', message.chat._id);
+            //         socket.to(message.chat._id).emit("message received", message);
+            //     }));
+            // }
+            // updateMessages();
+            // console.log("updateMessages send successfully ", updateMessages);
+            // sendUpdateMessage(updateMessages);
+            // updateMessages.forEach(async (message) => {
+            //     console.log('Message send successfully ', message.chat._id);
+            //     socket.to(message.chat._id).emit("message received", message);
+            // });
+
 
         }
 
