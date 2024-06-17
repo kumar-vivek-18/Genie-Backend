@@ -151,7 +151,7 @@ export const getParticularChat = async (req, res) => {
                     retailerId: data.retailerId,
                 }
             ]
-        })
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'message')
         if (!UserChat) return res.status(404).json({ message: "User not found" });
         return res.status(200).json(UserChat);
     } catch (error) {
