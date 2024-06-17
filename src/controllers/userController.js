@@ -67,7 +67,7 @@ export const createRequest = async (req, res) => {
             const retailerChat = await Chat.create({ requestId: userRequest._id, customerId: customerID, retailerId: retailer._id, requestType: 'new', users: [{ type: 'Retailer', refId: retailer._id }] });
 
             if (expectedPrice > 0 && retailerChat) {
-                const firstBid = await Message.create({ sender: { type: 'UserRequest', refId: userRequest._id }, message: request, bidType: "false", bidPrice: expectedPrice, bidImages: requestImages, bidAccepted: 'new', chat: retailerChat._id });
+                const firstBid = await Message.create({ sender: { type: 'UserRequest', refId: userRequest._id }, userRequest: userRequest._id, message: request, bidType: "false", bidPrice: expectedPrice, bidImages: requestImages, bidAccepted: 'new', chat: retailerChat._id });
 
                 if (!firstBid) {
                     throw new Error('Failed to create first bid');
@@ -148,23 +148,68 @@ export const getSpades = async (req, res) => {
 }
 
 
+// export const closeSpade = async (req, res) => {
+//     try {
+//         const id = req.body.id;
+//         const updateRequest = await UserRequest.findById({ _id: id }, { requestActive: "closed" }, { new: true });
+
+//         if (!updateRequest) {
+//             return res.status(404).json({ message: 'Request not found' });
+//         }
+
+//         const updateAcceptedChat = await Chat.findByIdAndUpdate({ _id: updateRequest.requestAcceptedChat }, { requestType: "closed" }, { new: true });
+//         if (!updateAcceptedChat) {
+//             return res.status(404).json({ message: 'Accepted chat not found' });
+//         }
+//         return res.status(200).json(updateRequest);
+
+//         // if (updateRequest) {
+//         //     updateRequest.requestActive = "closed";
+//         //     updateRequest.save();
+
+//         // }
+//         // else {
+//         //     return res.status(404).json({ message: 'Request not found' });
+//         // }
+//     } catch (error) {
+//         throw new Error(error.message);
+//     }
+// }
+
 export const closeSpade = async (req, res) => {
     try {
-        const id = req.body.id;
-        const updateRequest = await UserRequest.findById(id);
+        const { id } = req.body;
 
-        if (updateRequest) {
-            updateRequest.requestActive = "closed";
-            updateRequest.save();
-            return res.status(200).json(updateRequest);
-        }
-        else {
+        // Find and update the UserRequest by id
+        const updateRequest = await UserRequest.findByIdAndUpdate(
+            id, // The ID of the request to update
+            { requestActive: "closed" }, // The fields to update
+            { new: true } // Return the updated document
+        );
+
+        if (!updateRequest) {
             return res.status(404).json({ message: 'Request not found' });
         }
+
+        // Find and update the associated Chat by id
+        const updateAcceptedChat = await Chat.findByIdAndUpdate(
+            updateRequest.requestAcceptedChat, // The ID of the chat to update
+            { requestType: "closed" }, // The fields to update
+            { new: true } // Return the updated document
+        );
+
+        if (!updateAcceptedChat) {
+            return res.status(404).json({ message: 'Accepted chat not found' });
+        }
+
+        // Return the updated request
+        return res.status(200).json(updateRequest);
     } catch (error) {
-        throw new Error(error.message);
+        // Return a 500 status code and the error message
+        return res.status(500).json({ message: error.message });
     }
-}
+};
+
 
 export const getSpadesHistory = async (req, res) => {
     try {
