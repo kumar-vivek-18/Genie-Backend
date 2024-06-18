@@ -90,7 +90,10 @@ io.on("connection", (socket) => {
         //     console.log(roomName);
         // });
 
-
+        const updateRequest = async () => {
+            await UserRequest.findByIdAndUpdate(newMessageReceived.userRequest, { unread: true });
+        }
+        updateRequest();
 
         // console.log('messType', newMessageReceived.bidType, newMessageReceived.bidAccepted);
 
@@ -106,12 +109,8 @@ io.on("connection", (socket) => {
                 }));
             }
             updateMessages();
-            console.log("updateMessages send successfully ", updateMessages);
-            // sendUpdateMessage(updateMessages);
-            // updateMessages.forEach(async (message) => {
-            //     console.log('Message send successfully ', message.chat._id);
-            //     socket.to(message.chat._id).emit("message received", message);
-            // });
+            // console.log("updateMessages send successfully ", updateMessages);
+
 
 
         }

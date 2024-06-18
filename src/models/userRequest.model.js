@@ -38,6 +38,10 @@ const userRequestSchema = new Schema({
     requestAcceptedChat: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat",
+    },
+    unread: {
+        type: Boolean,
+        default: false,
     }
 
 

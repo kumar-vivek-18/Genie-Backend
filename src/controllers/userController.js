@@ -210,6 +210,20 @@ export const closeSpade = async (req, res) => {
     }
 };
 
+export const setSpadeMarkAsRead = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        if (!id)
+            return res.status(400).json({ message: 'Invalid request' });
+
+        const updateSpade = await UserRequest.findByIdAndUpdate(id, { unread: false });
+        return res.status(200).json({ message: "Spade Mark As Read" });
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
 
 export const getSpadesHistory = async (req, res) => {
     try {
