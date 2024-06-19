@@ -129,7 +129,7 @@ io.on("connection", (socket) => {
                 socket.to(user._id).emit("message received", newMessageReceived);
                 console.log('User is currently online');
             }
-            else if (newMessageReceived.bidType !== 'update') {
+            else {
 
 
                 const receiver = await Chat.findOneAndUpdate(

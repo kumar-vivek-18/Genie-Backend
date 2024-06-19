@@ -355,7 +355,7 @@ export const acceptBidRequest = async (req, res) => {
             if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "closed") {
                 // console.log('chats', chat._id, message.chat._id);
                 await Message.create([{
-                    sender: { type: 'Retailer', refId: chat.users[0]._id },
+                    sender: { type: 'UserRequest', refId: chat.users[1]._id },
                     userRequest: data.userRequestId,
                     message: `Bid closed with other seller at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
                     bidType: "update",
