@@ -61,7 +61,7 @@ export const getRetailerNewChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'message').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted').lean();
 
         await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
@@ -97,7 +97,7 @@ export const getRetailerOngoingChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'message').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', ' sender message bidType bidAccepted').lean();
 
         await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
@@ -151,7 +151,7 @@ export const getParticularChat = async (req, res) => {
                     retailerId: data.retailerId,
                 }
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'message')
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted')
         if (!UserChat) return res.status(404).json({ message: "User not found" });
         return res.status(200).json(UserChat);
     } catch (error) {
@@ -178,7 +178,7 @@ export const getChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'message').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted').lean();
 
         // Iterate through each chat and populate users
         await Promise.all(UserChats.map(async chat => {
