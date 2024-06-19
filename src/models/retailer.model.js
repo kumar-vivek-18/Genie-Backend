@@ -101,6 +101,10 @@ const RetailerSchema = new Schema({
     totalReview: {
         type: Number,
         default: 0,
+    },
+    profileCompleted: {
+        type: Boolean,
+        default: false,
     }
 
 }, {
