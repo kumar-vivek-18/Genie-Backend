@@ -91,9 +91,10 @@ io.on("connection", (socket) => {
         // });
 
         const updateRequest = async () => {
+
             await UserRequest.findByIdAndUpdate(newMessageReceived.userRequest, { unread: true });
         }
-        updateRequest();
+
 
         // console.log('messType', newMessageReceived.bidType, newMessageReceived.bidAccepted);
 
@@ -150,7 +151,13 @@ io.on("connection", (socket) => {
                 console.log('receiver', receiver.requestId.toString());
                 // console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
                 // console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
-                socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
+                if (newMessageReceived.sender === 'Retailer') {
+                    socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
+                    updateRequest();
+                }
+                else {
+                    socket.to(receiver.retailerId._id.toString()).emit('updated retailer', receiver);
+                }
             }
         });
 
