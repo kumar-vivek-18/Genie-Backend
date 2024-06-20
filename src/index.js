@@ -117,7 +117,7 @@ io.on("connection", (socket) => {
         }
 
         chat.users.forEach(async (user) => {
-            if (user._id === newMessageReceived.sender._id) return;
+
             const isOnline = await io.in(user._id).fetchSockets();
 
             const retailer = await Chat.findOneAndUpdate(
@@ -128,10 +128,11 @@ io.on("connection", (socket) => {
 
             if (io.sockets.adapter.rooms.has(user._id)) {
                 socket.to(user._id).emit("message received", newMessageReceived);
-                console.log('User is currently online');
+                console.log('online user id', user._id);
+                // console.log('User is currently online');
             }
             else {
-
+                if (user.type === newMessageReceived.sender.type) return;
 
                 const receiver = await Chat.findOneAndUpdate(
                     { _id: newMessageReceived.chat },
@@ -156,6 +157,7 @@ io.on("connection", (socket) => {
                     updateRequest();
                 }
                 else {
+                    console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
                     socket.to(receiver.retailerId._id.toString()).emit('updated retailer', receiver);
                 }
             }
