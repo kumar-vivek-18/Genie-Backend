@@ -151,7 +151,7 @@ io.on("connection", (socket) => {
                 console.log('receiver', receiver.requestId.toString());
                 // console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
                 // console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
-                if (newMessageReceived.sender === 'Retailer') {
+                if (newMessageReceived.sender.type === 'Retailer') {
                     socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
                     updateRequest();
                 }
