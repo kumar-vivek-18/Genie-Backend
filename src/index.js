@@ -30,7 +30,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'https://culturtap.com',
+    origin: process.env.CORS_ORIGIN || 'http://173.212.1937.109:5000',
     credentials: true
 }));
 
@@ -57,7 +57,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     pingTimeout: 6000,
     cors: {
-        origin: process.env.CORS_ORIGIN || 'https://culturtap.com',
+        origin: process.env.CORS_ORIGIN || 'http://173.212.1937.109:5000',
         transports: ['websocket', 'polling'],
         methods: ["GET", "POST", "PATCH"],
         credentials: true
@@ -154,7 +154,8 @@ io.on("connection", (socket) => {
                 // console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
                 if (newMessageReceived.sender.type === 'Retailer') {
                     socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
-                    updateRequest();
+                    if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString()) === false)
+                        updateRequest();
                 }
                 else {
                     console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
