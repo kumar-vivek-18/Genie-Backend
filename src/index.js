@@ -137,7 +137,7 @@ io.on("connection", (socket) => {
                     { _id: newMessageReceived.chat },
                     { latestMessage: newMessageReceived._id, $inc: { unreadCount: 1 } },
                     { new: true }
-                ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'sender message bidType bidAccepted').lean();;
+                ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude').populate('latestMessage', 'sender message bidType bidAccepted').lean();;
                 // await Promise.all(receiver.map(async chat => {
                 // Populate each user in the users array
                 await Promise.all(receiver.users.map(async user => {
