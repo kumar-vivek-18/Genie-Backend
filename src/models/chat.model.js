@@ -51,7 +51,12 @@ const ChatSchema = mongoose.Schema({
                 required: true,
 
             }
-        }]
+        }],
+    bidFlow: [{
+        amount: { type: Number },
+        status: { type: String }
+    }]
+
 },
     {
         timestamps: true,

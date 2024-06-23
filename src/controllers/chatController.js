@@ -327,6 +327,12 @@ export const acceptBidRequest = async (req, res) => {
             throw new Error('User request not found');
         }
 
+        const updateChat = await Chat.findById(message.chat._id).session(session);
+        if (updateChat) {
+            updateChat.bidFlow.push({ amount: message.bidPrice, status: "accepted" });
+            await updateChat.save({ session });
+        }
+
         const chats = await Chat.find({ requestId: data.userRequestId }).populate('retailerId', 'uniqueToken').session(session);
 
         const uniqueTokens = [];
