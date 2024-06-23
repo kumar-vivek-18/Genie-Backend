@@ -407,7 +407,7 @@ export const rejectBidRequest = async (req, res) => {
 
         const updateChat = await Chat.findById(message.chat._id);
         if (updateChat) {
-            updateChat.bidFlow.push({ amount: message.bidPrice, status: "accepted" });
+            updateChat.bidFlow.push({ amount: message.bidPrice, status: "rejected" });
             await updateChat.save();
         }
         // console.log('update-message', message);
