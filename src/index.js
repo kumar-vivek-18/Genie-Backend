@@ -138,7 +138,7 @@ io.on("connection", (socket) => {
                     { _id: newMessageReceived.chat },
                     { latestMessage: newMessageReceived._id, $inc: { unreadCount: 1 } },
                     { new: true }
-                ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude').populate('latestMessage', 'sender message bidType bidAccepted').lean();;
+                ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude').populate('latestMessage', 'sender message bidType bidAccepted').lean();
                 // await Promise.all(receiver.map(async chat => {
                 // Populate each user in the users array
                 await Promise.all(receiver.users.map(async user => {
@@ -166,14 +166,37 @@ io.on("connection", (socket) => {
 
     });
 
-    socket.on('read message', async (chatId) => {
-        // await Chat.fi
-        await Message.updateMany({ chat: chatId, read: false }, { read: true });
-        await Chat.findOneAndUpdate(
-            { _id: chatId },
-            { $set: { "latestMessages.$.unreadCount": 0 } }
-        );
+
+
+    socket.on('new request', (requestId) => {
+
+        console.log('new request', requestId);
+        const fetchChats = async () => {
+            const chats = await Chat.find({ requestId: requestId }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude').populate('latestMessage', 'sender message bidType bidAccepted').lean();
+
+
+            chats.forEach(async (chat) => {
+                console.log('send request to ', chat.retailerId?._id);
+                socket.to(chat.retailerId?._id.toString()).emit('fetch newRequest', chat);
+
+            });
+        }
+
+        fetchChats();
+
     })
+
+
+    // socket.on('read message', async (chatId) => {
+    //     // await Chat.fi
+    //     await Message.updateMany({ chat: chatId, read: false }, { read: true });
+    //     await Chat.findOneAndUpdate(
+    //         { _id: chatId },
+    //         { $set: { "latestMessages.$.unreadCount": 0 } }
+    //     );
+    // })
+
+
 
     // socket.on("typing", (room) => socket.to(room).emit("typing"));
     // socket.on("stop typing", (room) => socket.to(room).emit("stop typing"));
