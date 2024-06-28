@@ -209,7 +209,7 @@ export const sendMessage = async (req, res) => {
         const data = req.body;
         const bidImages = [];
         if (req.files && Array.isArray(req.files)) {
-            const imageUrl = req.files.map(file => `http://192.168.51.192:5000/uploads/${file.filename}`);
+            const imageUrl = req.files.map(file => `http://173.212.193.109:5000/uploads/${file.filename}`);
             bidImages.push(...imageUrl);
         }
 
