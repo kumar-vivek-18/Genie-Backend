@@ -207,37 +207,52 @@ export const getChats = async (req, res) => {
 export const sendMessage = async (req, res) => {
     try {
         const data = req.body;
+        const bidImages = [];
+        if (req.files && Array.isArray(req.files)) {
+            const imageUrl = req.files.map(file => `http://192.168.51.192:5000/uploads/${file.filename}`);
+            bidImages.push(...imageUrl);
+        }
 
-        // Create the message
+        // console.log('bidImages: ', bidImages)
+
         const createdMessage = await Message.create({
-            sender: data.sender,
-            userRequest: data.userRequest,
-            message: data.message,
-            bidType: data.bidType,
-            bidPrice: data.bidPrice,
-            bidImages: data.bidImages,
-            chat: data.chat,
-            warranty: data.warranty
+            sender: JSON.parse(data.sender),
+            userRequest: data?.userRequest,
+            message: data?.message,
+            bidType: data?.bidType,
+            bidPrice: data?.bidPrice,
+            bidImages: bidImages,
+            chat: data?.chat,
+            warranty: data?.warranty
         });
-
-
-
-        // Populate the chat field
-        const populatedMessage = await createdMessage.populate('chat', '_id users');
-        const updateLatestMessage = await Chat.findOneAndUpdate({ _id: createdMessage.chat }, { latestMessage: createdMessage._id });
 
         if (!createdMessage) {
             return res.status(404).json({ message: 'Message not created' });
         }
 
+        // Populate the chat and userRequest fields
+        await createdMessage.populate('chat', '_id users');
+        await createdMessage.populate('userRequest', '_id customer');
 
+        // Update the latest message in the chat
+        const updateLatestMessage = await Chat.findOneAndUpdate(
+            { _id: createdMessage.chat },
+            { latestMessage: createdMessage._id },
+            { new: true }
+        );
 
-        return res.status(201).json(populatedMessage);
+        if (!updateLatestMessage) {
+            return res.status(404).json({ message: 'Chat not found or update failed' });
+        }
+
+        return res.status(201).json(createdMessage);
     } catch (error) {
         console.error('Error creating message:', error); // Improved error logging
         return res.status(500).json({ message: 'Internal server error', error: error.message }); // Improved error response
     }
 };
+
+
 
 
 export const updateMessage = async (req, res) => {
@@ -250,7 +265,7 @@ export const updateMessage = async (req, res) => {
 
         // console.log('update-data', data.id, data.type);
 
-        const message = await Message.findById(data.id).populate('chat', '_id users');
+        const message = await Message.findById(data.id).populate('chat', '_id users').populate('userRequest', '_id customer');
 
         if (!message) {
             return res.status(404).json({ message: 'Message not found' });
@@ -307,7 +322,7 @@ export const acceptBidRequest = async (req, res) => {
             { _id: data.messageId },
             { bidAccepted: "accepted" },
             { session, new: true }
-        ).populate('chat', '_id users');
+        ).populate('chat', '_id users').populate('userRequest', '_id customer');
 
         if (!message) {
             throw new Error('Message not found');
@@ -391,7 +406,7 @@ export const rejectBidRequest = async (req, res) => {
         }
 
 
-        const message = await Message.findById(data.messageId).populate('chat', '_id users');
+        const message = await Message.findById(data.messageId).populate('chat', '_id users').populate('userRequest', '_id customer');
 
         if (!message) {
             return res.status(404).json({ message: 'Message not found' });

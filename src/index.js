@@ -42,6 +42,7 @@ app.use('/user', userRoutes);
 app.use('/retailer', retailerRoutes);
 app.use('/chat', chatRoutes);
 app.use('/coupon', couponRoutes);
+app.use('/uploads', express.static('uploads'));
 
 // const options = {
 //     key: fs.readFileSync(path.join(__dirname, '../privkey.pem')),
@@ -89,24 +90,38 @@ io.on("connection", (socket) => {
         // activeRooms.forEach((value, roomName) => {
         //     console.log(roomName);
         // });
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Updating HomeScreen latest spade ordering
+
+        // console.log('newMessageRecieved', newMessageReceived);
+        if (io.sockets.adapter.rooms.has(newMessageReceived.chat.users[1]._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest.customer) === true) {
+            console.log('Message Send at HomeScreen');
+            socket.to(newMessageReceived.userRequest.customer).emit('update userspade', newMessageReceived.userRequest._id);
+        }
+
+
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const updateRequest = async () => {
 
-            await UserRequest.findByIdAndUpdate(newMessageReceived.userRequest, { unread: true });
+            await UserRequest.findByIdAndUpdate(newMessageReceived.userRequest._id, { unread: true });
         }
+
 
 
         // console.log('messType', newMessageReceived.bidType, newMessageReceived.bidAccepted);
 
         if (newMessageReceived.bidType === "true" && newMessageReceived.bidAccepted === "accepted") {
             const updateMessages = async () => {
-                const messages = await Message.find({ bidType: "update", userRequest: newMessageReceived.userRequest }).populate('chat', '_id users');
+                const messages = await Message.find({ bidType: "update", userRequest: newMessageReceived.userRequest._id }).populate('chat', '_id users');
 
                 // console.log('hii', messages);
                 await Promise.all(messages.map(async (message) => {
                     console.log('Message send successfully ', message.chat.users[0]._id);
-
-                    socket.to(message.chat.users[0]._id.toString()).emit("message received", message);
+                    if (io.sockets.adapter.rooms.has(message.chat.users[0]._id.toString()))
+                        socket.to(message.chat.users[0]._id.toString()).emit("message received", message);
                 }));
             }
             updateMessages();
@@ -128,7 +143,8 @@ io.on("connection", (socket) => {
 
             if (io.sockets.adapter.rooms.has(user._id)) {
                 socket.to(user._id).emit("message received", newMessageReceived);
-                console.log('online user id', user._id);
+                console.log('Message data send at chatting screen with Id', user._id);
+
                 // console.log('User is currently online');
             }
             else {
@@ -148,18 +164,23 @@ io.on("connection", (socket) => {
                 }));
                 // }));
 
-                console.log('Send to chat id is ', io.sockets.adapter.rooms.has(receiver.requestId._id.toString()));
-                console.log('receiver', receiver.requestId.toString());
+
                 // console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
                 // console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
                 if (newMessageReceived.sender.type === 'Retailer') {
-                    socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
+                    if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString())) {
+                        console.log('Send to requestDetail screen with Id ', io.sockets.adapter.rooms.has(receiver.requestId._id.toString()));
+                        console.log('receiver', receiver.requestId.toString());
+                        socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
+                    }
                     if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString()) === false)
                         updateRequest();
                 }
                 else {
-                    console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
-                    socket.to(receiver.retailerId._id.toString()).emit('updated retailer', receiver);
+                    if (io.sockets.adapter.rooms.has(receiver.retailerId._id.toString())) {
+                        console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
+                        socket.to(receiver.retailerId._id.toString()).emit('updated retailer', receiver);
+                    }
                 }
             }
         });

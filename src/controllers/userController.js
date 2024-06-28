@@ -41,7 +41,15 @@ export const registerUser = async (req, res) => {
 // Remaining Transaction process i.e. Acid Properties setup
 export const createRequest = async (req, res) => {
     try {
-        const { customerID, request, requestCategory, requestImages, expectedPrice, lastSpadePrice } = req.body;
+        const { customerID, request, requestCategory, expectedPrice, lastSpadePrice } = req.body;
+
+        const requestImages = [];
+        if (req.files && Array.isArray(req.files)) {
+            const imageUrl = req.files.map(file => `http://192.168.51.192:5000/uploads/${file.filename}`);
+            requestImages.push(...imageUrl);
+        }
+
+        console.log('reqImages', requestImages);
 
         const retailers = await Retailer.find({ $and: [{ storeCategory: requestCategory }, { storeApproved: true }] });
 
