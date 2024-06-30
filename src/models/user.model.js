@@ -68,6 +68,10 @@ const UserSchema = new Schema({
         type: String,
         enum: ["paid", "unpaid"],
         default: "paid",
+    },
+    freeSpades: {
+        type: Number,
+        default: 5,
     }
 
 
