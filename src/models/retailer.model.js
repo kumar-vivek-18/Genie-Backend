@@ -105,6 +105,10 @@ const RetailerSchema = new Schema({
     profileCompleted: {
         type: Boolean,
         default: false,
+    },
+    freeSpades: {
+        type: Number,
+        default: 1000,
     }
 
 }, {
