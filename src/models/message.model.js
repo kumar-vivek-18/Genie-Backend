@@ -21,7 +21,6 @@ const messageModel = mongoose.Schema({
     },
     message: {
         type: String,
-        required: true,
         trim: true,
         default: ""
     },
