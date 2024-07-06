@@ -37,7 +37,7 @@ export const createRatingAndFeedback = async (req, res) => {
     try {
         const { user, retailer, rating, feedback } = req.body;
 
-        if (!user || !retailer || !rating || !feedback) {
+        if (!user || !retailer || !rating) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
