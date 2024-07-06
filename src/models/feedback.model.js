@@ -9,7 +9,6 @@ const feedbackSchema = new Schema({
     },
     feedback: {
         type: String,
-        required: true,
         trim: true,
         default: ""
     },
