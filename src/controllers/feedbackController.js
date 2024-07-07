@@ -36,15 +36,16 @@ export const createRatingAndFeedback = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        const { user, sender, rating, feedback } = req.body;
+        const { user, sender, rating, feedback, senderName } = req.body;
 
-        if (!user || !sender || !rating) {
+        if (!user || !sender || !rating || !senderName) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
         const createdRating = await RatingAndFeedback.create([{
             user,
             sender,
+            senderName,
             rating,
             feedback
         }], { session });
@@ -101,10 +102,20 @@ export const getRetailerFeedbacks = async (req, res) => {
         if (!id) {
             return res.status(400).json({ message: 'Invalid request' });
         }
-        const feedbacks = await RatingAndFeedback.find({ $and: [{ "user.type": "Retailer", "user.refId": id }, { feedback: { $ne: '' } }] },);
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid ID format' });
+        }
+
+        const feedbacks = await RatingAndFeedback.find({
+            $and: [
+                { "user.type": "Retailer", "user.refId": id },
+                { feedback: { $ne: '' } }
+            ]
+        });
         return res.status(200).json(feedbacks);
 
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 }
+

@@ -8,6 +8,7 @@ const senderSchema = new Schema({
     refId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
+        refPath: 'type'
     }
 })
 const feedbackSchema = new Schema({
@@ -33,6 +34,11 @@ const feedbackSchema = new Schema({
     //     required: true,
     // },
     sender: senderSchema,
+    senderName: {
+        type: String,
+        trim: true,
+        required: true,
+    },
     user: senderSchema,
 
 
