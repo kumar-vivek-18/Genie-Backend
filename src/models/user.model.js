@@ -72,7 +72,15 @@ const UserSchema = new Schema({
     freeSpades: {
         type: Number,
         default: 5,
-    }
+    },
+    totalRating: {
+        type: Number,
+        default: 0,
+    },
+    totalReview: {
+        type: Number,
+        default: 0,
+    },
 
 
 },

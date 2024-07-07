@@ -1,6 +1,7 @@
 import { RatingAndFeedback } from '../models/feedback.model.js';
 import mongoose from 'mongoose';
 import { Retailer } from '../models/retailer.model.js';
+import { User } from '../models/user.model.js';
 
 // export const createRatingAndFeedback = async (req, res) => {
 //     try {
@@ -35,15 +36,15 @@ export const createRatingAndFeedback = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        const { user, retailer, rating, feedback } = req.body;
+        const { user, sender, rating, feedback } = req.body;
 
-        if (!user || !retailer || !rating) {
+        if (!user || !sender || !rating) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
         const createdRating = await RatingAndFeedback.create([{
             user,
-            retailer,
+            sender,
             rating,
             feedback
         }], { session });
@@ -54,17 +55,33 @@ export const createRatingAndFeedback = async (req, res) => {
             return res.status(500).json({ message: 'Rating not created' });
         }
 
-        const updateRetailer = await Retailer.findByIdAndUpdate(
-            retailer,
-            { $inc: { totalRating: rating, totalReview: 1 } },
-            { new: true, session }
-        );
-
-        if (!updateRetailer) {
-            await session.abortTransaction();
-            session.endSession();
-            return res.status(404).json({ message: 'Retailer not found' });
+        if (user.type === 'Retailer') {
+            const updateRetailer = await Retailer.findByIdAndUpdate(
+                user.refId,
+                { $inc: { totalRating: rating, totalReview: 1 } },
+                { new: true, session }
+            );
+            if (!updateRetailer) {
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(404).json({ message: 'Retailer not found' });
+            }
         }
+        else {
+            const updateUser = await User.findByIdAndUpdate(
+                user.refId,
+                { $inc: { totalRating: rating, totalReview: 1 } },
+                { new: true, session }
+            );
+
+            if (!updateUser) {
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(404).json({ message: 'User not found' });
+            }
+        }
+
+
 
         await session.commitTransaction();
         session.endSession();

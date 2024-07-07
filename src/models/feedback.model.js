@@ -1,5 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
+const senderSchema = new Schema({
+    type: {
+        type: String,
+        enum: ['User', 'Retailer'],
+    },
+    refId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+    }
+})
 const feedbackSchema = new Schema({
     rating: {
         type: Number,
@@ -12,16 +22,19 @@ const feedbackSchema = new Schema({
         trim: true,
         default: ""
     },
-    retailer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Retailer",
-        required: true,
-    },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-    }
+    // retailer: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Retailer",
+    //     required: true,
+    // },
+    // user: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "User",
+    //     required: true,
+    // },
+    sender: senderSchema,
+    user: senderSchema,
+
 
 });
 
