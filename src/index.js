@@ -8,6 +8,7 @@ import retailerRoutes from './routes/retailerRoutes.js';
 import chatRoutes from './routes/chatroutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import ratingRoutes from './routes/ratingRoutes.js';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -43,6 +44,7 @@ app.use('/user', userRoutes);
 app.use('/retailer', retailerRoutes);
 app.use('/chat', chatRoutes);
 app.use('/coupon', couponRoutes);
+app.use('/rating', ratingRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/upload', uploadRoutes);
 

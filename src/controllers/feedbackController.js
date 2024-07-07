@@ -94,3 +94,17 @@ export const createRatingAndFeedback = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+
+export const getRetailerFeedbacks = async (req, res) => {
+    try {
+        const { id } = req.query;
+        if (!id) {
+            return res.status(400).json({ message: 'Invalid request' });
+        }
+        const feedbacks = await RatingAndFeedback.find({ $and: [{ "user.type": "Retailer", "user.refId": id }, { feedback: { $ne: '' } }] },);
+        return res.status(200).json(feedbacks);
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
