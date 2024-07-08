@@ -36,7 +36,7 @@ export const createRatingAndFeedback = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        const { user, sender, rating, feedback, senderName } = req.body;
+        const { user, sender, rating, feedback, senderName, chatId } = req.body;
 
         if (!user || !sender || !rating || !senderName) {
             return res.status(400).json({ message: 'All fields are required' });
@@ -47,7 +47,7 @@ export const createRatingAndFeedback = async (req, res) => {
             sender,
             senderName,
             rating,
-            feedback
+            feedback,
         }], { session });
 
         if (!createdRating) {
@@ -67,6 +67,7 @@ export const createRatingAndFeedback = async (req, res) => {
                 session.endSession();
                 return res.status(404).json({ message: 'Retailer not found' });
             }
+
         }
         else {
             const updateUser = await User.findByIdAndUpdate(
@@ -80,7 +81,20 @@ export const createRatingAndFeedback = async (req, res) => {
                 session.endSession();
                 return res.status(404).json({ message: 'User not found' });
             }
+
+            const updatedChat = await Chat.findByIdAndUpdate(
+                chatId,
+                { rated: true },
+                { new: true, session }
+            );
+            if (!updatedChat) {
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(404).json({ message: 'Chat not found' });
+            }
         }
+
+
 
 
 

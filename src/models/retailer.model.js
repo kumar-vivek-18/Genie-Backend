@@ -109,6 +109,10 @@ const RetailerSchema = new Schema({
     freeSpades: {
         type: Number,
         default: 1000,
+    },
+    documentVerified: {
+        type: Boolean,
+        default: false
     }
 
 }, {
