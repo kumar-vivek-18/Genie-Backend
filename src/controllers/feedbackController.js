@@ -2,6 +2,7 @@ import { RatingAndFeedback } from '../models/feedback.model.js';
 import mongoose from 'mongoose';
 import { Retailer } from '../models/retailer.model.js';
 import { User } from '../models/user.model.js';
+import { Chat } from '../models/chat.model.js';
 
 // export const createRatingAndFeedback = async (req, res) => {
 //     try {
