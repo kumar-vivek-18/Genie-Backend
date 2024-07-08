@@ -142,16 +142,7 @@ export const getRetailerOngoingChats = async (req, res) => {
 export const getParticularChat = async (req, res) => {
     try {
         const data = req.query;
-        const UserChat = await Chat.find({
-            $and: [
-                {
-                    requestId: data.requestId,
-
-                }, {
-                    retailerId: data.retailerId,
-                }
-            ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted')
+        const UserChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted')
         if (!UserChat) return res.status(404).json({ message: "User not found" });
         return res.status(200).json(UserChat);
     } catch (error) {
