@@ -156,33 +156,27 @@ export const getSpades = async (req, res) => {
 }
 
 
-// export const closeSpade = async (req, res) => {
-//     try {
-//         const id = req.body.id;
-//         const updateRequest = await UserRequest.findById({ _id: id }, { requestActive: "closed" }, { new: true });
+export const closeAcitveSpade = async (req, res) => {
+    try {
+        const id = req.body.id;
+        const updateRequest = await UserRequest.findById(id, { requestActive: "closed" }, { new: true });
 
-//         if (!updateRequest) {
-//             return res.status(404).json({ message: 'Request not found' });
-//         }
+        if (!updateRequest) {
+            return res.status(404).json({ message: 'Request not found' });
+        }
 
-//         const updateAcceptedChat = await Chat.findByIdAndUpdate({ _id: updateRequest.requestAcceptedChat }, { requestType: "closed" }, { new: true });
-//         if (!updateAcceptedChat) {
-//             return res.status(404).json({ message: 'Accepted chat not found' });
-//         }
-//         return res.status(200).json(updateRequest);
+        const chats = await Chat.find({ requestId: id, requestType: "new" });
 
-//         // if (updateRequest) {
-//         //     updateRequest.requestActive = "closed";
-//         //     updateRequest.save();
+        await Promise.all(chats.map(chat => {
+            return Chat.findByIdAndDelete(chat._id);
+        }))
 
-//         // }
-//         // else {
-//         //     return res.status(404).json({ message: 'Request not found' });
-//         // }
-//     } catch (error) {
-//         throw new Error(error.message);
-//     }
-// }
+
+
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 
 export const closeSpade = async (req, res) => {
     try {
@@ -200,15 +194,15 @@ export const closeSpade = async (req, res) => {
         }
 
         // Find and update the associated Chat by id
-        const updateAcceptedChat = await Chat.findByIdAndUpdate(
-            updateRequest.requestAcceptedChat, // The ID of the chat to update
-            { requestType: "closed" }, // The fields to update
-            { new: true } // Return the updated document
-        );
+        // const updateAcceptedChat = await Chat.findByIdAndUpdate(
+        //     updateRequest.requestAcceptedChat, // The ID of the chat to update
+        //     { requestType: "closed" }, // The fields to update
+        //     { new: true } // Return the updated document
+        // );
 
-        if (!updateAcceptedChat) {
-            return res.status(404).json({ message: 'Accepted chat not found' });
-        }
+        // if (!updateAcceptedChat) {
+        //     return res.status(404).json({ message: 'Accepted chat not found' });
+        // }
 
         // Return the updated request
         return res.status(200).json(updateRequest);
@@ -217,6 +211,8 @@ export const closeSpade = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+
 
 export const setSpadeMarkAsRead = async (req, res) => {
     try {

@@ -27,6 +27,24 @@ export const modifyChat = async (req, res) => {
     }
 }
 
+export const updateClosedChat = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const updateAcceptedChat = await Chat.findByIdAndUpdate(
+            id, // The ID of the chat to update
+            { requestType: "closed" }, // The fields to update
+            { new: true } // Return the updated document
+        );
+
+        if (!updateAcceptedChat) {
+            return res.status(404).json({ message: 'Accepted chat not found' });
+        }
+        return res.status(200).json(updateAcceptedChat);
+    } catch (error) {
+        return res.status(404).json({ message: 'Request error' });
+    }
+}
+
 // export const acceptBid = async (req, res) => {
 //     try {
 //         const data = req.body;

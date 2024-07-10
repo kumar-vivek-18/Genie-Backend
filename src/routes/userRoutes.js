@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { getUser, registerUser, createRequest, editProfile, getSpades, getSpadesHistory, closeSpade, getUniqueToken, setSpadeMarkAsRead } from '../controllers/userController.js';
+import { getUser, registerUser, createRequest, editProfile, getSpades, getSpadesHistory, closeSpade, getUniqueToken, setSpadeMarkAsRead, closeAcitveSpade } from '../controllers/userController.js';
 import { upload } from '../middlewares/multer.middleware.js';
 // const { protect } = require('../middlewares/authMiddleware');
 
@@ -14,4 +14,5 @@ router.route('/history').get(getSpadesHistory);
 // router.route('/update').patch(updateRequests);
 router.route('/unique-token').get(getUniqueToken);
 router.route('/set-spade-mark-as-read').patch(setSpadeMarkAsRead);
+router.route('/close-active-spade').patch(closeAcitveSpade);
 export default router;
