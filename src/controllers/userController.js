@@ -158,8 +158,9 @@ export const getSpades = async (req, res) => {
 
 export const closeAcitveSpade = async (req, res) => {
     try {
-        const id = req.body.id;
-        const updateRequest = await UserRequest.findById(id, { requestActive: "closed" }, { new: true });
+        const { id } = req.body;
+
+        const updateRequest = await UserRequest.findByIdAndUpdate(id, { requestActive: "closed" }, { new: true });
 
         if (!updateRequest) {
             return res.status(404).json({ message: 'Request not found' });
@@ -171,7 +172,7 @@ export const closeAcitveSpade = async (req, res) => {
             return Chat.findByIdAndDelete(chat._id);
         }))
 
-
+        return res.status(200).json(updateRequest);
 
     } catch (error) {
         throw new Error(error.message);
