@@ -27,6 +27,22 @@ export const modifyChat = async (req, res) => {
     }
 }
 
+export const updateCloseChat = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const updateClosedChat = await Chat.findByIdAndUpdate({
+            id,
+            requestType: "closed"
+        }, { new: true });
+        if (!updateClosedChat) return res.status(404).json({ message: "Chat not found" });
+
+        return res.status(200).json(updateCloseChat);
+    }
+    catch (error) {
+        throw new Error(error.message);
+    }
+}
+
 export const updateClosedChat = async (req, res) => {
     try {
         const { id } = req.body;

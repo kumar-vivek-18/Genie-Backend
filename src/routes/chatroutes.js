@@ -17,6 +17,6 @@ router.route('/reject-bid').patch(rejectBidRequest);
 router.route('/mark-as-read').patch(setChatMessageMarkAsRead);
 router.route('/get-particular-chat').get(getParticularChat);
 router.route('/update-closed-chat').patch(updateClosedChat);
-
+router.route('/update-closed-chat').patch(updateClosedChat);
 
 export default router;
