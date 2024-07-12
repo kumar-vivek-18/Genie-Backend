@@ -26,7 +26,7 @@ const messageModel = mongoose.Schema({
     },
     bidType: {
         type: String,
-        enum: ["false", "true", "image", "update"],
+        enum: ["false", "true", "image", "update", "location"],
         default: "false",
     },
     bidPrice: {
@@ -52,9 +52,13 @@ const messageModel = mongoose.Schema({
         type: Number,
         default: 0,
     },
-    read: {
-        type: Boolean,
-        default: false
+    longitude: {
+        type: Number,
+        default: 0,
+    },
+    latitude: {
+        type: Number,
+        default: 0,
     }
 },
     {
