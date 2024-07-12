@@ -248,7 +248,9 @@ export const sendMessage = async (req, res) => {
             bidPrice: data?.bidPrice,
             bidImages: bidImages,
             chat: data?.chat,
-            warranty: data?.warranty
+            warranty: data?.warranty,
+            longitude: data?.longitude ? data?.longitude : 0,
+            latitude: data?.latitude ? data?.latitude : 0,
         });
 
         if (!createdMessage) {
