@@ -23,16 +23,7 @@ const feedbackSchema = new Schema({
         trim: true,
         default: ""
     },
-    // retailer: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Retailer",
-    //     required: true,
-    // },
-    // user: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "User",
-    //     required: true,
-    // },
+
     sender: senderSchema,
     senderName: {
         type: String,

@@ -68,6 +68,16 @@ export const createRatingAndFeedback = async (req, res) => {
                 session.endSession();
                 return res.status(404).json({ message: 'Retailer not found' });
             }
+            const updatedChat = await Chat.findByIdAndUpdate(
+                chatId,
+                { retailerRated: true },
+                { new: true, session }
+            );
+            if (!updatedChat) {
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(404).json({ message: 'Chat not found' });
+            }
 
         }
         else {
@@ -94,9 +104,6 @@ export const createRatingAndFeedback = async (req, res) => {
                 return res.status(404).json({ message: 'Chat not found' });
             }
         }
-
-
-
 
 
         await session.commitTransaction();

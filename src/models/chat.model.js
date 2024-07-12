@@ -59,6 +59,10 @@ const ChatSchema = mongoose.Schema({
     rated: {
         type: Boolean,
         default: false,
+    },
+    retailerRated: {
+        type: Boolean,
+        default: false,
     }
 
 },
