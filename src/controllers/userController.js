@@ -59,9 +59,9 @@ export const createRequest = async (req, res) => {
             return res.status(404).json({ message: 'No retailers found for the requested category' });
         }
 
-        retailers.map(retailer => {
-            uniqueTokens.push(retailer.uniqueToken);
-        });
+        // retailers.map(retailer => {
+        //     uniqueTokens.push(retailer.uniqueToken);
+        // });
 
         const userRequest = await UserRequest.create({ customer: customerID, requestDescription: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice });
 
@@ -71,12 +71,12 @@ export const createRequest = async (req, res) => {
 
 
 
-        const retailerRequests = await Promise.all(retailers.map(async retailer => {
+        const retailerRequests = await Promise.all(retailers.map(async (retailer) => {
             const retailerChat = await Chat.create({ requestId: userRequest._id, customerId: customerID, retailerId: retailer._id, requestType: 'new', users: [{ type: 'Retailer', refId: retailer._id }] });
 
-            if (expectedPrice > 0 && retailerChat) {
+            if (retailerChat) {
                 const firstBid = await Message.create({ sender: { type: 'UserRequest', refId: userRequest._id }, userRequest: userRequest._id, message: request, bidType: "false", bidPrice: expectedPrice, bidImages: requestImages, bidAccepted: 'new', chat: retailerChat._id });
-
+                uniqueTokens.push({ token: retailer.uniqueToken, chatId: retailerChat._id, socketId: retailerChat.users[0]._id })
                 if (!firstBid) {
                     throw new Error('Failed to create first bid');
                 }
