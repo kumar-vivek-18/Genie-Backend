@@ -95,7 +95,7 @@ export const getRetailerNewChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted').lean().sort({ updatedAt: -1 });
 
         await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
@@ -131,7 +131,7 @@ export const getRetailerOngoingChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', ' sender message bidType bidAccepted').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', ' sender message bidType bidAccepted').lean().sort({ updatedAt: -1 });
 
         await Promise.all(RetailerChats.map(async chat => {
             // Populate each user in the users array
@@ -203,7 +203,7 @@ export const getChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted').lean().sort({ updatedAt: -1 });
 
         // Iterate through each chat and populate users
         await Promise.all(UserChats.map(async chat => {
