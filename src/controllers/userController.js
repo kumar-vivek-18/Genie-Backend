@@ -141,7 +141,7 @@ export const getSpades = async (req, res) => {
                     ]
                 }
             ]
-        });
+        }).sort({ updatedAt: -1 });
 
         // console.log('spades', spades);
         if (spades.length > 0) {
@@ -240,7 +240,7 @@ export const getSpadesHistory = async (req, res) => {
             }, {
                 requestActive: "closed"
             }]
-        })
+        }).sort({ updatedAt: -1 })
         if (spades.length > 0) {
             return res.status(200).json(spades);
         }
