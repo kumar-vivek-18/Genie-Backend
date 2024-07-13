@@ -203,7 +203,7 @@ export const getChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted').lean().sort({ updatedAt: -1 });
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean().sort({ updatedAt: -1 });
 
         // Iterate through each chat and populate users
         await Promise.all(UserChats.map(async chat => {
