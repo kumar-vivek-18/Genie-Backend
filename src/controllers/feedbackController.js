@@ -136,7 +136,7 @@ export const createRatings = async (req, res) => {
 
 
         const updateRetailerTotalRatings = await Retailer.findByIdAndUpdate(userId, {
-            $inc: { totalRating: rating, totalReview: 1 }
+            $inc: { totalRating: retailerRating, totalReview: 1 }
         }, { new: true });
         if (!updateRetailerTotalRatings)
             return res.status(404).json({ message: "Error updating stats" });
