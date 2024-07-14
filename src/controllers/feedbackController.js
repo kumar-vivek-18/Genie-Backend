@@ -121,9 +121,9 @@ export const createRatingAndFeedback = async (req, res) => {
 
 export const createRatings = async (req, res) => {
     try {
-        const { spadeRating, retailerRating, spadeId, senderId, userId, senderName } = req.body();
+        const { spadeRating, retailerRating, spadeId, senderId, userId, senderName } = req.body;
 
-        console.log(req.body());
+        console.log(req.body);
         const createRetailerRating = await RatingAndFeedback.create({ rating: retailerRating, sender: { type: "User", refId: senderId }, senderName: senderName, user: { type: 'Retailer', refId: userId } });
         if (!createRetailerRating) {
             return res.status(500).json({ message: 'Retailer rating not created' });

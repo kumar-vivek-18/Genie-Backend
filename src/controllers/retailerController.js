@@ -65,8 +65,8 @@ export const getRetailerHistory = async (req, res) => {
             $and: [
                 {
                     $or: [
-                        { requestType: "closed" },
-                        { requestType: "cancelled" },
+                        { requestType: "rejected" },
+                        { requestType: "closedHistory" },
                         { requestType: "completed" }
                     ],
 
