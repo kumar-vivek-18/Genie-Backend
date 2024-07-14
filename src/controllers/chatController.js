@@ -7,7 +7,7 @@ import { response } from 'express';
 import { populate } from 'dotenv';
 import mongoose from 'mongoose';
 
-export const modifyChat = async (req, res) => {
+export const productAvailable = async (req, res) => {
     try {
         const data = req.body;
         // console.log('data', data);
@@ -15,7 +15,7 @@ export const modifyChat = async (req, res) => {
         // console.log('createdChat', createdChat);
         if (createdChat) {
             createdChat.users.push({ type: 'UserRequest', refId: createdChat.requestId });
-            createdChat.requestType = data.type;
+            createdChat.requestType = "ongoing";
             createdChat.save();
             return res.status(200).json(createdChat);
         }
@@ -26,29 +26,40 @@ export const modifyChat = async (req, res) => {
         throw new Error(error.message);
     }
 }
-
-export const updateCloseChat = async (req, res) => {
+export const productNotAvailable = async (req, res) => {
     try {
         const { id } = req.body;
-        const updateClosedChat = await Chat.findByIdAndUpdate({
-            id,
-            requestType: "closed"
-        }, { new: true });
-        if (!updateClosedChat) return res.status(404).json({ message: "Chat not found" });
-
-        return res.status(200).json(updateCloseChat);
-    }
-    catch (error) {
+        if (!id) return res.status(404).json({ message: "Please provide a valid Id" })
+        const updateChat = await Chat.findByIdAndUpdate(id, { requestType: "rejected" }, { new: true });
+        if (!updateChat) return res.status(404).json({ message: 'Chat not available' });
+        return res.status(200).json(updateChat);
+    } catch (error) {
         throw new Error(error.message);
     }
 }
+
+// export const updateCloseChat = async (req, res) => {
+//     try {
+//         const { id } = req.body;
+//         const updateClosedChat = await Chat.findByIdAndUpdate({
+//             id,
+//             requestType: "completed"
+//         }, { new: true });
+//         if (!updateClosedChat) return res.status(404).json({ message: "Chat not found" });
+
+//         return res.status(200).json(updateCloseChat);
+//     }
+//     catch (error) {
+//         throw new Error(error.message);
+//     }
+// }
 
 export const updateClosedChat = async (req, res) => {
     try {
         const { id } = req.body;
         const updateAcceptedChat = await Chat.findByIdAndUpdate(
             id, // The ID of the chat to update
-            { requestType: "closed" }, // The fields to update
+            { requestType: "completed" }, // The fields to update
             { new: true } // Return the updated document
         );
 
@@ -123,7 +134,7 @@ export const getRetailerOngoingChats = async (req, res) => {
                 {
                     $or: [
                         { requestType: "ongoing" },
-                        { requestType: "completed" }
+                        { requestType: "win" }
                     ],
                 },
                 {
@@ -176,7 +187,7 @@ export const getRetailerOngoingChats = async (req, res) => {
 export const getParticularChat = async (req, res) => {
     try {
         const data = req.query;
-        const UserChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted')
+        const UserChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages')
         if (!UserChat) return res.status(404).json({ message: "User not found" });
         return res.status(200).json(UserChat);
     } catch (error) {
@@ -192,7 +203,7 @@ export const getChats = async (req, res) => {
                 {
                     $or: [
                         { requestType: "ongoing" },
-                        { requestType: "completed" },
+                        { requestType: "win" },
                         { requestType: "closed" },
                     ],
 
@@ -369,11 +380,11 @@ export const acceptBidRequest = async (req, res) => {
             throw new Error('User request not found');
         }
 
-        const updateChat = await Chat.findById(message.chat._id).session(session);
-        if (updateChat) {
-            updateChat.bidFlow.push({ amount: message.bidPrice, status: "accepted" });
-            await updateChat.save({ session });
-        }
+        // const updateChat = await Chat.findById(message.chat._id).session(session);
+        // if (updateChat) {
+        //     updateChat.bidFlow.push({ amount: message.bidPrice, status: "accepted" });
+        //     await updateChat.save({ session });
+        // }
 
         const chats = await Chat.find({ requestId: data.userRequestId }).populate('retailerId', 'uniqueToken').session(session);
 
@@ -381,15 +392,20 @@ export const acceptBidRequest = async (req, res) => {
         uniqueTokens.push(chats[0].retailerId.uniqueToken);
         await Promise.all(chats.map(async (chat) => {
             console.log('chat token', chat._id, message.chat._id);
-            if (chat.requestType === "new") {
-                await Chat.findByIdAndDelete(chat._id).session(session);
-            }
-            else if (chat._id.toString() === message.chat._id.toString() && chat.requestType === "ongoing") {
-
+            // if (chat.requestType === "new") {
+            //     await Chat.findByIdAndDelete(chat._id).session(session);
+            // }
+            // else
+            if (chat._id.toString() === message.chat._id.toString() && chat.requestType === "ongoing") {
                 chat.bidCompleted = true;
-                chat.requestType = "completed";
+                chat.requestType = "win";
                 await chat.save({ session });
                 uniqueTokens.push(chat.retailerId.uniqueToken);
+            }
+            else if (chat.requestType === "new") {
+                chat.bidCompleted = true;
+                chat.requestType = "notParitcipated";
+                await chat.save({ session });
             }
             else {
                 uniqueTokens.push(chat.retailerId.uniqueToken);
@@ -403,7 +419,7 @@ export const acceptBidRequest = async (req, res) => {
             if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "closed") {
                 // console.log('chats', chat._id, message.chat._id);
                 await Message.create([{
-                    sender: { type: 'UserRequest', refId: chat.users[1]._id },
+                    sender: { type: 'Retailer', refId: chat.users[0]._id },
                     userRequest: data.userRequestId,
                     message: `Bid closed with other seller at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
                     bidType: "update",

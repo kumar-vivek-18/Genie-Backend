@@ -166,10 +166,14 @@ export const closeAcitveSpade = async (req, res) => {
             return res.status(404).json({ message: 'Request not found' });
         }
 
-        const chats = await Chat.find({ requestId: id, requestType: "new" });
+        const chats = await Chat.find({ requestId: id });
 
         await Promise.all(chats.map(chat => {
-            return Chat.findByIdAndDelete(chat._id);
+            // return Chat.findByIdAndDelete(chat._id);
+            if (chat.requestType === "new")
+                return Chat.findByIdAndUpdate(chat._id, { requestType: "notParitcipated" });
+            else
+                return Chat.findByIdAndUpdate(chat._id, { requestType: "closed" });
         }))
 
         return res.status(200).json(updateRequest);
