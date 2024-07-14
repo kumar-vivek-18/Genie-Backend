@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 const spadeRatingSchema = new Schema({
-    spadeRating: {
+    rating: {
         type: Number,
         required: true,
         min: 1,
