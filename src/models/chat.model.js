@@ -25,7 +25,7 @@ const ChatSchema = mongoose.Schema({
         lowercase: true,
         trim: true,
         required: true,
-        enum: ["new", "ongoing", "cancelled", "completed", "closed", "win", "rejected", "notParitcipated"],
+        enum: ["new", "ongoing", "cancelled", "completed", "closed", "closedHistory", "win", "rejected", "notParitcipated"],
         default: "new"
     },
     bidCompleted: {

@@ -54,12 +54,12 @@ export const productNotAvailable = async (req, res) => {
 //     }
 // }
 
-export const updateClosedChat = async (req, res) => {
+export const updateToHistory = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id, type } = req.body;
         const updateAcceptedChat = await Chat.findByIdAndUpdate(
             id, // The ID of the chat to update
-            { requestType: "completed" }, // The fields to update
+            { requestType: type }, // The fields to update
             { new: true } // Return the updated document
         );
 
@@ -134,7 +134,8 @@ export const getRetailerOngoingChats = async (req, res) => {
                 {
                     $or: [
                         { requestType: "ongoing" },
-                        { requestType: "win" }
+                        { requestType: "win" },
+                        { requestType: "closed" },
                     ],
                 },
                 {

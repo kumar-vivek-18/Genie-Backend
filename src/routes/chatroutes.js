@@ -1,5 +1,5 @@
 import express from 'express';
-import { getRetailerNewChats, getRetailerOngoingChats, getChats, sendMessage, getSpadeMessages, acceptBidRequest, rejectBidRequest, setChatMessageMarkAsRead, getParticularChat, updateClosedChat, productAvailable, productNotAvailable } from '../controllers/chatController.js';
+import { getRetailerNewChats, getRetailerOngoingChats, getChats, sendMessage, getSpadeMessages, acceptBidRequest, rejectBidRequest, setChatMessageMarkAsRead, getParticularChat, productAvailable, productNotAvailable, updateToHistory } from '../controllers/chatController.js';
 import { upload } from '../middlewares/multer.middleware.js';
 
 
@@ -17,6 +17,6 @@ router.route('/accept-bid').patch(acceptBidRequest);
 router.route('/reject-bid').patch(rejectBidRequest);
 router.route('/mark-as-read').patch(setChatMessageMarkAsRead);
 router.route('/get-particular-chat').get(getParticularChat);
-router.route('/update-closed-chat').patch(updateClosedChat);
+router.route('/update-to-history').patch(updateToHistory);
 
 export default router;
