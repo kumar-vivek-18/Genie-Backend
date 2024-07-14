@@ -28,7 +28,7 @@ const feedbackSchema = new Schema({
     senderName: {
         type: String,
         trim: true,
-        required: true,
+        default: "",
     },
     user: senderSchema,
 

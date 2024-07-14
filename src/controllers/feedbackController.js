@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { Retailer } from '../models/retailer.model.js';
 import { User } from '../models/user.model.js';
 import { Chat } from '../models/chat.model.js';
+import { SpadeRating } from '../models/spadeRating.model.js';
 
 // export const createRatingAndFeedback = async (req, res) => {
 //     try {
@@ -115,6 +116,35 @@ export const createRatingAndFeedback = async (req, res) => {
         await session.abortTransaction();
         session.endSession();
         return res.status(500).json({ message: error.message });
+    }
+}
+
+export const createRatings = async (req, res) => {
+    try {
+        const { spadeRating, retailerRating, spadeId, senderId, userId, senderName } = req.body();
+
+        console.log(req.body());
+        const createRetailerRating = await RatingAndFeedback.create({ rating: retailerRating, sender: { type: "User", refId: senderId }, senderName: senderName, user: { type: 'Retailer', refId: userId } });
+        if (!createRetailerRating) {
+            return res.status(500).json({ message: 'Retailer rating not created' });
+        }
+
+
+        const createSpadeRating = await SpadeRating.create({ rating: spadeRating, sender: senderId, spade: spadeId, senderName: senderName });
+        if (!createSpadeRating)
+            return res.status(500).json({ message: 'Spade rating not created' });
+
+
+        const updateRetailerTotalRatings = await Retailer.findByIdAndUpdate(userId, {
+            $inc: { totalRating: rating, totalReview: 1 }
+        }, { new: true });
+        if (!updateRetailerTotalRatings)
+            return res.status(404).json({ message: "Error updating stats" });
+
+
+        return res.status(201).json({ message: 'Ratings created successfully' });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
     }
 }
 
