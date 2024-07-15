@@ -72,11 +72,26 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     console.log("Connected to socket.io");
 
-    socket.on("setup", (userId) => {
+    socket.on("setup", ({ userId, senderId }) => {
         socket.join(userId);
         socket.userId = userId;
         console.log(`User with ID ${userId} has joined their personal room.`);
         socket.emit("connected");
+
+        console.log(userId, senderId);
+        if (userId !== senderId && senderId && io.sockets.adapter.rooms.has(senderId)) {
+            socket.to(senderId).emit("online");
+            setTimeout(() => {
+                socket.to(userId).emit("online");
+            }, 2000);
+
+        }
+
+        // const activeRooms = io.sockets.adapter.rooms;
+        // console.log('Rooms while connecting')
+        // activeRooms.forEach((value, roomName) => {
+        //     console.log(roomName);
+        // });
     });
 
     socket.on("join chat", (room) => {
@@ -88,7 +103,7 @@ io.on("connection", (socket) => {
         const chat = newMessageReceived.chat;
         console.log('new message received', newMessageReceived._id);
         if (!chat.users) return console.log("chat.users not defined");
-        const activeRooms = io.sockets.adapter.rooms;
+        // const activeRooms = io.sockets.adapter.rooms;
 
         // console.log("List of active rooms:");
         // activeRooms.forEach((value, roomName) => {
@@ -226,16 +241,26 @@ io.on("connection", (socket) => {
     // socket.on("typing", (room) => socket.to(room).emit("typing"));
     // socket.on("stop typing", (room) => socket.to(room).emit("stop typing"));
 
-    socket.on("leave room", (roomToLeave) => {
+    socket.on("leave room", ({ userId, senderId }) => {
         // Leave the specified room
-        socket.leave(roomToLeave);
-        console.log(`User lwith ID ${roomToLeave} has leaved their personal room`);
+        socket.leave(userId);
+        console.log(`User lwith ID ${userId} has leaved their personal room`);
+
+        if (io.sockets.adapter.rooms.has(senderId)) {
+            socket.to(senderId).emit("offline");
+        }
+        const activeRooms = io.sockets.adapter.rooms;
+        console.log('Rooms while leaving')
+        activeRooms.forEach((value, roomName) => {
+            console.log(roomName);
+        });
     });
 
     socket.on("disconnect", () => {
 
         if (socket.userId) {
             console.log("USER DISCONNECTED with id: ", socket.userId);
+
             socket.leave(socket.userId);
 
         }
