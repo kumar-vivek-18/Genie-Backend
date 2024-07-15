@@ -206,7 +206,7 @@ export const getChats = async (req, res) => {
                         { requestType: "ongoing" },
                         { requestType: "win" },
                         { requestType: "closed" },
-                        { requestType: "closeHistory" },
+                        { requestType: "closedHistory" },
                         { requestType: "completed" }
                     ],
 
