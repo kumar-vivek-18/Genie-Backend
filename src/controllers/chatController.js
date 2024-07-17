@@ -369,7 +369,7 @@ export const acceptBidRequest = async (req, res) => {
             throw new Error('Message not found');
         }
 
-        // console.log('mess', message);
+        console.log('mess', message);
 
         const userRequest = await UserRequest.findByIdAndUpdate(
             { _id: data.userRequestId },
@@ -377,7 +377,7 @@ export const acceptBidRequest = async (req, res) => {
             { session, new: true }
         );
 
-        // console.log('userRequest', userRequest);
+        console.log('userRequest', userRequest);
 
         if (!userRequest) {
             throw new Error('User request not found');
@@ -395,10 +395,7 @@ export const acceptBidRequest = async (req, res) => {
         uniqueTokens.push(chats[0].retailerId.uniqueToken);
         await Promise.all(chats.map(async (chat) => {
             console.log('chat token', chat._id, message.chat._id);
-            // if (chat.requestType === "new") {
-            //     await Chat.findByIdAndDelete(chat._id).session(session);
-            // }
-            // else
+
             if (chat._id.toString() === message.chat._id.toString() && chat.requestType === "ongoing") {
                 chat.bidCompleted = true;
                 chat.requestType = "win";
@@ -407,7 +404,7 @@ export const acceptBidRequest = async (req, res) => {
             }
             else if (chat.requestType === "new") {
                 chat.bidCompleted = true;
-                chat.requestType = "notParitcipated";
+                chat.requestType = "notPartcipated";
                 await chat.save({ session });
             }
             else {
@@ -420,7 +417,7 @@ export const acceptBidRequest = async (req, res) => {
 
 
             if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "closed") {
-                // console.log('chats', chat._id, message.chat._id);
+                console.log('sending mess', chat._id, message.chat._id);
                 await Message.create([{
                     sender: { type: 'Retailer', refId: chat.users[0]._id },
                     userRequest: data.userRequestId,
