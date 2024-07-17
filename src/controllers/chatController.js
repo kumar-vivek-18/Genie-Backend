@@ -416,7 +416,7 @@ export const acceptBidRequest = async (req, res) => {
 
 
 
-            if (chat._id.toString() !== message.chat._id.toString() && chat.requestType === "closed") {
+            if (chat._id.toString() !== message.chat._id.toString() && (chat.requestType === "closed" || chat.requestType === "new")) {
                 // console.log('sending mess', chat._id, message.chat._id);
                 await Message.create([{
                     sender: { type: 'Retailer', refId: chat.users[0]._id },
