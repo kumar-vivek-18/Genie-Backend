@@ -404,7 +404,7 @@ export const acceptBidRequest = async (req, res) => {
             }
             else if (chat.requestType === "new") {
                 chat.bidCompleted = true;
-                chat.requestType = "notPartcipated";
+                chat.requestType = "new";
                 await chat.save({ session });
             }
             else {
