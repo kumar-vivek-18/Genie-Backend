@@ -424,7 +424,7 @@ export const acceptBidRequest = async (req, res) => {
                 await Message.create([{
                     sender: { type: 'Retailer', refId: chat.users[0]._id },
                     userRequest: data.userRequestId,
-                    message: `Bid closed with other seller at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
+                    message: `Offer closed with other vendor at a price of ${message.bidPrice} Rs. Try next time with better pricing.`,
                     bidType: "update",
                     chat: chat._id
                 }], { session });
