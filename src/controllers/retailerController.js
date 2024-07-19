@@ -4,6 +4,50 @@ import { User } from '../models/user.model.js';
 import { UserRequest } from '../models/userRequest.model.js';
 // import { Message } from '../models/message.model.js';
 import { Chat } from '../models/chat.model.js';
+import jwt from 'jsonwebtoken';
+
+const generateAccessAndRefreshToken = async (retailerId) => {
+    try {
+        const retailer = await Retailer.findById(retailerId);
+        const accessToken = retailer.generateAccessToken();
+        const refreshToken = retailer.generateRefreshToken();
+
+        retailer.refreshToken = refreshToken;
+        await retailer.save({ validateBeforeSave: false });
+
+        return { accessToken, refreshToken };
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Error generating while generating access and refresh token' });
+
+    }
+}
+
+export const refreshAccessToken = async (req, res) => {
+    try {
+        const incomingRefreshToken = req.body.refreshToken || req.cookies.refreshToken;
+        if (!incomingRefreshToken)
+            return res.status(401).json({ message: 'Unauthorized request' });
+
+        const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+        const retailer = await Retailer.findById(decodedToken._id);
+
+        if (!retailer) return res.status(401).json({ message: "Ivalid incoming refresh token" });
+
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(retailer._id);
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+
+        return res.status(200).cookie("refreshToken", refreshToken, options).cookie("accessToken", accessToken, options).json({ accessToken, refreshToken });
+    }
+    catch (error) {
+        return res.status(401).json({ message: "Error while generating refresh token" });
+    }
+}
 
 export const createNewRetailer = async (req, res) => {
     try {
@@ -16,10 +60,19 @@ export const createNewRetailer = async (req, res) => {
             storeOwnerName: data.storeOwnerName, storeCategory: data.storeCategory,
             panCard: `${data?.panCard ? data.panCard : ""}`, homeDelivery: data.homeDelivery
         });
-        if (retailer)
-            return res.status(201).json(retailer);
-        else
+
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(retailer._id);
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+        if (!retailer)
             return res.status(500).json({ message: "Error Occured" });
+
+        return res.status(201).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({ retailer, accessToken, refreshToken });
+
+
     } catch (error) {
         res.status(500);
         throw new Error(error.message);
@@ -30,13 +83,36 @@ export const getRetailer = async (req, res) => {
     try {
         const data = req.query;
         const retailer = await Retailer.findOne({ storeMobileNo: data.storeMobileNo });
-        if (retailer)
-            return res.status(200).json(retailer);
-        else
+        if (!retailer)
             return res.json({ status: 404, message: "User Not Found!" });
+
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(retailer._id);
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({ retailer, accessToken, refreshToken });
+
     } catch (error) {
         res.status(500);
         throw new Error(error.message);
+    }
+}
+
+export const logoutRetailer = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        const retailer = await Retailer.findByIdAndUpdate(id, { $unset: { refreshToken: true, uniqueToken: true } });
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+
+        return res.status(200).clearCookie("accessToken", options).clearCookie("refreshToken", options).json({ message: "Retailer logged out successfully" });
+    } catch (error) {
+        return res.status(500).json({ message: "Error while logging out retailer" });
     }
 }
 

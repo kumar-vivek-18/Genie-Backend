@@ -154,9 +154,9 @@ export const getRetailerFeedbacks = async (req, res) => {
         if (!id) {
             return res.status(400).json({ message: 'Invalid request' });
         }
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Invalid ID format' });
-        }
+        // if (!mongoose.Types.ObjectId.isValid(id)) {
+        //     return res.status(400).json({ message: 'Invalid ID format' });
+        // }
 
         const feedbacks = await RatingAndFeedback.find({
             $and: [

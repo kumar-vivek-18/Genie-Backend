@@ -113,10 +113,23 @@ const RetailerSchema = new Schema({
     documentVerified: {
         type: Boolean,
         default: false
+    },
+    refreshToken: {
+        type: String,
+        default: "",
     }
 
 }, {
     timestamps: true
 })
+
+RetailerSchema.methods.generateAccessToken = function () {
+    return jwt.sign({ _id: this._id, storeOwnerName: this.storeOwnerName }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
+
+}
+
+RetailerSchema.methods.generateRefreshToken = function () {
+    return jwt.sign({ _id: this._id, storeOwnerName: this.storeOwnerName }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
+}
 
 export const Retailer = mongoose.model('Retailer', RetailerSchema);

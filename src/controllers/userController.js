@@ -3,21 +3,84 @@ import { User } from '../models/user.model.js';
 import { Retailer } from '../models/retailer.model.js';
 import { UserRequest } from '../models/userRequest.model.js';
 import { Message } from '../models/message.model.js';
+import jwt from 'jsonwebtoken';
+
+const generateAccessRefreshToken = async (userId) => {
+    try {
+        // console.log('userId', userId.toString());
+        const user = await User.findById(userId.toString());
+        // console.log('generaing tokne', user._id);
+
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
+
+        // console.log(accessToken, refreshToken);
+        user.refreshToken = refreshToken;
+        await user.save({ validateBeforeSafe: false });
+
+        return { accessToken, refreshToken };
+    } catch (error) {
+        return res.status(500).json({ message: "Something went wrong while generating refresh token and access token" });
+    }
+}
+
+export const refreshAccessToken = async (req, res) => {
+    try {
+        const incomingRefreshToken = req.body.refreshToken || req.cookies.refreshToken;
+
+
+        if (!incomingRefreshToken)
+            return res.status(401).json({ message: "Unauthorized request" });
+
+        const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+        const user = await User.findById(decodedToken?._id);
+
+        if (!user)
+            return res.status(401).json({ message: "Invalid refresh token" });
+
+        const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
+
+        const options = {
+            httpOnly: true,
+            secure: true,
+        }
+
+
+        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({ accessToken, refreshToken });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Error generating refresh token" });
+    }
+}
+
 
 export const getUser = async (req, res) => {
     try {
         const { mobileNo } = req.query;
+        console.log(mobileNo);
         const user = await User.findOne({ mobileNo }).populate('lastSpade');
-        // console.log('user', user);
-        if (user) {
-            return res.status(200).json(user);
+        // console.log('user', user._id);
+        if (!user)
+            return res.status(404).json({ status: 404, message: 'User not found' });
+
+        const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
+
+        // console.log({ accessToken, refreshToken });
+        // const loggedInUser = await User.findById(user._id).select('-refreshToken');
+
+        const options = {
+            httpOnly: true,
+            secure: true,
         }
-        else {
-            return res.json({ status: 404, message: 'User not found' });
-        }
+
+        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({ user, accessToken, refreshToken });
+        // return res.status(200).json(user);
+
+
     } catch (error) {
         res.status(500);
-        throw new Error('User not found');
+        throw new Error('Error while getting user', error);
     }
 };
 
@@ -26,16 +89,47 @@ export const registerUser = async (req, res) => {
         // console.log('first', req.body);
         const { userName, mobileNo } = req.body;
         const user = await User.create({ userName: userName, mobileNo: mobileNo });
-        if (user)
-            return res.status(201).json(user);
-        else
+
+        if (!user)
             return res.status(404).json({ message: 'User not created' });
+
+        const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
+
+        // console.log(accessToken, refreshToken);
+
+
+        const options = {
+            httpOnly: true,
+            secure: true,
+        }
+        return res.status(201).cookie("refreshToken", refreshToken, options).cookie("accessToken", accessToken, options).json({ user, accessToken, refreshToken });
+
+
     } catch (error) {
         res.status(500);
         throw new Error(error.message);
     }
 }
 
+export const logoutUser = async (req, res) => {
+    try {
+        const { id } = req.body();
+
+        await User.findByIdAndUpdate(id, { $unset: { refreshToken: true, uniqueToken: true } }, { new: true });
+
+        const options = {
+            http: true,
+            secure: true,
+        }
+
+        return res.status(200).clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options).json({ message: "User logged out successfully" });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Error while logging out" });
+
+    }
+}
 
 
 // Remaining Transaction process i.e. Acid Properties setup
@@ -45,7 +139,7 @@ export const createRequest = async (req, res) => {
 
         const requestImages = [];
         if (req.files && Array.isArray(req.files)) {
-            const imageUrl = req.files.map(file => `http://173.212.193.109:5000/uploads/${file.filename}`);
+            const imageUrl = req.files.map(file => `${process.env.SERVER_URL}/uploads/${file.filename}`);
             requestImages.push(...imageUrl);
         }
 
@@ -112,7 +206,7 @@ export const createRequest = async (req, res) => {
 export const editProfile = async (req, res) => {
     try {
         const { _id, updateData } = req.body;
-        console.log('data', updateData);
+        // console.log('data', updateData);
         const user = await User.findByIdAndUpdate(_id, updateData, { new: true }).populate('lastSpade');
         if (user) {
             return res.status(200).json(user);
@@ -171,7 +265,7 @@ export const closeAcitveSpade = async (req, res) => {
         await Promise.all(chats.map(chat => {
             // return Chat.findByIdAndDelete(chat._id);
             if (chat.requestType === "new")
-                return Chat.findByIdAndUpdate(chat._id, { requestType: "notParitcipated" });
+                return Chat.findByIdAndUpdate(chat._id, { requestType: "notParticipated" });
             else
                 return Chat.findByIdAndUpdate(chat._id, { requestType: "closed" });
         }))
@@ -188,6 +282,7 @@ export const closeSpade = async (req, res) => {
         const { id } = req.body;
 
         // Find and update the UserRequest by id
+        console.log('close request id: ' + id);
         const updateRequest = await UserRequest.findByIdAndUpdate(
             id, // The ID of the request to update
             { requestActive: "closed" }, // The fields to update
@@ -201,11 +296,11 @@ export const closeSpade = async (req, res) => {
         // Find and update the associated Chat by id
         // const updateAcceptedChat = await Chat.findByIdAndUpdate(
         //     updateRequest.requestAcceptedChat, // The ID of the chat to update
-        //     { requestType: "closed" }, // The fields to update
+        //     { requestType: "win" }, // The fields to update
         //     { new: true } // Return the updated document
         // );
 
-        // if (!updateAcceptedChat) {
+        // if (!updateAcceptedChat) { 
         //     return res.status(404).json({ message: 'Accepted chat not found' });
         // }
 

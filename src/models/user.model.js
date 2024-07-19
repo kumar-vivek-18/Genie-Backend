@@ -81,11 +81,27 @@ const UserSchema = new Schema({
         type: Number,
         default: 0,
     },
+    refreshToken: {
+        type: String,
+        default: "",
+    }
 
 
 },
     {
         timestamps: true
-    })
+    });
+
+
+UserSchema.methods.generateAccessToken = function () {
+    // console.log(process.env.ACCESS_TOKEN_SECRET, process.env.ACCESS_TOKEN_EXPIRY);
+    return jwt.sign({ _id: this._id, userName: this.userName }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
+
+}
+
+UserSchema.methods.generateRefreshToken = function () {
+    // console.log(process.env.REFRESH_TOKEN_SECRET, process.env.REFRESH_TOKEN_SECRET);
+    return jwt.sign({ _id: this._id, userName: this.userName }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
+}
 
 export const User = mongoose.model('User', UserSchema);

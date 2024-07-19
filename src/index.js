@@ -207,7 +207,7 @@ io.on("connection", (socket) => {
     });
 
 
-
+    //////////////////////////////////////For Updating the new request of retailer app in realtime ////////////////////////////////////
     socket.on('new request', (requestId) => {
 
         console.log('new request', requestId);
@@ -226,20 +226,13 @@ io.on("connection", (socket) => {
 
     })
 
+    //////////////////////////////////////////For updating the new user on user for particular spade////////////////////////////////////////////
 
-    // socket.on('read message', async (chatId) => {
-    //     // await Chat.fi
-    //     await Message.updateMany({ chat: chatId, read: false }, { read: true });
-    //     await Chat.findOneAndUpdate(
-    //         { _id: chatId },
-    //         { $set: { "latestMessages.$.unreadCount": 0 } }
-    //     );
-    // })
+    socket.on('new retailer', (retailer) => {
+        socket.to(retailer.requestId._id).emit('fetch newRetailer', retailer);
+    })
 
-
-
-    // socket.on("typing", (room) => socket.to(room).emit("typing"));
-    // socket.on("stop typing", (room) => socket.to(room).emit("stop typing"));
+    //////////////////////////////////For Leaving the personal room from the socket/////////////////////////////////////////////////////
 
     socket.on("leave room", ({ userId, senderId }) => {
         // Leave the specified room

@@ -1,9 +1,11 @@
 import express from 'express';
 import { getRetailerNewChats, getRetailerOngoingChats, getChats, sendMessage, getSpadeMessages, acceptBidRequest, rejectBidRequest, setChatMessageMarkAsRead, getParticularChat, productAvailable, productNotAvailable, updateToHistory } from '../controllers/chatController.js';
+import { protectRoute } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
 
 
 const router = express.Router();
+router.use(protectRoute);
 
 router.route('/product-available').patch(productAvailable);
 router.route('/product-not-available').patch(productNotAvailable);
