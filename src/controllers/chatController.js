@@ -12,16 +12,32 @@ export const productAvailable = async (req, res) => {
         const data = req.body;
         // console.log('data', data);
         const createdChat = await Chat.findById(data.id);
+        if (!createdChat) return res.status(404).json({ message: "Invalid chat Id" });
+
         // console.log('createdChat', createdChat);
-        if (createdChat) {
-            createdChat.users.push({ type: 'UserRequest', refId: createdChat.requestId });
-            createdChat.requestType = "ongoing";
-            createdChat.save();
-            return res.status(200).json(createdChat);
+
+        createdChat.users.push({ type: 'UserRequest', refId: createdChat.requestId });
+        createdChat.requestType = "ongoing";
+        await createdChat.save();
+
+        const spade = await UserRequest.findById(createdChat.requestId);
+
+        if (!spade) return res.status(404).json({ message: "spade not found" });
+
+        spade.activeRetailers = spade.activeRetailers + 1;
+        await spade.save();
+
+        if (spade.activeRetailers === 2) {
+            const user = await User.findById(spade.customer);
+            if (!user)
+                return res.status(404).json({ message: 'User not found' });
+
+            user.unpaidSpades.push(spade);
+            await user.save();
         }
-        else {
-            return res.status(404).json({ message: 'Request not found' });
-        }
+
+        return res.status(200).json(createdChat);
+
     } catch (error) {
         throw new Error(error.message);
     }
@@ -38,21 +54,7 @@ export const productNotAvailable = async (req, res) => {
     }
 }
 
-// export const updateCloseChat = async (req, res) => {
-//     try {
-//         const { id } = req.body;
-//         const updateClosedChat = await Chat.findByIdAndUpdate({
-//             id,
-//             requestType: "completed"
-//         }, { new: true });
-//         if (!updateClosedChat) return res.status(404).json({ message: "Chat not found" });
 
-//         return res.status(200).json(updateCloseChat);
-//     }
-//     catch (error) {
-//         throw new Error(error.message);
-//     }
-// }
 
 export const updateToHistory = async (req, res) => {
     try {
@@ -72,26 +74,7 @@ export const updateToHistory = async (req, res) => {
     }
 }
 
-// export const acceptBid = async (req, res) => {
-//     try {
-//         const data = req.body;
-//         // console.log('data', data);
-//         const request = await UserRequest.findById(data.id);
-//         // console.log('createdChat', createdChat);
-//         if (request) {
 
-//             request.requestActive = data.type;
-//             request.save();
-//             return res.status(200).json(request);
-//         }
-//         else {
-//             return res.status(404).json({ message: 'Request not found' });
-//         }
-//     } catch (error) {
-//         throw new Error(error.message);
-//     }
-// }
-// getRetailerNewChats and getRetailerOngoingChats are different chats
 
 export const getRetailerNewChats = async (req, res) => {
     try {
@@ -163,28 +146,7 @@ export const getRetailerOngoingChats = async (req, res) => {
     }
 }
 
-// export const getChats = async (req, res) => {
-//     try {
-//         const data = req.query;
-//         const UserChats = await Chat.find({
-//             $and: [
-//                 {
-//                     requestType: "ongoing",
-//                     users: { $elemMatch: { refId: data.id } }
-//                 }
 
-//             ]
-
-
-//         }).populate({ path: 'users' })
-//         if (UserChats.length > 0)
-//             return res.status(200).json(UserChats);
-//         else
-//             return res.status(404).json({ message: "Retailer Chat not found" });
-//     } catch (error) {
-//         throw new Error(error.message);
-//     }
-// }
 export const getParticularChat = async (req, res) => {
     try {
         const data = req.query;

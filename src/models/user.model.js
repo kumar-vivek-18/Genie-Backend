@@ -55,20 +55,20 @@ const UserSchema = new Schema({
         type: String,
         default: "",
     },
-    lastSpade: {
+    unpaidSpades: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserRequest',
         default: null,
-    },
-    lastSpadePrice: {
-        type: Number,
-        default: 0,
-    },
-    lastPaymentStatus: {
-        type: String,
-        enum: ["paid", "unpaid"],
-        default: "paid",
-    },
+    }],
+    // lastSpadePrice: {
+    //     type: Number,
+    //     default: 0,
+    // },
+    // lastPaymentStatus: {
+    //     type: String,
+    //     enum: ["paid", "unpaid"],
+    //     default: "paid",
+    // },
     freeSpades: {
         type: Number,
         default: 5,

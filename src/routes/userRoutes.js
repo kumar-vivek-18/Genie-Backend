@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { getUser, registerUser, createRequest, editProfile, getSpades, getSpadesHistory, closeSpade, getUniqueToken, setSpadeMarkAsRead, closeAcitveSpade, logoutUser, refreshAccessToken } from '../controllers/userController.js';
+import { getUser, registerUser, createRequest, editProfile, getSpades, getSpadesHistory, closeSpade, getUniqueToken, setSpadeMarkAsRead, closeAcitveSpade, logoutUser, refreshAccessToken, getUserDetails, getParticularSpade, updatePaymentStatus } from '../controllers/userController.js';
 import { protectRoute } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
 
@@ -13,9 +13,11 @@ router.route('/edit-profile').patch(protectRoute, editProfile);
 router.route('/getspades').get(protectRoute, getSpades);
 router.route('/close-spade').patch(protectRoute, closeSpade);
 router.route('/history').get(protectRoute, getSpadesHistory);
-// router.route('/update').patch(updateRequests);
 router.route('/unique-token').get(protectRoute, getUniqueToken);
 router.route('/set-spade-mark-as-read').patch(protectRoute, setSpadeMarkAsRead);
 router.route('/close-active-spade').patch(protectRoute, closeAcitveSpade);
+router.route('/user-details').get(protectRoute, getUserDetails);
+router.route('/spade-details').get(protectRoute, getParticularSpade);
+router.route('/update-payment-status').patch(protectRoute, updatePaymentStatus);
 
 export default router;

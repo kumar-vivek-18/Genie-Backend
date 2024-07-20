@@ -42,6 +42,23 @@ const userRequestSchema = new Schema({
     unread: {
         type: Boolean,
         default: false,
+    },
+    appliedCouponCode: {
+        type: String,
+        default: "",
+    },
+    spadePrice: {
+        type: Number,
+        default: 0,
+    },
+    paymentStatus: {
+        type: String,
+        enum: ["paid", "unpaid"],
+        default: "unpaid",
+    },
+    activeRetailers: {
+        type: Number,
+        default: 0,
     }
 
 

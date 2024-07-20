@@ -59,8 +59,8 @@ export const getUser = async (req, res) => {
     try {
         const { mobileNo } = req.query;
         console.log(mobileNo);
-        const user = await User.findOne({ mobileNo }).populate('lastSpade');
-        // console.log('user', user._id);
+        const user = await User.findOne({ mobileNo });
+        console.log('user', user._id);
         if (!user)
             return res.status(404).json({ status: 404, message: 'User not found' });
 
@@ -80,6 +80,7 @@ export const getUser = async (req, res) => {
 
     } catch (error) {
         res.status(500);
+        console.error(error.message);
         throw new Error('Error while getting user', error);
     }
 };
@@ -135,7 +136,9 @@ export const logoutUser = async (req, res) => {
 // Remaining Transaction process i.e. Acid Properties setup
 export const createRequest = async (req, res) => {
     try {
-        const { customerID, request, requestCategory, expectedPrice, lastSpadePrice } = req.body;
+        const { customerID, request, requestCategory, expectedPrice, spadePrice, appliedCoupon, longitude, latitude } = req.body;
+
+        // console.log(customerID, request, requestCategory, expectedPrice, spadePrice, appliedCoupon, longitude, latitude);
 
         const requestImages = [];
         if (req.files && Array.isArray(req.files)) {
@@ -143,10 +146,21 @@ export const createRequest = async (req, res) => {
             requestImages.push(...imageUrl);
         }
 
-        console.log('reqImages', requestImages);
+        // console.log('reqImages', requestImages);
 
-        const retailers = await Retailer.find({ $and: [{ storeCategory: requestCategory }, { storeApproved: true }] });
+        const retailers = await Retailer.find({
+            $and: [{ storeCategory: requestCategory }, { storeApproved: true }, {
+                coords: {
+                    $geoWithin: {
+                        $centerSphere: [
+                            [longitude, latitude], 10 / 6371
+                        ]
+                    }
+                }
+            }]
+        });
 
+        console.log('retailers length while creating spade', retailers.length);
         const uniqueTokens = [];
 
         if (!retailers || !retailers.length) {
@@ -157,7 +171,7 @@ export const createRequest = async (req, res) => {
         //     uniqueTokens.push(retailer.uniqueToken);
         // });
 
-        const userRequest = await UserRequest.create({ customer: customerID, requestDescription: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice });
+        const userRequest = await UserRequest.create({ customer: customerID, requestDescription: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice, spadePrice: spadePrice, appliedCouponCode: appliedCoupon, paymentStatus: "unpaid" });
 
         if (!userRequest) {
             return res.status(404).json({ message: 'Request not created' });
@@ -179,18 +193,23 @@ export const createRequest = async (req, res) => {
             return retailerChat;
         }));
 
-        console.log(userRequest._id);
+        if (spadePrice == 0) {
+            await User.findByIdAndUpdate(
+                customerID,
+                { $inc: { freeSpades: -1 } }
+            );
+        }
 
-        await User.findByIdAndUpdate(
-            { _id: customerID },
-            {
-                lastSpade: userRequest._id,
-                lastSpadePrice: lastSpadePrice,
-                lastPaymentStatus: "unpaid"
-            }
-        );
+        const userDetails = await User.findById(customerID);
 
-        const userDetails = await User.findById(customerID).populate('lastSpade');
+        if (userDetails.freeSpades > 0) {
+            console.log(userDetails.freeSpades);
+            userDetails.freeSpades = userDetails.freeSpades - 1;
+            console.log(userDetails.freeSpades);
+            await userDetails.save();
+            console.log(userDetails.freeSpades);
+        }
+
         if (!retailerRequests.length) {
             return res.status(404).json({ message: 'Request not created due to no retailer found of particular category' });
         }
@@ -207,7 +226,7 @@ export const editProfile = async (req, res) => {
     try {
         const { _id, updateData } = req.body;
         // console.log('data', updateData);
-        const user = await User.findByIdAndUpdate(_id, updateData, { new: true }).populate('lastSpade');
+        const user = await User.findByIdAndUpdate(_id, updateData, { new: true });
         if (user) {
             return res.status(200).json(user);
         } else {
@@ -358,5 +377,80 @@ export const getUniqueToken = async (req, res) => {
         return res.status(200).json(token.uniqueToken);
     } catch (error) {
         throw new Error(error.message);
+    }
+}
+
+// export const addSpadeForPayment = async (req, res) => {
+//     try {
+//         const { userId, spadeId } = req.body;
+
+//         const user = await User.findById(userId);
+
+//         if (!user)
+//             return res.status(404).json({ message: 'User not found' });
+
+//         user.unpaidSpades.push(spadeId);
+//         user.lastPaymentStatus = "unpaid";
+//         user.save();
+
+//         return res.status(200).json(user);
+
+//     } catch (error) {
+//         return res.status(500).json({ message: error.message });
+//     }
+// }
+
+export const getUserDetails = async (req, res) => {
+    try {
+        const { userId } = req.query;
+        if (!userId) return res.status(404).json({ message: "Invalid user id" });
+
+        const user = await User.findById(userId);
+        console.log('user details id', user._id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        return res.status(200).json(user);
+    } catch (error) {
+        return res.status(500).json({ message: "Error while getting user details" });
+    }
+}
+
+export const getParticularSpade = async (req, res) => {
+    try {
+        const { id } = req.query;
+        if (!id) return res.status(404).json({ message: "Invalid spade id" });
+        console.log('spade id', id);
+        const spade = await UserRequest.findById(id);
+        console.log('spade data', spade._id);
+        if (!spade) return res.status(404).json({ message: "Spade not found" });
+
+        return res.status(200).json(spade);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+export const updatePaymentStatus = async (req, res) => {
+    try {
+        const { userId, spadeId } = req.body;
+
+        if (!userId || !spadeId) return res.status(404).json({ message: "Invalid data" });
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "Invalid user Id" });
+
+        user.unpaidSpades.shift();
+        await user.save();
+
+        const spadeDetails = await UserRequest.findById(spadeId);
+        if (!spadeDetails) return res.status(404).json({ message: "Invalid spade id" });
+
+        spadeDetails.paymentStatus = "paid";
+        await spadeDetails.save();
+
+        return res.status(200).json(user);
+
+    } catch (error) {
+
     }
 }
