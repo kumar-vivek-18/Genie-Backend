@@ -229,8 +229,9 @@ io.on("connection", (socket) => {
     //////////////////////////////////////////For updating the new user on user for particular spade////////////////////////////////////////////
 
     socket.on('new retailer', (retailer) => {
-        socket.to(retailer.requestId._id).emit('fetch newRetailer', retailer);
-    })
+        console.log('new retailer', retailer);
+        socket.to(retailer.requestId._id).emit('updated retailer', retailer);
+    });
 
     //////////////////////////////////For Leaving the personal room from the socket/////////////////////////////////////////////////////
 

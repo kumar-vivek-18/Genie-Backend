@@ -14,16 +14,18 @@ export const productAvailable = async (req, res) => {
         const createdChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages');
         if (!createdChat) return res.status(404).json({ message: "Invalid chat Id" });
 
-        // console.log('createdChat', createdChat);
+        const message = await Message.findOne({ chat: createdChat._id });
+        if (!message) return res.status(404).json({ message: "Message not found" });
 
+        createdChat.latestMessage = message._id;
         createdChat.users.push({ type: 'UserRequest', refId: createdChat.requestId });
         createdChat.requestType = "ongoing";
         await createdChat.save();
+        const updatedChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages');
+
 
         const spade = await UserRequest.findById(createdChat.requestId);
-
         if (!spade) return res.status(404).json({ message: "spade not found" });
-
         spade.activeRetailers = spade.activeRetailers + 1;
         await spade.save();
 
@@ -36,7 +38,7 @@ export const productAvailable = async (req, res) => {
             await user.save();
         }
 
-        return res.status(200).json(createdChat);
+        return res.status(200).json(updatedChat);
 
     } catch (error) {
         throw new Error(error.message);
