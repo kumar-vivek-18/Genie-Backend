@@ -25,7 +25,7 @@ const generateAccessAndRefreshToken = async (retailerId) => {
 
 export const refreshAccessToken = async (req, res) => {
     try {
-        const incomingRefreshToken = req.body.refreshToken || req.cookies.refreshToken;
+        const incomingRefreshToken = req.query.refreshToken || req.cookies.refreshToken;
         if (!incomingRefreshToken)
             return res.status(401).json({ message: 'Unauthorized request' });
 
@@ -33,7 +33,7 @@ export const refreshAccessToken = async (req, res) => {
 
         const retailer = await Retailer.findById(decodedToken._id);
 
-        if (!retailer) return res.status(401).json({ message: "Ivalid incoming refresh token" });
+        if (!retailer) return res.status(401).json({ message: "Invalid incoming refresh token" });
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshToken(retailer._id);
 
@@ -86,12 +86,14 @@ export const getRetailer = async (req, res) => {
         if (!retailer)
             return res.json({ status: 404, message: "User Not Found!" });
 
-        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(retailer._id);
-        const options = {
-            httpOnly: true,
-            secure: true
+        if (retailer) {
+            const { accessToken, refreshToken } = await generateAccessAndRefreshToken(retailer._id);
+            const options = {
+                httpOnly: true,
+                secure: true
+            }
+            return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({ retailer, accessToken, refreshToken });
         }
-        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({ retailer, accessToken, refreshToken });
 
     } catch (error) {
         res.status(500);
@@ -143,7 +145,8 @@ export const getRetailerHistory = async (req, res) => {
                     $or: [
                         { requestType: "rejected" },
                         { requestType: "closedHistory" },
-                        { requestType: "completed" }
+                        { requestType: "completed" },
+                        { requestType: "notParticipated" },
                     ],
 
                 },

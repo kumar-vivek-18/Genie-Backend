@@ -169,7 +169,7 @@ export const getChats = async (req, res) => {
                         { requestType: "win" },
                         { requestType: "closed" },
                         { requestType: "closedHistory" },
-                        { requestType: "completed" }
+                        { requestType: "completed" },
                     ],
 
 

@@ -7,13 +7,13 @@ export const protectRoute = async (req, res, next) => {
     try {
         const token = await req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
-        console.log(token);
+        // console.log(token);
         if (!token) return res.status(401).json({ message: "Unauthorized request" });
 
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
         // if(decodedToken.includes('userName')) 
-        console.log('decoded Token: ' + decodedToken?.userName);
+        // console.log('decoded Token: ' + decodedToken?.userName);
         if ((decodedToken?.userName)) {
             const user = User.findById(decodedToken._id).select("_id userName")
 

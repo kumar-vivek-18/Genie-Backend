@@ -26,14 +26,14 @@ const generateAccessRefreshToken = async (userId) => {
 
 export const refreshAccessToken = async (req, res) => {
     try {
-        const incomingRefreshToken = req.body.refreshToken || req.cookies.refreshToken;
+        const incomingRefreshToken = req.query.refreshToken || req.cookies.refreshToken;
 
-
+        console.log('incoming refresh token', incomingRefreshToken);
         if (!incomingRefreshToken)
             return res.status(401).json({ message: "Unauthorized request" });
 
         const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
-
+        console.log('decoded-token', decodedToken);
         const user = await User.findById(decodedToken?._id);
 
         if (!user)
@@ -60,21 +60,24 @@ export const getUser = async (req, res) => {
         const { mobileNo } = req.query;
         console.log(mobileNo);
         const user = await User.findOne({ mobileNo });
-        console.log('user', user._id);
+        // console.log('user', user);
         if (!user)
-            return res.status(404).json({ status: 404, message: 'User not found' });
+            return res.json({ status: 404, message: 'User not found' });
 
-        const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
+        console.log('hii');
+        if (user) {
+            const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
 
-        // console.log({ accessToken, refreshToken });
-        // const loggedInUser = await User.findById(user._id).select('-refreshToken');
+            // console.log({ accessToken, refreshToken });
+            // const loggedInUser = await User.findById(user._id).select('-refreshToken');
 
-        const options = {
-            httpOnly: true,
-            secure: true,
+            const options = {
+                httpOnly: true,
+                secure: true,
+            }
+
+            return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({ user, accessToken, refreshToken });
         }
-
-        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({ user, accessToken, refreshToken });
         // return res.status(200).json(user);
 
 
