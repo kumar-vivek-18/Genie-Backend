@@ -56,8 +56,6 @@ export const productNotAvailable = async (req, res) => {
     }
 }
 
-
-
 export const updateToHistory = async (req, res) => {
     try {
         const { id, type } = req.body;
@@ -93,14 +91,14 @@ export const getRetailerNewChats = async (req, res) => {
             ]
         }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted').lean().sort({ updatedAt: -1 });
 
-        await Promise.all(RetailerChats.map(async chat => {
-            // Populate each user in the users array
-            await Promise.all(chat.users.map(async user => {
-                const model = user.type === 'UserRequest' ? UserRequest : Retailer;
-                // console.log('model', model);
-                user.populatedUser = await model.findById(user.refId);
-            }));
-        }));
+        // await Promise.all(RetailerChats.map(async chat => {
+        //     // Populate each user in the users array
+        //     await Promise.all(chat.users.map(async user => {
+        //         const model = user.type === 'UserRequest' ? UserRequest : Retailer;
+        //         // console.log('model', model);
+        //         user.populatedUser = await model.findById(user.refId);
+        //     }));
+        // }));
 
         if (RetailerChats.length > 0)
             return res.status(200).json(RetailerChats);
@@ -130,14 +128,14 @@ export const getRetailerOngoingChats = async (req, res) => {
             ]
         }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', ' sender message bidType bidAccepted').lean().sort({ updatedAt: -1 });
 
-        await Promise.all(RetailerChats.map(async chat => {
-            // Populate each user in the users array
-            await Promise.all(chat.users.map(async user => {
-                const model = user.type === 'UserRequest' ? UserRequest : Retailer;
-                // console.log('model', model);
-                user.populatedUser = await model.findById(user.refId);
-            }));
-        }));
+        // await Promise.all(RetailerChats.map(async chat => {
+        //     // Populate each user in the users array
+        //     await Promise.all(chat.users.map(async user => {
+        //         const model = user.type === 'UserRequest' ? UserRequest : Retailer;
+        //         // console.log('model', model);
+        //         user.populatedUser = await model.findById(user.refId);
+        //     }));
+        // }));
 
         if (RetailerChats.length > 0)
             return res.status(200).json(RetailerChats);
@@ -184,14 +182,14 @@ export const getChats = async (req, res) => {
         }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean().sort({ updatedAt: -1 });
 
         // Iterate through each chat and populate users
-        await Promise.all(UserChats.map(async chat => {
-            // Populate each user in the users array
-            await Promise.all(chat.users.map(async user => {
-                const model = user.type === 'UserRequest' ? UserRequest : Retailer;
-                // console.log('model', model);
-                user.populatedUser = await model.findById(user.refId);
-            }));
-        }));
+        // await Promise.all(UserChats.map(async chat => {
+        //     // Populate each user in the users array
+        //     await Promise.all(chat.users.map(async user => {
+        //         const model = user.type === 'UserRequest' ? UserRequest : Retailer;
+        //         // console.log('model', model);
+        //         user.populatedUser = await model.findById(user.refId);
+        //     }));
+        // }));
 
         // console.log('chats data', UserChats);
 
@@ -216,7 +214,7 @@ export const sendMessage = async (req, res) => {
             bidImages.push(...imageUrl);
         }
 
-        // console.log('bidImages: ', bidImages)
+
 
         const createdMessage = await Message.create({
             sender: JSON.parse(data.sender),
@@ -231,6 +229,8 @@ export const sendMessage = async (req, res) => {
             latitude: data?.latitude ? data?.latitude : 0,
         });
 
+
+
         if (!createdMessage) {
             return res.status(404).json({ message: 'Message not created' });
         }
@@ -239,9 +239,10 @@ export const sendMessage = async (req, res) => {
         await createdMessage.populate('chat', '_id users');
         await createdMessage.populate('userRequest', '_id customer');
 
+        await UserRequest.findByIdAndUpdate(createdMessage.userRequest._id, { unread: false })
         // Update the latest message in the chat
-        const updateLatestMessage = await Chat.findOneAndUpdate(
-            { _id: createdMessage.chat },
+        const updateLatestMessage = await Chat.findByIdAndUpdate(
+            createdMessage.chat._id,
             { latestMessage: createdMessage._id },
             { new: true }
         );
@@ -260,40 +261,42 @@ export const sendMessage = async (req, res) => {
 
 
 
-export const updateMessage = async (req, res) => {
-    try {
-        const data = req.body;
+// export const updateMessage = async (req, res) => {
+//     try {
+//         const data = req.body;
 
-        if (!data.id || !data.type) {
-            return res.status(400).json({ message: 'Missing id or type parameter' });
-        }
+//         if (!data.id || !data.type) {
+//             return res.status(400).json({ message: 'Missing id or type parameter' });
+//         }
 
-        // console.log('update-data', data.id, data.type);
+//         // console.log('update-data', data.id, data.type);
 
-        const message = await Message.findById(data.id).populate('chat', '_id users').populate('userRequest', '_id customer');
+//         const message = await Message.findById(data.id).populate('chat', '_id users').populate('userRequest', '_id customer');
 
-        if (!message) {
-            return res.status(404).json({ message: 'Message not found' });
-        }
+//         if (!message) {
+//             return res.status(404).json({ message: 'Message not found' });
+//         }
 
-        // console.log('message', message);
+//         // console.log('message', message);
 
 
-        if (!["new", "accepted", "rejected", "image"].includes(data.type)) {
-            return res.status(400).json({ message: 'Invalid type parameter' });
-        }
+//         if (!["new", "accepted", "rejected", "image"].includes(data.type)) {
+//             return res.status(400).json({ message: 'Invalid type parameter' });
+//         }
 
-        message.bidAccepted = data.type;
+//         message.bidAccepted = data.type;
 
-        await message.save();
-        // console.log('update-message', message);
+//         await message.save();
 
-        return res.status(200).json(message);
-    } catch (error) {
-        // console.error('Error updating message:', error);
-        return res.status(500).json({ message: "Internal Server Error" });
-    }
-}
+//         await UserRequest.findByIdAndUpdate(message.userRequest._id, { unread: false });
+//         // console.log('update-message', message);
+
+//         return res.status(200).json(message);
+//     } catch (error) {
+//         // console.error('Error updating message:', error);
+//         return res.status(500).json({ message: "Internal Server Error" });
+//     }
+// }
 
 export const setChatMessageMarkAsRead = async (req, res) => {
 
@@ -412,27 +415,23 @@ export const rejectBidRequest = async (req, res) => {
             return res.status(400).json({ message: 'Missing id or type parameter' });
         }
 
-
         const message = await Message.findById(data.messageId).populate('chat', '_id users').populate('userRequest', '_id customer');
+        message.bidAccepted = "rejected";
+        await message.save();
+
+        await UserRequest.findByIdAndUpdate(message.userRequest._id, { unread: false });
+        await Chat.findByIdAndUpdate(
+            message.chat._id,
+            { latestMessage: message._id },
+            { new: true }
+        );
 
         if (!message) {
             return res.status(404).json({ message: 'Message not found' });
         }
 
-        // console.log('message', message);
 
 
-
-        message.bidAccepted = "rejected";
-
-        await message.save();
-
-        const updateChat = await Chat.findById(message.chat._id);
-        if (updateChat) {
-            updateChat.bidFlow.push({ amount: message.bidPrice, status: "rejected" });
-            await updateChat.save();
-        }
-        // console.log('update-message', message);
 
         return res.status(200).json(message);
     } catch (error) {
@@ -464,3 +463,25 @@ export const getSpadeMessages = async (req, res) => {
 
 
 
+export const getNewStatusRetailerChats = async (req, res) => {
+    try {
+        const { id } = req.query;
+        const RetailerChats = await Chat.find({
+            $and: [
+                {
+                    requestType: "new"
+                },
+                {
+                    requestId: id
+                }
+
+            ]
+        }).populate('retailerId');
+
+        if (!RetailerChats) return res.status(404).json({ message: 'Invalid retailer identifier' });
+
+        return res.status(200).json(RetailerChats);
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}

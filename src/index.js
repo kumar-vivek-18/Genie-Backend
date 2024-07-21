@@ -113,8 +113,15 @@ io.on("connection", (socket) => {
         // Updating HomeScreen latest spade ordering
 
         // console.log('newMessageRecieved', newMessageReceived);
+
+        const updateRequest = async () => {
+
+            await UserRequest.findByIdAndUpdate(newMessageReceived.userRequest._id, { unread: true });
+        }
+
         if (io.sockets.adapter.rooms.has(newMessageReceived.chat.users[1]._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest.customer) === true) {
             console.log('Message Send at HomeScreen');
+            updateRequest();
             socket.to(newMessageReceived.userRequest.customer).emit('update userspade', newMessageReceived.userRequest._id);
         }
 
@@ -123,10 +130,11 @@ io.on("connection", (socket) => {
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const updateRequest = async () => {
 
-            await UserRequest.findByIdAndUpdate(newMessageReceived.userRequest._id, { unread: true });
-        }
+
+        // const updateTmpRequest = async () => {
+        //     await UserRequest.findByIdAndUpdate(newMessageReceived.userRequest._id, { tmpUnread: false });
+        // }
 
 
 
@@ -152,13 +160,13 @@ io.on("connection", (socket) => {
 
         chat.users.forEach(async (user) => {
 
-            const isOnline = await io.in(user._id).fetchSockets();
+            // const isOnline = await io.in(user._id).fetchSockets();
 
-            const retailer = await Chat.findOneAndUpdate(
-                { _id: newMessageReceived.chat },
-                { latestMessage: newMessageReceived._id },
-                { new: true }
-            );
+            // const retailer = await Chat.findByIdAndUpdate(
+            //     newMessageReceived.chat,
+            //     { latestMessage: newMessageReceived._id },
+            //     { new: true }
+            // );
 
             if (io.sockets.adapter.rooms.has(user._id)) {
                 socket.to(user._id).emit("message received", newMessageReceived);
@@ -169,19 +177,13 @@ io.on("connection", (socket) => {
             else {
                 if (user.type === newMessageReceived.sender.type) return;
 
-                const receiver = await Chat.findOneAndUpdate(
-                    { _id: newMessageReceived.chat },
-                    { latestMessage: newMessageReceived._id, $inc: { unreadCount: 1 } },
+                const receiver = await Chat.findByIdAndUpdate(
+                    newMessageReceived.chat._id,
+                    { $inc: { unreadCount: 1 } },
                     { new: true }
                 ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude homeDelivery totalRating totalReview storeImages').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean();
-                // await Promise.all(receiver.map(async chat => {
-                // Populate each user in the users array
-                // await Promise.all(receiver.users.map(async user => {
-                //     const model = user.type === 'UserRequest' ? UserRequest : Retailer;
-                //     // console.log('model', model);
-                //     user.populatedUser = await model.findById(user.refId);
-                // }));
-                // }));
+
+
 
 
                 // console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
@@ -192,8 +194,8 @@ io.on("connection", (socket) => {
                         console.log('receiver', receiver.requestId.toString());
                         socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
                     }
-                    if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString()) === false)
-                        updateRequest();
+                    // if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString()) === false)
+                    //     updateRequest();
                 }
                 else {
                     if (io.sockets.adapter.rooms.has(receiver.retailerId._id.toString())) {
@@ -243,11 +245,11 @@ io.on("connection", (socket) => {
         if (io.sockets.adapter.rooms.has(senderId)) {
             socket.to(senderId).emit("offline");
         }
-        const activeRooms = io.sockets.adapter.rooms;
-        console.log('Rooms while leaving')
-        activeRooms.forEach((value, roomName) => {
-            console.log(roomName);
-        });
+        // const activeRooms = io.sockets.adapter.rooms;
+        // console.log('Rooms while leaving')
+        // activeRooms.forEach((value, roomName) => {
+        //     console.log(roomName);
+        // });
     });
 
     socket.on("disconnect", () => {
