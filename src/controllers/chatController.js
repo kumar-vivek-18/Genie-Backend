@@ -59,11 +59,13 @@ export const productNotAvailable = async (req, res) => {
 export const updateToHistory = async (req, res) => {
     try {
         const { id, type } = req.body;
+        console.log('type', type);
         const updateAcceptedChat = await Chat.findByIdAndUpdate(
             id, // The ID of the chat to update
             { requestType: type }, // The fields to update
             { new: true } // Return the updated document
         );
+        console.log('updateToHistory', updateAcceptedChat);
 
         if (!updateAcceptedChat) {
             return res.status(404).json({ message: 'Accepted chat not found' });

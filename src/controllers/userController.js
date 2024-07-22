@@ -28,12 +28,12 @@ export const refreshAccessToken = async (req, res) => {
     try {
         const incomingRefreshToken = req.query.refreshToken || req.cookies.refreshToken;
 
-        console.log('incoming refresh token', incomingRefreshToken);
+        // console.log('incoming refresh token', incomingRefreshToken);
         if (!incomingRefreshToken)
             return res.status(401).json({ message: "Unauthorized request" });
 
         const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
-        console.log('decoded-token', decodedToken);
+        // console.log('decoded-token', decodedToken);
         const user = await User.findById(decodedToken?._id);
 
         if (!user)
@@ -276,7 +276,7 @@ export const closeAcitveSpade = async (req, res) => {
     try {
         const { id } = req.body;
 
-        const updateRequest = await UserRequest.findByIdAndUpdate(id, { requestActive: "closed" }, { new: true });
+        const updateRequest = await UserRequest.findByIdAndUpdate(id, { requestActive: "closed", bidCompleted: true }, { new: true });
 
         if (!updateRequest) {
             return res.status(404).json({ message: 'Request not found' });

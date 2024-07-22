@@ -32,7 +32,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://173.212.1937.109:5000',
+    origin: process.env.CORS_ORIGIN || 'http://173.212.193.109:5000' || 'http://192.168.212.192:5000',
     credentials: true
 }));
 
@@ -119,7 +119,7 @@ io.on("connection", (socket) => {
             await UserRequest.findByIdAndUpdate(newMessageReceived.userRequest._id, { unread: true });
         }
 
-        if (io.sockets.adapter.rooms.has(newMessageReceived.chat.users[1]._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest.customer) === true) {
+        if (newMessageReceived.chat.users.length > 1 && io.sockets.adapter.rooms.has(newMessageReceived.chat.users[1]._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest.customer) === true) {
             console.log('Message Send at HomeScreen');
             updateRequest();
             socket.to(newMessageReceived.userRequest.customer).emit('update userspade', newMessageReceived.userRequest._id);
