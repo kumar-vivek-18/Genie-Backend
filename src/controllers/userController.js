@@ -191,6 +191,8 @@ export const createRequest = async (req, res) => {
                 if (!firstBid) {
                     throw new Error('Failed to create first bid');
                 }
+                retailerChat.latestMessage = firstBid._id;
+
             }
 
             return retailerChat;
@@ -206,11 +208,11 @@ export const createRequest = async (req, res) => {
         const userDetails = await User.findById(customerID);
 
         if (userDetails.freeSpades > 0) {
-            console.log(userDetails.freeSpades);
+            // console.log(userDetails.freeSpades);
             userDetails.freeSpades = userDetails.freeSpades - 1;
-            console.log(userDetails.freeSpades);
+            // console.log(userDetails.freeSpades);
             await userDetails.save();
-            console.log(userDetails.freeSpades);
+            // console.log(userDetails.freeSpades);
         }
 
         if (!retailerRequests.length) {

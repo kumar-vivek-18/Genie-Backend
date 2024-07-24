@@ -101,7 +101,8 @@ io.on("connection", (socket) => {
 
     socket.on("new message", (newMessageReceived) => {
         const chat = newMessageReceived.chat;
-        console.log('new message received', newMessageReceived._id);
+        if (!newMessageReceived) return null;
+        console.log('new message received', newMessageReceived?._id);
         if (!chat.users) return console.log("chat.users not defined");
         // const activeRooms = io.sockets.adapter.rooms;
 
@@ -231,7 +232,7 @@ io.on("connection", (socket) => {
     //////////////////////////////////////////For updating the new user on user for particular spade////////////////////////////////////////////
 
     socket.on('new retailer', (retailer) => {
-        console.log('new retailer', retailer);
+        // console.log('new retailer', retailer);
         socket.to(retailer.requestId._id).emit('updated retailer', retailer);
     });
 
