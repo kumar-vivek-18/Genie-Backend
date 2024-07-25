@@ -76,7 +76,10 @@ io.on("connection", (socket) => {
         socket.join(userId);
         socket.userId = userId;
         console.log(`User with ID ${userId} has joined their personal room.`);
-        socket.emit("connected");
+        if (senderId && io.sockets.adapter.rooms.has(senderId))
+            socket.emit("connected", { value: true });
+        else
+            socket.emit("connected", { value: false });
 
         console.log(userId, senderId);
         if (userId !== senderId && senderId && io.sockets.adapter.rooms.has(senderId)) {
