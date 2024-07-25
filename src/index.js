@@ -103,10 +103,13 @@ io.on("connection", (socket) => {
     });
 
     socket.on("new message", (newMessageReceived) => {
+
+        if (!newMessageReceived) return;
+
         const chat = newMessageReceived.chat;
         if (!newMessageReceived) return null;
         console.log('new message received', newMessageReceived?._id);
-        if (!chat.users) return console.log("chat.users not defined");
+        if (!chat?.users) return console.log("chat.users not defined");
         // const activeRooms = io.sockets.adapter.rooms;
 
         // console.log("List of active rooms:");
