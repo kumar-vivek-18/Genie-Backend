@@ -284,17 +284,22 @@ export const closeAcitveSpade = async (req, res) => {
             return res.status(404).json({ message: 'Request not found' });
         }
 
-        const chats = await Chat.find({ requestId: id });
+        const chats = await Chat.find({ requestId: id }).populate('retailerId');
+        const uniqueTokens = [];
 
         await Promise.all(chats.map(chat => {
             // return Chat.findByIdAndDelete(chat._id);
+
             if (chat.requestType === "new")
                 return Chat.findByIdAndUpdate(chat._id, { requestType: "notParticipated" });
-            else
+            else {
+                if (chat?.retailerId?.uniqueToken.length > 0)
+                    uniqueTokens.push(chat?.retailerId?.uniqueToken);
                 return Chat.findByIdAndUpdate(chat._id, { requestType: "closed" });
+            }
         }))
 
-        return res.status(200).json(updateRequest);
+        return res.status(200).json({ updateRequest, uniqueTokens });
 
     } catch (error) {
         throw new Error(error.message);
