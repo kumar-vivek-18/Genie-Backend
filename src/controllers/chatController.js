@@ -59,13 +59,13 @@ export const productNotAvailable = async (req, res) => {
 export const updateToHistory = async (req, res) => {
     try {
         const { id, type } = req.body;
-        console.log('type', type);
+        // console.log('type', type);
         const updateAcceptedChat = await Chat.findByIdAndUpdate(
             id, // The ID of the chat to update
             { requestType: type }, // The fields to update
             { new: true } // Return the updated document
         );
-        console.log('updateToHistory', updateAcceptedChat);
+        // console.log('updateToHistory', updateAcceptedChat);
 
         if (!updateAcceptedChat) {
             return res.status(404).json({ message: 'Accepted chat not found' });
@@ -218,16 +218,16 @@ export const sendMessage = async (req, res) => {
 
         const chatDetails = await Chat.findById(data.chat).populate('latestMessage');
         if (!chatDetails) return res.status(404).json({ message: "Ivalid chat id" });
-        console.log(chatDetails.requestType, chatDetails.latestMessage);
+        // console.log(chatDetails.requestType, chatDetails.latestMessage);
         if (chatDetails?.requestType === "new" || chatDetails?.requestType === "completed" || chatDetails?.requestType === "closed" || chatDetails?.requestType === "closedHistory" || chatDetails?.requestType === "notParticipated" || chatDetails?.requestType === "rejected" || chatDetails?.requestType === "cancelled") {
-            console.log('case1');
+            // console.log('case1');
             return res.status(200).json({ message: "Unable to send message" });
         }
         if (chatDetails?.latestMessage?.bidType === "true" && chatDetails?.latestMessage?.bidAccepted === "new") {
-            console.log('case2');
+            // console.log('case2');
             return res.status(200).json({ message: "Unable to send offer" });
         }
-        console.log('hii');
+        // console.log('hii');
         const createdMessage = await Message.create({
             sender: JSON.parse(data.sender),
             userRequest: data?.userRequest,
@@ -265,7 +265,7 @@ export const sendMessage = async (req, res) => {
 
         return res.status(201).json(createdMessage);
     } catch (error) {
-        console.error('Error creating message:', error); // Improved error logging
+        // console.error('Error creating message:', error); // Improved error logging
         return res.status(500).json({ message: 'Internal server error', error: error.message }); // Improved error response
     }
 };

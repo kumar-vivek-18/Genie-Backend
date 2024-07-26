@@ -58,13 +58,13 @@ export const refreshAccessToken = async (req, res) => {
 export const getUser = async (req, res) => {
     try {
         const { mobileNo } = req.query;
-        console.log(mobileNo);
+        // console.log(mobileNo);
         const user = await User.findOne({ mobileNo });
         // console.log('user', user);
         if (!user)
             return res.json({ status: 404, message: 'User not found' });
 
-        console.log('hii');
+        // console.log('hii');
         if (user) {
             const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
 
@@ -83,7 +83,7 @@ export const getUser = async (req, res) => {
 
     } catch (error) {
         res.status(500);
-        console.error(error.message);
+        // console.error(error.message);
         throw new Error('Error while getting user', error);
     }
 };
@@ -163,7 +163,7 @@ export const createRequest = async (req, res) => {
             }]
         });
 
-        console.log('retailers length while creating spade', retailers.length);
+        // console.log('retailers length while creating spade', retailers.length);
         const uniqueTokens = [];
 
         if (!retailers || !retailers.length) {
@@ -311,7 +311,7 @@ export const closeSpade = async (req, res) => {
         const { id } = req.body;
 
         // Find and update the UserRequest by id
-        console.log('close request id: ' + id);
+        // console.log('close request id: ' + id);
         const updateRequest = await UserRequest.findByIdAndUpdate(
             id, // The ID of the request to update
             { requestActive: "closed" }, // The fields to update
@@ -416,7 +416,7 @@ export const getUserDetails = async (req, res) => {
         if (!userId) return res.status(404).json({ message: "Invalid user id" });
 
         const user = await User.findById(userId);
-        console.log('user details id', user._id);
+        // console.log('user details id', user._id);
         if (!user) return res.status(404).json({ message: "User not found" });
 
         return res.status(200).json(user);
@@ -429,9 +429,9 @@ export const getParticularSpade = async (req, res) => {
     try {
         const { id } = req.query;
         if (!id) return res.status(404).json({ message: "Invalid spade id" });
-        console.log('spade id', id);
+        // console.log('spade id', id);
         const spade = await UserRequest.findById(id);
-        console.log('spade data', spade._id);
+        // console.log('spade data', spade._id);
         if (!spade) return res.status(404).json({ message: "Spade not found" });
 
         return res.status(200).json(spade);

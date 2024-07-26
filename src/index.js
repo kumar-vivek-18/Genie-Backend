@@ -109,7 +109,7 @@ io.on("connection", (socket) => {
         const chat = newMessageReceived.chat;
         if (!newMessageReceived) return null;
         console.log('new message received', newMessageReceived?._id);
-        if (!chat?.users) return console.log("chat.users not defined");
+        if (!chat?.users) return;
         // const activeRooms = io.sockets.adapter.rooms;
 
         // console.log("List of active rooms:");
@@ -198,7 +198,7 @@ io.on("connection", (socket) => {
                 if (newMessageReceived.sender.type === 'Retailer') {
                     if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString())) {
                         console.log('Send to requestDetail screen with Id ', io.sockets.adapter.rooms.has(receiver.requestId._id.toString()));
-                        console.log('receiver', receiver.requestId.toString());
+                        // console.log('receiver', receiver.requestId.toString());
                         socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
                     }
                     // if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString()) === false)
@@ -206,7 +206,7 @@ io.on("connection", (socket) => {
                 }
                 else {
                     if (io.sockets.adapter.rooms.has(receiver.retailerId._id.toString())) {
-                        console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
+                        // console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
                         socket.to(receiver.retailerId._id.toString()).emit('updated retailer', receiver);
                     }
                 }
@@ -219,7 +219,7 @@ io.on("connection", (socket) => {
     //////////////////////////////////////For Updating the new request of retailer app in realtime ////////////////////////////////////
     socket.on('new request', (requestId) => {
 
-        console.log('new request', requestId);
+        // console.log('new request', requestId);
         const fetchChats = async () => {
             const chats = await Chat.find({ requestId: requestId }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude').populate('latestMessage', 'sender message bidType bidAccepted').lean();
 

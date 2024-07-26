@@ -22,7 +22,7 @@ export const createCouponCode = async (req, res) => {
         return res.status(201).json(savedCoupon);
     } catch (error) {
         // Handle any errors
-        console.error('Error creating coupon code:', error);
+        // console.error('Error creating coupon code:', error);
         throw error; // or handle it according to your application's needs
     }
 };
@@ -48,7 +48,7 @@ export const verifyCouponCode = async (req, res) => {
         // Coupon code is valid
         return res.status(200).json({ message: "Coupon code is valid" });
     } catch (error) {
-        console.error('Error verifying coupon code:', error);
+        // console.error('Error verifying coupon code:', error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
