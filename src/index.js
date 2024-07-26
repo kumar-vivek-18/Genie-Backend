@@ -206,7 +206,7 @@ io.on("connection", (socket) => {
                 }
                 else {
                     if (io.sockets.adapter.rooms.has(receiver.retailerId._id.toString())) {
-                        // console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
+                        console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
                         socket.to(receiver.retailerId._id.toString()).emit('updated retailer', receiver);
                     }
                 }

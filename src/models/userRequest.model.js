@@ -59,6 +59,10 @@ const userRequestSchema = new Schema({
     activeRetailers: {
         type: Number,
         default: 0,
+    },
+    rated: {
+        type: Boolean,
+        default: false,
     }
 
 

@@ -4,34 +4,9 @@ import { Retailer } from '../models/retailer.model.js';
 import { User } from '../models/user.model.js';
 import { Chat } from '../models/chat.model.js';
 import { SpadeRating } from '../models/spadeRating.model.js';
+import { UserRequest } from '../models/userRequest.model.js';
 
-// export const createRatingAndFeedback = async (req, res) => {
-//     try {
-//         const data = req.body;
 
-//         // console.log('data', data);
-//         if (!data.user || !data.retailer || !data.rating || !data.feedback) {
-//             return res.status(400).json({ message: 'All fields are required' });
-//         }
-//         const createdRating = await RatingAndFeedback.create({
-//             user: data.user,
-//             retailer: data.retailer,
-//             rating: data.rating,
-//             feedback: data.feedback
-//         });
-
-//         const updateRetailer = await Retailer.findByIdAndUpdate({ _id: data.retailer }, { $inc: { totalRating: data.rating, totalReview: 1 } });
-
-//         if (createdRating) {
-//             return res.status(201).json(createdRating);
-//         }
-//         else {
-//             return res.status(404).json({ message: 'Rating not created' });
-//         }
-//     } catch (error) {
-//         throw new Error(error.message);
-//     }
-// }
 
 
 export const createRatingAndFeedback = async (req, res) => {
@@ -141,6 +116,7 @@ export const createRatings = async (req, res) => {
         if (!updateRetailerTotalRatings)
             return res.status(404).json({ message: "Error updating stats" });
 
+        await UserRequest.findByIdAndUpdate(spadeId, { rated: true });
 
         return res.status(201).json({ message: 'Ratings created successfully' });
     } catch (err) {
