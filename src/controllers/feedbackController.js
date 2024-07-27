@@ -161,7 +161,7 @@ export const updatedFeedback = async (req, res) => {
         if (!updateRetailer) return res.status(404).json({ message: "Retailer not found" });
         updateRetailer.totalRating = updateRetailer.totalRating - oldRating + rating;
         await updateRetailer.save();
-        console.log(updated);
+        // console.log(updated);
 
         return res.status(200).json({ message: "Retailer rating successfully updated" });
 
