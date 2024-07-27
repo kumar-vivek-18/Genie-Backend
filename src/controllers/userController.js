@@ -291,7 +291,7 @@ export const closeAcitveSpade = async (req, res) => {
             // return Chat.findByIdAndDelete(chat._id);
 
             if (chat.requestType === "new")
-                return Chat.findByIdAndUpdate(chat._id, { requestType: "notParticipated" });
+                return Chat.findByIdAndUpdate(chat._id, { requestType: "new" });
             else {
                 if (chat?.retailerId?.uniqueToken.length > 0)
                     uniqueTokens.push(chat?.retailerId?.uniqueToken);
