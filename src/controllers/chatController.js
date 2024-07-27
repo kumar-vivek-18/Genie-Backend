@@ -219,7 +219,7 @@ export const sendMessage = async (req, res) => {
         const chatDetails = await Chat.findById(data.chat).populate('latestMessage');
         if (!chatDetails) return res.status(404).json({ message: "Ivalid chat id" });
         // console.log(chatDetails.requestType, chatDetails.latestMessage);
-        if (chatDetails?.requestType === "new" || chatDetails?.requestType === "completed" || chatDetails?.requestType === "closed" || chatDetails?.requestType === "closedHistory" || chatDetails?.requestType === "notParticipated" || chatDetails?.requestType === "rejected" || chatDetails?.requestType === "cancelled") {
+        if (chatDetails?.requestType === "completed" || chatDetails?.requestType === "closed" || chatDetails?.requestType === "closedHistory" || chatDetails?.requestType === "notParticipated" || chatDetails?.requestType === "rejected" || chatDetails?.requestType === "cancelled") {
             // console.log('case1');
             return res.status(200).json({ message: "Unable to send message" });
         }
