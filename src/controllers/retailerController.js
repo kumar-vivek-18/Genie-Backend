@@ -182,6 +182,7 @@ export const getRetailerHistory = async (req, res) => {
 export const getUniqueToken = async (req, res) => {
     try {
         const data = req.query;
+        if (!data.id) return res.status(404).json({ message: 'Invalid id' });
         const uniqueToken = await Retailer.findById(data.id);
         return res.status(200).json(uniqueToken.uniqueToken);
     } catch (error) {
