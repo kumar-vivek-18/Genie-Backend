@@ -147,3 +147,26 @@ export const getRetailerFeedbacks = async (req, res) => {
     }
 }
 
+export const updatedFeedback = async (req, res) => {
+    try {
+        console.log('hii');
+        const { commentId, rating, oldRating, feedback, userId } = req.body;
+        if (!commentId || !rating || !feedback) return res.status(404).json({ message: "Feedback not found" });
+
+        const updated = await RatingAndFeedback.findByIdAndUpdate(commentId, { rating: rating, feedback: feedback }, { new: true });
+
+        if (!updated) return res.status(404).json({ message: "Feedback not found" });
+
+        const updateRetailer = await Retailer.findByIdAndUpdate(userId);
+        if (!updateRetailer) return res.status(404).json({ message: "Retailer not found" });
+        updateRetailer.totalRating = updateRetailer.totalRating - oldRating + rating;
+        await updateRetailer.save();
+        console.log(updated);
+
+        return res.status(200).json({ message: "Retailer rating successfully updated" });
+
+    } catch (error) {
+        res.status(500).json({ message: "Error updating" });
+    }
+}
+
