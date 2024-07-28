@@ -219,13 +219,15 @@ export const sendMessage = async (req, res) => {
         const chatDetails = await Chat.findById(data.chat).populate('latestMessage');
         if (!chatDetails) return res.status(404).json({ message: "Ivalid chat id" });
         // console.log(chatDetails.requestType, chatDetails.latestMessage);
-        if (chatDetails?.requestType === "completed" || chatDetails?.requestType === "closed" || chatDetails?.requestType === "closedHistory" || chatDetails?.requestType === "notParticipated" || chatDetails?.requestType === "rejected" || chatDetails?.requestType === "cancelled") {
-            // console.log('case1');
-            return res.status(200).json({ message: "Unable to send message" });
-        }
-        if (chatDetails?.latestMessage?.bidType === "true" && chatDetails?.latestMessage?.bidAccepted === "new") {
-            // console.log('case2');
-            return res.status(200).json({ message: "Unable to send offer" });
+        if (data.bidType !== 'update') {
+            if (chatDetails?.requestType === "completed" || chatDetails?.requestType === "closed" || chatDetails?.requestType === "closedHistory" || chatDetails?.requestType === "notParticipated" || chatDetails?.requestType === "rejected" || chatDetails?.requestType === "cancelled") {
+                // console.log('case1');
+                return res.status(200).json({ message: "Unable to send message" });
+            }
+            if (chatDetails?.latestMessage?.bidType === "true" && chatDetails?.latestMessage?.bidAccepted === "new") {
+                // console.log('case2');
+                return res.status(200).json({ message: "Unable to send offer" });
+            }
         }
         // console.log('hii');
         const createdMessage = await Message.create({
@@ -372,11 +374,9 @@ export const acceptBidRequest = async (req, res) => {
 
         const uniqueTokens = [];
 
-        let winId = null;
         await Promise.all(chats.map(async (chat) => {
 
             if (chat._id.toString() === message.chat._id.toString() && chat.requestType === "ongoing") {
-                winId = message.chat._id;
                 chat.bidCompleted = true;
                 chat.requestType = "win";
                 await chat.save({ session });
@@ -408,7 +408,6 @@ export const acceptBidRequest = async (req, res) => {
             }
         }));
 
-        await Chat.findByIdAndUpdate(winId, { bidCompleted: true, requestActive: "win" }, { session, new: true });
 
 
         await session.commitTransaction();
