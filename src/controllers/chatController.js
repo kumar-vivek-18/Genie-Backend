@@ -372,9 +372,11 @@ export const acceptBidRequest = async (req, res) => {
 
         const uniqueTokens = [];
 
+        let winId = null;
         await Promise.all(chats.map(async (chat) => {
 
             if (chat._id.toString() === message.chat._id.toString() && chat.requestType === "ongoing") {
+                winId = message.chat._id;
                 chat.bidCompleted = true;
                 chat.requestType = "win";
                 await chat.save({ session });
@@ -405,6 +407,8 @@ export const acceptBidRequest = async (req, res) => {
                 }], { session });
             }
         }));
+
+        await Chat.findByIdAndUpdate(winId, { bidCompleted: true, requestActive: "win" });
 
 
         await session.commitTransaction();
