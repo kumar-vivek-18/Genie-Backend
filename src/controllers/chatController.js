@@ -408,7 +408,7 @@ export const acceptBidRequest = async (req, res) => {
             }
         }));
 
-        await Chat.findByIdAndUpdate(winId, { bidCompleted: true, requestActive: "win" });
+        await Chat.findByIdAndUpdate(winId, { bidCompleted: true, requestActive: "win" }, { session, new: true });
 
 
         await session.commitTransaction();
