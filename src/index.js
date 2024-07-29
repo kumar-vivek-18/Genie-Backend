@@ -129,7 +129,9 @@ io.on("connection", (socket) => {
         if (newMessageReceived.chat.users.length > 1 && io.sockets.adapter.rooms.has(newMessageReceived.chat.users[1]._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest.customer) === true) {
             console.log('Message Send at HomeScreen');
             updateRequest();
-            socket.to(newMessageReceived.userRequest.customer).emit('update userspade', newMessageReceived.userRequest._id);
+            const updatedSpade = { _id: newMessageReceived?.userRequest?._id, bidAccepted: newMessageReceived?.bidAccepted, chatId: newMessageReceived?.chat?._id };
+            console.log(updatedSpade);
+            socket.to(newMessageReceived.userRequest.customer).emit('update userspade', updatedSpade);
         }
 
 

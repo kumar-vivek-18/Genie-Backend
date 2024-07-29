@@ -163,6 +163,7 @@ export const getParticularChat = async (req, res) => {
 export const getChats = async (req, res) => {
     try {
         const data = req.query;
+        if (!data?.id) return res.status(403).json({ message: "Invalid user id" });
         const UserChats = await Chat.find({
             $and: [
                 {
@@ -397,7 +398,7 @@ export const acceptBidRequest = async (req, res) => {
 
 
             if (chat._id.toString() !== message.chat._id.toString() && (chat.requestType === "closed" || chat.requestType === "new")) {
-                // console.log('sending mess', chat._id, message.chat._id);
+                console.log('sending mess', chat._id, message.chat._id);
                 await Message.create([{
                     sender: { type: 'Retailer', refId: chat.users[0]._id },
                     userRequest: data.userRequestId,
