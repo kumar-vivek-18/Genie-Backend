@@ -47,6 +47,7 @@ const messageModel = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat",
         required: true,
+        index: true,
     },
     warranty: {
         type: Number,
