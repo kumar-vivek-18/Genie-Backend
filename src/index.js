@@ -108,7 +108,7 @@ io.on("connection", (socket) => {
 
         const chat = newMessageReceived.chat;
         if (!newMessageReceived) return null;
-        console.log('new message received', newMessageReceived?._id);
+        console.log('new message received', newMessageReceived?._id, newMessageReceived?.message);
         if (!chat?.users) return;
         // const activeRooms = io.sockets.adapter.rooms;
 
