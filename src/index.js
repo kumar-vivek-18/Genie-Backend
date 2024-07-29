@@ -130,7 +130,7 @@ io.on("connection", (socket) => {
             console.log('Message Send at HomeScreen');
             updateRequest();
             const updatedSpade = { _id: newMessageReceived?.userRequest?._id, bidAccepted: newMessageReceived?.bidAccepted, chatId: newMessageReceived?.chat?._id };
-            console.log(updatedSpade);
+            // console.log(updatedSpade);
             socket.to(newMessageReceived.userRequest.customer).emit('update userspade', updatedSpade);
         }
 
