@@ -32,7 +32,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://173.212.193.109:5000' || 'http://192.168.212.192:5000',
+    origin: process.env.CORS_ORIGIN || 'http://173.212.193.109:5000' || 'http://192.168.232.192:5000',
     credentials: true
 }));
 
@@ -60,7 +60,8 @@ app.use('/upload', uploadRoutes);
 const server = http.createServer(app);
 
 const io = new Server(server, {
-    pingTimeout: 6000,
+    pingInterval: 25000,
+    pingTimeout: 60000,
     cors: {
         origin: process.env.CORS_ORIGIN || 'http://173.212.1937.109:5000',
         transports: ['websocket', 'polling'],
@@ -73,6 +74,7 @@ io.on("connection", (socket) => {
     console.log("Connected to socket.io");
 
     socket.on("setup", ({ userId, senderId }) => {
+        // console.log('trying to connect to socket', userId, senderId);
         socket.join(userId);
         socket.userId = userId;
         console.log(`User with ID ${userId} has joined their personal room.`);
@@ -107,7 +109,7 @@ io.on("connection", (socket) => {
         if (!newMessageReceived) return;
 
         const chat = newMessageReceived.chat;
-        if (!newMessageReceived) return null;
+        // if (!newMessageReceived) return null;
         console.log('new message received', newMessageReceived?._id, newMessageReceived?.message);
         if (!chat?.users) return;
         // const activeRooms = io.sockets.adapter.rooms;
@@ -178,7 +180,7 @@ io.on("connection", (socket) => {
             // );
 
             if (io.sockets.adapter.rooms.has(user._id)) {
-                socket.to(user._id).emit("message received", newMessageReceived);
+                socket.to(user._id.toString()).emit("message received", newMessageReceived);
                 console.log('Message data send at chatting screen with Id', user._id);
 
                 // console.log('User is currently online');
@@ -191,9 +193,6 @@ io.on("connection", (socket) => {
                     { $inc: { unreadCount: 1 } },
                     { new: true }
                 ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude homeDelivery totalRating totalReview storeImages').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean();
-
-
-
 
                 // console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
                 // console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
@@ -267,6 +266,11 @@ io.on("connection", (socket) => {
             console.log("USER DISCONNECTED with id: ", socket.userId);
 
             socket.leave(socket.userId);
+            const activeRooms = io.sockets.adapter.rooms;
+            console.log('Rooms while leaving')
+            activeRooms.forEach((value, roomName) => {
+                console.log(roomName);
+            })
 
         }
         // if (socket.rooms) {
