@@ -186,7 +186,9 @@ io.on("connection", (socket) => {
                 // console.log('User is currently online');
             }
             else {
-                if (user.type === newMessageReceived.sender.type) return;
+                console.log(newMessageReceived.bidType);
+                if (user.type === newMessageReceived.sender.type && newMessageReceived.bidType !== 'true') return;
+                console.log(newMessageReceived.bidType);
 
                 const receiver = await Chat.findByIdAndUpdate(
                     newMessageReceived.chat._id,
@@ -194,23 +196,40 @@ io.on("connection", (socket) => {
                     { new: true }
                 ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude homeDelivery totalRating totalReview storeImages').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean();
 
+                // console.log('recievers', reciever);
+
                 // console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
                 // console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
-                if (newMessageReceived.sender.type === 'Retailer') {
+                if (newMessageReceived.sender.type === 'Retailer' && newMessageReceived.bidAccepted !== "accepted" && newMessageReceived.bidAccepted !== "rejected") {
                     if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString())) {
                         console.log('Send to requestDetail screen with Id ', io.sockets.adapter.rooms.has(receiver.requestId._id.toString()));
-                        // console.log('receiver', receiver.requestId.toString());
+                        // console.log('receiver', receiver);
                         socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
                     }
                     // if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString()) === false)
                     //     updateRequest();
                 }
-                else {
+                else if (newMessageReceived.sender.type === 'UserRequest' && newMessageReceived.bidAccepted !== "accepted" && newMessageReceived.bidAccepted !== "rejected") {
                     if (io.sockets.adapter.rooms.has(receiver.retailerId._id.toString())) {
                         console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
                         socket.to(receiver.retailerId._id.toString()).emit('updated retailer', receiver);
                     }
                 }
+                else if (newMessageReceived.sender.type === 'Retailer' && (newMessageReceived.bidAccepted === "accepted" || newMessageReceived.bidAccepted === "rejected")) {
+
+                    if (io.sockets.adapter.rooms.has(receiver.retailerId._id.toString())) {
+                        console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
+                        socket.to(receiver.retailerId._id.toString()).emit('updated retailer', receiver);
+                    }
+                }
+                else if (newMessageReceived.sender.type === 'UserRequest' && (newMessageReceived.bidAccepted === "accepted" || newMessageReceived.bidAccepted === "rejected")) {
+                    if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString())) {
+                        console.log('Send to requestDetail screen with Id ', io.sockets.adapter.rooms.has(receiver.requestId._id.toString()));
+                        // console.log('receiver', receiver);
+                        socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
+                    }
+                }
+
             }
         });
 
@@ -266,11 +285,11 @@ io.on("connection", (socket) => {
             console.log("USER DISCONNECTED with id: ", socket.userId);
 
             socket.leave(socket.userId);
-            const activeRooms = io.sockets.adapter.rooms;
-            console.log('Rooms while leaving')
-            activeRooms.forEach((value, roomName) => {
-                console.log(roomName);
-            })
+            // const activeRooms = io.sockets.adapter.rooms;
+            // console.log('Rooms while leaving')
+            // activeRooms.forEach((value, roomName) => {
+            //     console.log(roomName);
+            // })
 
         }
         // if (socket.rooms) {

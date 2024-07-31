@@ -341,6 +341,13 @@ export const acceptBidRequest = async (req, res) => {
             return res.status(400).json({ message: 'Missing id or type parameter' });
         }
 
+        const spadeDetails = await UserRequest.findById(data.userRequestId);
+        if (!spadeDetails) return res.status(404).json({ message: 'Invalid details' });
+
+        if (spadeDetails.requestActive === 'completed' || spadeDetails.requestActive === 'closed') {
+            return res.status(403).json({ message: "Request already completed/closed" });
+        }
+
         const message = await Message.findByIdAndUpdate(
             { _id: data.messageId },
             { bidAccepted: "accepted" },
