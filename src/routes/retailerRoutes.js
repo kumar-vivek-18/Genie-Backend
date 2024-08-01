@@ -14,6 +14,6 @@ router.route('/editretailer').patch(protectRoute, editRetailerDetails);
 router.route('/history').get(protectRoute, getRetailerHistory);
 router.route('/unique-token').get(protectRoute, getUniqueToken);
 router.route('/stores-near-me').get(protectRoute, getStoreCategoriesNearMe);
-router.route('/availabe-categories').get(availableCategories);
+router.route('/available-categories').get(availableCategories);
 
 export default router;
