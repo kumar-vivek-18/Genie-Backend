@@ -259,7 +259,16 @@ io.on("connection", (socket) => {
 
     socket.on('new retailer', (retailer) => {
         // console.log('new retailer', retailer);
+        const updateRequest = async () => {
+            await UserRequest.findByIdAndUpdate(retailer.requestId._id, { unread: true });
+        }
         socket.to(retailer.requestId._id).emit('updated retailer', retailer);
+        if (io.sockets.adapter.rooms.has(retailer.requestId._id.toString()) == false) {
+            updateRequest();
+            // console.log('sending data to update spades', retailer.customerId._id);
+            const data = { _id: retailer.requestId._id, bidAccepted: "new", chatId: retailer._id }
+            socket.to(retailer.customerId._id.toString()).emit('update userspade', data);
+        }
     });
 
     //////////////////////////////////For Leaving the personal room from the socket/////////////////////////////////////////////////////
