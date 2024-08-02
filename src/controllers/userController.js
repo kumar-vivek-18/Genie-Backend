@@ -292,7 +292,7 @@ export const closeAcitveSpade = async (req, res) => {
 
             if (chat.requestType === "new")
                 return Chat.findByIdAndUpdate(chat._id, { requestType: "new" });
-            else {
+            else if (chat.requestType === "ongoing") {
                 if (chat?.retailerId?.uniqueToken.length > 0)
                     uniqueTokens.push(chat?.retailerId?.uniqueToken);
                 return Chat.findByIdAndUpdate(chat._id, { requestType: "closed" });
@@ -340,6 +340,22 @@ export const closeSpade = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+export const closeParticularChat = async (req, res) => {
+    try {
+        const { chatId } = req.body;
+        console.log('chatId for closeing chat', chatId);
+        if (!chatId) return res.status(403).json({ message: "Invalid chat id" });
+
+        const closeChat = await Chat.findByIdAndUpdate(chatId, { requestType: "closed" });
+
+        if (!closeChat) return res.status(404).json({ message: "Chat not found" });
+
+        return res.status(200).json(closeChat);
+    } catch (error) {
+        return res.status(404).json({ message: "Error while closing chat", error: error });
+    }
+}
 
 
 

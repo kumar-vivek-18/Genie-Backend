@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { getUser, registerUser, createRequest, editProfile, getSpades, getSpadesHistory, closeSpade, getUniqueToken, setSpadeMarkAsRead, closeAcitveSpade, logoutUser, refreshAccessToken, getUserDetails, getParticularSpade, updatePaymentStatus } from '../controllers/userController.js';
+import { getUser, registerUser, createRequest, editProfile, getSpades, getSpadesHistory, closeSpade, getUniqueToken, setSpadeMarkAsRead, closeAcitveSpade, logoutUser, refreshAccessToken, getUserDetails, getParticularSpade, updatePaymentStatus, closeParticularChat } from '../controllers/userController.js';
 import { protectRoute } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
 
@@ -19,5 +19,6 @@ router.route('/close-active-spade').patch(protectRoute, closeAcitveSpade);
 router.route('/user-details').get(protectRoute, getUserDetails);
 router.route('/spade-details').get(protectRoute, getParticularSpade);
 router.route('/update-payment-status').patch(protectRoute, updatePaymentStatus);
+router.route('/close-particular-chat').patch(protectRoute, closeParticularChat);
 
 export default router;

@@ -155,7 +155,7 @@ export const getRetailerHistory = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean();
+        }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName').populate('latestMessage', 'message').lean().sort({ updatedAt: -1 });
 
         // Iterate through each chat and populate users
         await Promise.all(UserChats.map(async chat => {

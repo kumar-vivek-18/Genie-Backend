@@ -196,7 +196,7 @@ io.on("connection", (socket) => {
                     { new: true }
                 ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude homeDelivery totalRating totalReview storeImages').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean();
 
-                // console.log('recievers', reciever);
+                // console.log('recievers', receiver);
 
                 // console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
                 // console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
