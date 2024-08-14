@@ -8,9 +8,12 @@ const senderSchema = new Schema({
     refId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        refPath: 'type'
+        refPath: 'type',
     }
 })
+
+senderSchema.index({ type: 1, refId: 1 });
+
 const feedbackSchema = new Schema({
     rating: {
         type: Number,

@@ -82,7 +82,8 @@ export const createNewRetailer = async (req, res) => {
 export const getRetailer = async (req, res) => {
     try {
         const data = req.query;
-        const retailer = await Retailer.findOne({ storeMobileNo: data.storeMobileNo });
+        if (!data.storeMobileNo) return res.status(403).json({ message: "Store Mobile No is required" });
+        const retailer = await Retailer.findOne({ storeMobileNo: data.storeMobileNo }).lean();
         if (!retailer)
             return res.json({ status: 404, message: "User Not Found!" });
 
@@ -121,7 +122,7 @@ export const logoutRetailer = async (req, res) => {
 export const editRetailerDetails = async (req, res) => {
     try {
         const data = req.body;
-        const user = await Retailer.findByIdAndUpdate(data._id, data, { new: true });
+        const user = await Retailer.findByIdAndUpdate(data._id, data, { new: true }).lean();
         if (user) {
             return res.status(200).json(user);
         }
@@ -183,7 +184,7 @@ export const getUniqueToken = async (req, res) => {
     try {
         const data = req.query;
         if (!data.id) return res.status(404).json({ message: 'Invalid id' });
-        const uniqueToken = await Retailer.findById(data.id);
+        const uniqueToken = await Retailer.findById(data.id).lean();
         return res.status(200).json(uniqueToken.uniqueToken);
     } catch (error) {
         throw new Error(error.message);

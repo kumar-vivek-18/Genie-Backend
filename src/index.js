@@ -9,6 +9,7 @@ import chatRoutes from './routes/chatroutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import ratingRoutes from './routes/ratingRoutes.js';
+import toolRoutes from './routes/b2bRoutes.js';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -45,6 +46,7 @@ app.use('/retailer', retailerRoutes);
 app.use('/chat', chatRoutes);
 app.use('/coupon', couponRoutes);
 app.use('/rating', ratingRoutes);
+app.use('/b2b', toolRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/upload', uploadRoutes);
 

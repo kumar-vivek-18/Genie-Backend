@@ -25,7 +25,8 @@ const ChatSchema = mongoose.Schema({
         trim: true,
         required: true,
         enum: ["new", "ongoing", "cancelled", "completed", "closed", "closedHistory", "win", "rejected", "notPartcipated"],
-        default: "new"
+        default: "new",
+        index: true
     },
     bidCompleted: {
         type: Boolean,
@@ -48,6 +49,7 @@ const ChatSchema = mongoose.Schema({
             refId: {
                 type: mongoose.Schema.Types.ObjectId,
                 required: true,
+                index: true
 
             }
         }],

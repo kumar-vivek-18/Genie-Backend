@@ -152,7 +152,7 @@ export const getRetailerOngoingChats = async (req, res) => {
 export const getParticularChat = async (req, res) => {
     try {
         const data = req.query;
-        const UserChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages')
+        const UserChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean();
         if (!UserChat) return res.status(404).json({ message: "User not found" });
         return res.status(200).json(UserChat);
     } catch (error) {
@@ -319,7 +319,7 @@ export const setChatMessageMarkAsRead = async (req, res) => {
 
         const data = req.body;
         // console.log('data', data);
-        const response = await Chat.findByIdAndUpdate({ _id: data.id }, { unreadCount: 0 });
+        const response = await Chat.findByIdAndUpdate({ _id: data.id }, { unreadCount: 0 }).lean();
 
         return res.status(200).json(response);
     } catch (error) {
@@ -469,7 +469,9 @@ export const getSpadeMessages = async (req, res) => {
     try {
         const data = req.query;
         // console.log('chat', data);
-        const mess = await Message.find({ chat: data.id }).populate('chat', '_id users');
+        if (!data.id) return res.status(403).json({ message: "Invalid query data" });
+
+        const mess = await Message.find({ chat: data.id }).populate('chat', '_id users').lean();
 
         if (mess.length > 0) {
 
@@ -498,7 +500,7 @@ export const getNewStatusRetailerChats = async (req, res) => {
                 }
 
             ]
-        }).populate('retailerId');
+        }).populate('retailerId').lean();
 
         if (!RetailerChats) return res.status(404).json({ message: 'Invalid retailer identifier' });
 

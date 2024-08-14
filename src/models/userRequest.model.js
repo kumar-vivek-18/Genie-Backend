@@ -6,6 +6,7 @@ const userRequestSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
+        index: true,
     },
     requestDescription: {
         type: String,
@@ -34,6 +35,7 @@ const userRequestSchema = new Schema({
         type: String,
         enum: ["active", "completed", "closed"],
         default: "active",
+        index:true,
     },
     requestAcceptedChat: {
         type: mongoose.Schema.Types.ObjectId,

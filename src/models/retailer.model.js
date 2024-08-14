@@ -30,7 +30,6 @@ const RetailerSchema = new Schema({
     },
     email: {
         type: String,
-        lowercase: true,
         trim: true,
         default: "",
     },
@@ -40,7 +39,6 @@ const RetailerSchema = new Schema({
     }],
     storeCategory: {
         type: String,
-        lowercase: true,
         required: true,
         trim: true,
         default: "",
@@ -62,18 +60,17 @@ const RetailerSchema = new Schema({
     coords: {
         type: {
             type: String,
-            enum: ['Point'],
-            required: true,
-            default: 'Point'
+            enum: ['Point']
         },
         coordinates: {
             type: [Number],
-            required: true,
         }
     },
     storeApproved: {
-        type: Boolean,
-        default: false,
+        type: String,
+        enum: ["new", "approved", "blocked", "rejected"],
+        default: "new",
+        index: true,
     },
     homeDelivery: {
         type: Boolean,
@@ -121,7 +118,10 @@ const RetailerSchema = new Schema({
 
 }, {
     timestamps: true
-})
+});
+
+// Create a 2dsphere index on the coords field
+RetailerSchema.index({ coords: "2dsphere" });
 
 RetailerSchema.methods.generateAccessToken = function () {
     return jwt.sign({ _id: this._id, storeOwnerName: this.storeOwnerName }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });

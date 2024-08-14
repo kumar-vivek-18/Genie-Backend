@@ -92,6 +92,8 @@ export const registerUser = async (req, res) => {
     try {
         // console.log('first', req.body);
         const { userName, mobileNo } = req.body;
+        if (!userName || !mobileNo) return res.status(404).json({ message: "Invalid signup details" });
+
         const user = await User.create({ userName: userName, mobileNo: mobileNo });
 
         if (!user)
@@ -152,7 +154,7 @@ export const createRequest = async (req, res) => {
         // console.log('reqImages', requestImages);
 
         const retailers = await Retailer.find({
-            $and: [{ storeCategory: requestCategory }, { storeApproved: true }, {
+            $and: [{ storeCategory: requestCategory }, { storeApproved: "approved" }, {
                 coords: {
                     $geoWithin: {
                         $centerSphere: [
@@ -248,7 +250,7 @@ export const getSpades = async (req, res) => {
     try {
         const data = req.query;
         // console.log('spades data', data);
-
+        if (!data.id) return res.status(403).json({ message: "User id is required" });
         const spades = await UserRequest.find({
             $and: [
                 { customer: data.id },
@@ -259,7 +261,7 @@ export const getSpades = async (req, res) => {
                     ]
                 }
             ]
-        }).sort({ updatedAt: -1 });
+        }).sort({ updatedAt: -1 }).lean();
 
         // console.log('spades', spades);
         if (spades.length > 0) {
@@ -284,18 +286,18 @@ export const closeAcitveSpade = async (req, res) => {
             return res.status(404).json({ message: 'Request not found' });
         }
 
-        const chats = await Chat.find({ requestId: id }).populate('retailerId');
+        const chats = await Chat.find({ requestId: id }).populate('retailerId').lean();
         const uniqueTokens = [];
 
         await Promise.all(chats.map(chat => {
             // return Chat.findByIdAndDelete(chat._id);
 
             if (chat.requestType === "new")
-                return Chat.findByIdAndUpdate(chat._id, { requestType: "new" });
+                return Chat.findByIdAndUpdate(chat._id, { requestType: "new" }).lean();
             else if (chat.requestType === "ongoing") {
                 if (chat?.retailerId?.uniqueToken.length > 0)
                     uniqueTokens.push(chat?.retailerId?.uniqueToken);
-                return Chat.findByIdAndUpdate(chat._id, { requestType: "closed" });
+                return Chat.findByIdAndUpdate(chat._id, { requestType: "closed" }).lean();
             }
         }))
 
@@ -316,7 +318,7 @@ export const closeSpade = async (req, res) => {
             id, // The ID of the request to update
             { requestActive: "closed" }, // The fields to update
             { new: true } // Return the updated document
-        );
+        ).lean();
 
         if (!updateRequest) {
             return res.status(404).json({ message: 'Request not found' });
@@ -347,7 +349,7 @@ export const closeParticularChat = async (req, res) => {
         console.log('chatId for closeing chat', chatId);
         if (!chatId) return res.status(403).json({ message: "Invalid chat id" });
 
-        const closeChat = await Chat.findByIdAndUpdate(chatId, { requestType: "closed" });
+        const closeChat = await Chat.findByIdAndUpdate(chatId, { requestType: "closed" }).lean();
 
         if (!closeChat) return res.status(404).json({ message: "Chat not found" });
 
@@ -366,7 +368,7 @@ export const setSpadeMarkAsRead = async (req, res) => {
         if (!id)
             return res.status(400).json({ message: 'Invalid request' });
 
-        const updateSpade = await UserRequest.findByIdAndUpdate(id, { unread: false });
+        const updateSpade = await UserRequest.findByIdAndUpdate(id, { unread: false }).lean();
         return res.status(200).json({ message: "Spade Mark As Read" });
     } catch (error) {
         throw new Error(error.message);
@@ -384,7 +386,7 @@ export const getSpadesHistory = async (req, res) => {
             }, {
                 requestActive: "closed"
             }]
-        }).sort({ updatedAt: -1 })
+        }).sort({ updatedAt: -1 }).lean();
         if (spades.length > 0) {
             return res.status(200).json(spades);
         }
@@ -399,7 +401,7 @@ export const getSpadesHistory = async (req, res) => {
 export const getUniqueToken = async (req, res) => {
     const data = req.query;
     try {
-        const token = await User.findById(data.id);
+        const token = await User.findById(data.id).lean();
         return res.status(200).json(token.uniqueToken);
     } catch (error) {
         throw new Error(error.message);
@@ -446,7 +448,7 @@ export const getParticularSpade = async (req, res) => {
         const { id } = req.query;
         if (!id) return res.status(404).json({ message: "Invalid spade id" });
         // console.log('spade id', id);
-        const spade = await UserRequest.findById(id);
+        const spade = await UserRequest.findById(id).lean();
         // console.log('spade data', spade._id);
         if (!spade) return res.status(404).json({ message: "Spade not found" });
 
