@@ -114,6 +114,10 @@ const RetailerSchema = new Schema({
     refreshToken: {
         type: String,
         default: "",
+    },
+    query: {
+        type: String,
+        default: "",
     }
 
 }, {
