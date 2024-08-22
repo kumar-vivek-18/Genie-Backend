@@ -54,6 +54,7 @@ export const createNewRetailer = async (req, res) => {
         const data = req.body;
         // console.log('retailer data', data);
 
+        if (!data.storeMobileNo || !data.storeName || !data.storeOwnerName || !data.storeCategory || !data.homeDelivery) return res.status(403).json({ message: "Some fields are empthy" });
 
         const retailer = await Retailer.create({
             storeMobileNo: data.storeMobileNo, storeName: data.storeName,
