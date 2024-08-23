@@ -250,10 +250,11 @@ export const availableCategories = async (req, res) => {
             { id: 33, title: 'Plants & Gardening Accessories', subTitle: '' },
             { id: 34, title: 'Services & Repair, Consumer Electronics & Accessories', subTitle: 'Home appliances and equipment etc' },
             { id: 35, title: 'Services & Repair, Consumer Electronics & Accessories', subTitle: 'Mobile, Laptop, digital products etc' },
-            { id: 36, title: 'Sports Accessories & Services', subTitle: 'Cricket, Football, Basketball etc' },
-            { id: 37, title: 'Sports Nutrition', subTitle: 'Whey Pro etc' },
-            { id: 38, title: 'Stationary & Book Stores', subTitle: '' },
-            { id: 39, title: 'Tailor', subTitle: 'Makes or alters clothing' }
+            { id: 36, title: 'Services & Repair, Heavy Construction & Commercial Vehicles', subTitle: 'JCB, Cranes, Trucks etc' },
+            { id: 37, title: 'Sports Accessories & Services', subTitle: 'Cricket, Football, Basketball etc' },
+            { id: 38, title: 'Sports Nutrition', subTitle: 'Whey Pro etc' },
+            { id: 39, title: 'Stationary & Book Stores', subTitle: '' },
+            { id: 40, title: 'Tailor', subTitle: 'Makes or alters clothing' }
         ];
 
 
