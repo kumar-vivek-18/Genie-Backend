@@ -137,6 +137,10 @@ io.on("connection", (socket) => {
             // console.log(updatedSpade);
             socket.to(newMessageReceived.userRequest.customer).emit('update userspade', updatedSpade);
         }
+        else if (newMessageReceived.chat.users.length > 1 && io.sockets.adapter.rooms.has(newMessageReceived.chat.users[1]._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest._id) === false && io.sockets.adapter.rooms.has(newMessageReceived.userRequest.customer) === false) {
+            updateRequest();
+        }
+
 
 
 
