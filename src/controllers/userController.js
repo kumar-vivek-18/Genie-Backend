@@ -158,7 +158,7 @@ export const createRequest = async (req, res) => {
                 coords: {
                     $geoWithin: {
                         $centerSphere: [
-                            [longitude, latitude], 10 / 6371
+                            [longitude, latitude], 13 / 6371
                         ]
                     }
                 }

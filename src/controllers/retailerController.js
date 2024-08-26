@@ -5,6 +5,7 @@ import { UserRequest } from '../models/userRequest.model.js';
 // import { Message } from '../models/message.model.js';
 import { Chat } from '../models/chat.model.js';
 import jwt from 'jsonwebtoken';
+import { lchown } from 'fs/promises';
 
 const generateAccessAndRefreshToken = async (retailerId) => {
     try {
@@ -201,7 +202,7 @@ export const getStoreCategoriesNearMe = async (req, res) => {
             coords: {
                 $geoWithin: {
                     $centerSphere: [
-                        [longitude, latitude], 10 / 6371
+                        [longitude, latitude], 13 / 6371
                     ]
                 }
             }
@@ -233,6 +234,7 @@ export const availableCategories = async (req, res) => {
             { id: 16, title: 'Electrical Services & Repair', subTitle: 'Electrician' },
             { id: 17, title: 'Fashion Accessories', subTitle: 'Eyewear etc' },
             { id: 18, title: 'Fashion Accessories', subTitle: 'Jewellery, Gold & Diamond' },
+            { id: 19, title: 'Fashion Accessories', subTitle: 'Sharee, suits, kurti & dress materials etc' },
             { id: 19, title: 'Fashion Accessories', subTitle: 'Shoes, bags etc' },
             { id: 20, title: 'Fashion/Clothings', subTitle: 'Top, bottom, dresses' },
             { id: 21, title: 'Gardening Services', subTitle: '' },
@@ -265,4 +267,70 @@ export const availableCategories = async (req, res) => {
     }
 
 
+}
+
+
+export const nearBySellers = async (req, res) => {
+    try {
+        const { lat, lon, page = 1, limit = 10, category, query } = req.query;
+        if (!lat || !lon) {
+            return res.status(400).json({ message: 'Invalid coordinates' });
+        }
+
+        const pageNumber = parseInt(page, 10);
+        const limitNumber = parseInt(limit, 10);
+        const skip = (pageNumber - 1) * limitNumber;
+
+        let sellers = [];
+        if (!category && !query) {
+            sellers = await Retailer.find({
+                coords: {
+                    $near: {
+                        $geometry: {
+                            type: "Point",
+                            coordinates: [parseFloat(lon), parseFloat(lat)]
+                        },
+                        $maxDistance: 13000
+                    }
+                }
+            }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
+                .lean().limit(limitNumber).skip(skip);
+        }
+        else if (category) {
+            sellers = await Retailer.find({
+                storeCategory: category,
+                coords: {
+                    $near: {
+                        $geometry: {
+                            type: "Point",
+                            coordinates: [parseFloat(lon), parseFloat(lat)]
+                        },
+                        $maxDistance: 13000
+                    }
+                }
+            }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
+                .lean().limit(limitNumber).skip(skip);
+        }
+        else if (query) {
+            sellers = await Retailer.find({
+                $text: {
+                    $search: query
+                },
+                coords: {
+                    $near: {
+                        $geometry: {
+                            type: "Point",
+                            coordinates: [parseFloat(lon), parseFloat(lat)]
+                        },
+                        $maxDistance: 13000
+                    }
+                }
+            }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
+                .lean().limit(limitNumber).skip(skip);
+        }
+        return res.status(200).json(sellers);
+    }
+    catch (error) {
+        throw new Error(error.message);
+    }
 }
