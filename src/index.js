@@ -216,7 +216,7 @@ io.on("connection", (socket) => {
                     //     updateRequest();
                 }
                 else if (newMessageReceived.sender.type === 'UserRequest' && newMessageReceived.bidAccepted !== "accepted" && newMessageReceived.bidAccepted !== "rejected") {
-                    if (io.sockets.adapter.rooms.has(receiver.retailerId._id.toString())) {
+                    if (receiver?.retailerId?._id && io.sockets.adapter.rooms.has(receiver.retailerId._id.toString())) {
                         console.log(receiver.retailerId._id.toString(), io.sockets.adapter.rooms.has(receiver.retailerId._id.toString()));
                         socket.to(receiver.retailerId._id.toString()).emit('updated retailer', receiver);
                     }
