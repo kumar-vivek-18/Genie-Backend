@@ -272,7 +272,7 @@ export const availableCategories = async (req, res) => {
 
 export const nearBySellers = async (req, res) => {
     try {
-        const { lat, lon, page = 1, limit = 10, category, query } = req.query;
+        const { lat, lon, page = 1, limit = 10, query } = req.query;
         if (!lat || !lon) {
             return res.status(400).json({ message: 'Invalid coordinates' });
         }
@@ -282,7 +282,7 @@ export const nearBySellers = async (req, res) => {
         const skip = (pageNumber - 1) * limitNumber;
 
         let sellers = [];
-        if (!category && !query) {
+        if (!query) {
             sellers = await Retailer.find({
                 coords: {
                     $near: {
@@ -296,38 +296,42 @@ export const nearBySellers = async (req, res) => {
             }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
                 .lean().limit(limitNumber).skip(skip);
         }
-        else if (category) {
+        else {
             sellers = await Retailer.find({
-                storeCategory: category,
-                coords: {
-                    $near: {
-                        $geometry: {
-                            type: "Point",
-                            coordinates: [parseFloat(lon), parseFloat(lat)]
-                        },
-                        $maxDistance: 13000
+                $and: [
+                    {
+                        $or: [
+                            {
+                                storeName: {
+                                    $regex: query,
+                                    $options: 'i'
+                                },
+                            },
+                            {
+                                storeCategory: {
+                                    $regex: query,
+                                    $options: 'i'
+                                }
+                            },
+                        ]
+                    },
+
+                    {
+                        coords: {
+                            $near: {
+                                $geometry: {
+                                    type: "Point",
+                                    coordinates: [parseFloat(lon), parseFloat(lat)]
+                                },
+                                $maxDistance: 13000
+                            }
+                        }
                     }
-                }
+                ]
             }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
                 .lean().limit(limitNumber).skip(skip);
         }
-        else if (query) {
-            sellers = await Retailer.find({
-                $text: {
-                    $search: query
-                },
-                coords: {
-                    $near: {
-                        $geometry: {
-                            type: "Point",
-                            coordinates: [parseFloat(lon), parseFloat(lat)]
-                        },
-                        $maxDistance: 13000
-                    }
-                }
-            }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
-                .lean().limit(limitNumber).skip(skip);
-        }
+
         return res.status(200).json(sellers);
     }
     catch (error) {
