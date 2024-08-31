@@ -93,6 +93,35 @@ export const createRatingAndFeedback = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+export const rateVendor = async (req, res) => {
+
+    try {
+        const { user, sender, rating, feedback, senderName } = req.body;
+
+        if (!user || !sender || !rating || !senderName) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        const createdRating = await RatingAndFeedback.create([{
+            user,
+            sender,
+            senderName,
+            rating,
+            feedback,
+        }]);
+
+        if (!createdRating) {
+            return res.status(409).json({ message: 'Rating not created' });
+        }
+
+
+
+        return res.status(201).json(createdRating);
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
 
 export const createRatings = async (req, res) => {
     try {
