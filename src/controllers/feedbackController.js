@@ -199,3 +199,29 @@ export const updatedFeedback = async (req, res) => {
     }
 }
 
+export const particularFeedback = async (req, res) => {
+    try {
+        const { senderId, retailerId } = req.query;
+
+        if (!senderId || !retailerId) {
+            return res.status(400).json({ message: "Missing senderId or retailerId in query parameters" });
+        }
+
+        console.log("Fetching feedback for sender:", senderId, "and retailer:", retailerId);
+
+        const feedback = await RatingAndFeedback.findOne({
+            $and: [
+                { "sender.refId": senderId },
+                { "user.refId": retailerId },
+            ]
+        });
+
+        if (!feedback) {
+            return res.status(404).json({ message: "Feedback not found" });
+        }
+
+        return res.status(200).json({ feedback });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error", error });
+    }
+};
