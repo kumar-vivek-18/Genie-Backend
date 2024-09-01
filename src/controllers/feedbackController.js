@@ -220,7 +220,7 @@ export const particularFeedback = async (req, res) => {
             return res.status(404).json({ message: "Feedback not found" });
         }
 
-        return res.status(200).json({ feedback });
+        return res.status(200).json(feedback);
     } catch (error) {
         return res.status(500).json({ message: "Internal server error", error });
     }
