@@ -4,7 +4,7 @@ import { Retailer } from '../models/retailer.model.js';
 export const getUnApprovedRetailers = async (req, res) => {
     try {
 
-        const retailers = await Retailer.find({ storeApproved: "new" }).sort({ updatedAt: -1 }).lean();
+        const retailers = await Retailer.find({ $or: [{ storeApproved: "new" }, { documentVerified: false }] }).sort({ updatedAt: -1 }).lean();
 
         if (!retailers) return res.status(404).json({ message: "No retailers found" });
 
@@ -17,7 +17,7 @@ export const getUnApprovedRetailers = async (req, res) => {
 export const allApprovedRetailers = async (req, res) => {
     try {
 
-        const retailers = await Retailer.find({ storeApproved: "approved" }).sort({ createdAt: -1 }).lean();
+        const retailers = await Retailer.find({ storeApproved: "approved" }, { documentVerified: true }).sort({ createdAt: -1 }).lean();
 
         if (!retailers) return res.status(404).json({ message: 'No approved retailers' });
 
@@ -35,7 +35,7 @@ export const approveRetailers = async (req, res) => {
         // console.log('retailers approval', retailerId);
         if (!retailerId) return res.status(404).json({ message: 'Invalid retailer Id' });
 
-        const approvedRetailers = await Retailer.findByIdAndUpdate(retailerId, { storeApproved: "approved", documentVerified: true }, { new: true }).lean();
+        const approvedRetailers = await Retailer.findByIdAndUpdate(retailerId, { storeApproved: "approved" }, { new: true }).lean();
 
         if (!approvedRetailers)
             return res.status(404).json({ message: "Retailer not found" });
