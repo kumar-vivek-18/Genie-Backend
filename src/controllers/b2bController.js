@@ -35,7 +35,7 @@ export const approveRetailers = async (req, res) => {
         // console.log('retailers approval', retailerId);
         if (!retailerId) return res.status(404).json({ message: 'Invalid retailer Id' });
 
-        const approvedRetailers = await Retailer.findByIdAndUpdate(retailerId, { storeApproved: "approved" }).lean();
+        const approvedRetailers = await Retailer.findByIdAndUpdate(retailerId, { storeApproved: "approved", documentVerified: true }, { new: true }).lean();
 
         if (!approvedRetailers)
             return res.status(404).json({ message: "Retailer not found" });
@@ -53,7 +53,7 @@ export const rejectRetailers = async (req, res) => {
 
         if (!retailerId) return res.status(404).json({ message: 'Invalid retailer Id' });
 
-        const approvedRetailers = await Retailer.findByIdAndUpdate(retailerId, { storeApproved: "rejected" }).lean();
+        const approvedRetailers = await Retailer.findByIdAndUpdate(retailerId, { storeApproved: "rejected" }, { new: true }).lean();
 
         if (!approvedRetailers)
             return res.status(404).json({ message: "Retailer not found" });
@@ -69,7 +69,7 @@ export const blockRetailers = async (req, res) => {
         const { retailerId } = req.body;
         if (!retailerId) return res.status(403).json({ message: "Invalid retailer id" });
 
-        const approvedRetailers = await Retailer.findByIdAndUpdate(retailerId, { storeApproved: "blocked" }).lean();
+        const approvedRetailers = await Retailer.findByIdAndUpdate(retailerId, { storeApproved: "blocked" }, { new: true }).lean();
 
         if (!approvedRetailers)
             return res.status(404).json({ message: "Retailer not found" });
@@ -87,7 +87,7 @@ export const verifyDocument = async (req, res) => {
 
         if (!retailerId) return res.status(403).json({ message: "Retaier Id is required" });
 
-        const verifiedRetailer = await Retailer.findByIdAndUpdate(retailerId, { documentVerified: true }).lean();
+        const verifiedRetailer = await Retailer.findByIdAndUpdate(retailerId, { documentVerified: true }, { new: true }).lean();
 
         if (!verifiedRetailer) return res.status(404).json({ message: "Retaieler not found" });
 
