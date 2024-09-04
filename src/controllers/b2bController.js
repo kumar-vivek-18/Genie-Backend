@@ -17,7 +17,7 @@ export const getUnApprovedRetailers = async (req, res) => {
 export const allApprovedRetailers = async (req, res) => {
     try {
 
-        const retailers = await Retailer.find({ storeApproved: "approved" }, { documentVerified: true }).sort({ createdAt: -1 }).lean();
+        const retailers = await Retailer.find({ $and: [{ storeApproved: "approved" }, { documentVerified: true }] }).sort({ createdAt: -1 }).lean();
 
         if (!retailers) return res.status(404).json({ message: 'No approved retailers' });
 
