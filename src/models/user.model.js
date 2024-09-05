@@ -71,7 +71,7 @@ const UserSchema = new Schema({
     // },
     freeSpades: {
         type: Number,
-        default: 50,
+        default: 25,
     },
     totalRating: {
         type: Number,
