@@ -338,3 +338,12 @@ export const nearBySellers = async (req, res) => {
         throw new Error(error.message);
     }
 }
+
+export const currentVersion = async (req, res) => {
+    try {
+        const version = "1.9.0";
+        return res.status(200).json(version);
+    } catch (error) {
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
