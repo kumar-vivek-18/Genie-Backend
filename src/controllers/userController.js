@@ -200,12 +200,12 @@ export const createRequest = async (req, res) => {
             return retailerChat;
         }));
 
-        if (spadePrice == 0) {
-            await User.findByIdAndUpdate(
-                customerID,
-                { $inc: { freeSpades: -1 } }
-            );
-        }
+        // if (spadePrice == 0) {
+        //     await User.findByIdAndUpdate(
+        //         customerID,
+        //         { $inc: { freeSpades: -1 } }
+        //     );
+        // }
 
         const userDetails = await User.findById(customerID);
 
