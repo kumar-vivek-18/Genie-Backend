@@ -209,13 +209,13 @@ export const createRequest = async (req, res) => {
 
         const userDetails = await User.findById(customerID);
 
-        if (userDetails.freeSpades > 0) {
-            // console.log(userDetails.freeSpades);
-            userDetails.freeSpades = userDetails.freeSpades - 1;
-            // console.log(userDetails.freeSpades);
-            await userDetails.save();
-            // console.log(userDetails.freeSpades);
-        }
+        // if (userDetails.freeSpades > 0) {
+        //     // console.log(userDetails.freeSpades);
+        //     userDetails.freeSpades = userDetails.freeSpades - 1;
+        //     // console.log(userDetails.freeSpades);
+        //     await userDetails.save();
+        //     // console.log(userDetails.freeSpades);
+        // }
 
         if (!retailerRequests.length) {
             return res.status(404).json({ message: 'Request not created due to no retailer found of particular category' });

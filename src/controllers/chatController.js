@@ -34,7 +34,10 @@ export const productAvailable = async (req, res) => {
             if (!user)
                 return res.status(404).json({ message: 'User not found' });
 
-            user.unpaidSpades.push(spade);
+            if (user.freeSpades > 0)
+                user.freeSpades = user.freeSpades - 1;
+            else
+                user.unpaidSpades.push(spade);
             await user.save();
         }
 
