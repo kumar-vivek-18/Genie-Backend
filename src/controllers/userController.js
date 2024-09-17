@@ -94,6 +94,8 @@ export const registerUser = async (req, res) => {
         const { userName, mobileNo } = req.body;
         if (!userName || !mobileNo) return res.status(404).json({ message: "Invalid signup details" });
 
+        const currentUser = await User.find({ mobileNo: mobileNo });
+        if (currentUser.length > 0) return res.status(409).json({ message: "User already exists" });
         const user = await User.create({ userName: userName, mobileNo: mobileNo });
 
         if (!user)

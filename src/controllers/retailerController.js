@@ -243,7 +243,7 @@ export const availableCategories = async (req, res) => {
             { id: 25, title: 'Home & Function Decoration', subTitle: '' },
             { id: 26, title: 'Home Furnishing', subTitle: 'Blanket, Pillow, Curtains etc' },
             { id: 27, title: 'Home Furnishing', subTitle: 'Furniture etc' },
-            { id: 28, title: 'Kids Games,Toys & Clothings', subTitle: '' },
+            { id: 28, title: 'Kids Games,Toys & Accessories', subTitle: '' },
             { id: 29, title: 'Kitchen Utensils & Kitchenware', subTitle: '' },
             { id: 30, title: 'Luxury Watches', subTitle: '' },
             { id: 31, title: 'Medical Store & Healthcare', subTitle: '' },
