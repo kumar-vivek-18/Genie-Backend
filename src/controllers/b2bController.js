@@ -3,6 +3,7 @@ import { Chat } from '../models/chat.model.js';
 import { Message } from '../models/message.model.js';
 import { Retailer } from '../models/retailer.model.js';
 import { UserRequest } from '../models/userRequest.model.js';
+import { User } from '../models/user.model.js';
 
 export const getUnApprovedRetailers = async (req, res) => {
     try {
@@ -121,12 +122,15 @@ export const verifyDocument = async (req, res) => {
 
 export const getAllRequests = async (req, res) => {
     try {
-
+        console.log('hii there')
         const requests = await UserRequest.find().sort({ updatedAt: -1 }).lean();
+
         if (!requests) return res.status(404).json({ message: "No requests found" });
         const requestDetail = await Promise.all(requests.map(async (request) => {
+
             const userDetails = await User.findById(request.customer);
-            return { ...request, userDetails };
+
+            return { request, userDetails };
         }));
         // const userDetails = await User.findById(requests?.customer);
         // console.log(userDetails);
