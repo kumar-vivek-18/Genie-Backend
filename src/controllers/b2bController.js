@@ -130,7 +130,7 @@ export const getAllRequests = async (req, res) => {
 
             const userDetails = await User.findById(request.customer);
 
-            return { request, userDetails };
+            return { ...request, userDetails };
         }));
         // const userDetails = await User.findById(requests?.customer);
         // console.log(userDetails);
