@@ -347,3 +347,39 @@ export const currentVersion = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
+export const getCategoryImages = async (req, res) => {
+    try {
+        const { category, lat, lon, page = 1, limit = 20, } = req.query;
+        if (!category || !lat || !lon) return res.status(400).json({ message: "Invalid credentials" });
+
+        const pageNumber = parseInt(page, 10);
+        const limitNumber = parseInt(limit, 10);
+        const skip = (pageNumber - 1) * limitNumber;
+        console.log(category, lat, lon, page, limit, skip);
+        const Images = await Retailer.find({
+            storeCategory: category,
+            coords: {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [parseFloat(lon), parseFloat(lat)]
+                    },
+                    $maxDistance: 13000  // max-distance in meters
+                }
+            }
+        }).lean().select('productImages');
+
+        const imageURIs = Images
+            .map(item => item.productImages || [])  // Ensure productImages exists, default to an empty array if not
+            .flat();
+
+        console.log('images', imageURIs);
+
+        if (!imageURIs) return res.status(404).json({ message: "Images not found" });
+
+        return res.status(200).json(imageURIs);
+    } catch (error) {
+        return res.status(500).json({ message: "Internal Server Error", error: error });
+    }
+}
