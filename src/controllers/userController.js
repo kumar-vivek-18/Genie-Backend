@@ -143,7 +143,7 @@ export const logoutUser = async (req, res) => {
 // Remaining Transaction process i.e. Acid Properties setup
 export const createRequest = async (req, res) => {
     try {
-        const { customerID, request, requestCategory, expectedPrice, spadePrice, appliedCoupon, longitude, latitude } = req.body;
+        const { customerID, request, requestCategory, expectedPrice, spadePrice, appliedCoupon, longitude, latitude, suggestedImages = [] } = req.body;
 
         // console.log(customerID, request, requestCategory, expectedPrice, spadePrice, appliedCoupon, longitude, latitude);
 
@@ -152,6 +152,10 @@ export const createRequest = async (req, res) => {
             const imageUrl = req.files.map(file => `${process.env.SERVER_URL}/uploads/${file.filename}`);
             requestImages.push(...imageUrl);
         }
+
+        suggestedImages.forEach(image => {
+            requestImages.push(image);
+        });
 
         // console.log('reqImages', requestImages);
 
