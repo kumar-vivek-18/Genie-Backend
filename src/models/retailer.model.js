@@ -38,7 +38,8 @@ const RetailerSchema = new Schema({
         default: "https://res.cloudinary.com/kumarvivek/image/upload/v1718021385/fddizqqnbuj9xft9pbl6.jpg",
     }],
     productImages: [{
-        type: String,
+        uri: { type: String, trim: true },
+        price: { type: Number, trim: true }
     }],
     storeCategory: {
         type: String,
