@@ -143,21 +143,24 @@ export const logoutUser = async (req, res) => {
 // Remaining Transaction process i.e. Acid Properties setup
 export const createRequest = async (req, res) => {
     try {
-        const { customerID, request, requestCategory, expectedPrice, spadePrice, appliedCoupon, longitude, latitude, suggestedImages = [] } = req.body;
+        const { customerID, request, requestCategory, expectedPrice, spadePrice, longitude, latitude, suggestedImages = [] } = req.body;
 
-        // console.log(customerID, request, requestCategory, expectedPrice, spadePrice, appliedCoupon, longitude, latitude);
+        console.log(customerID, request, requestCategory, expectedPrice, spadePrice, longitude, latitude, suggestedImages);
 
         const requestImages = [];
         if (req.files && Array.isArray(req.files)) {
             const imageUrl = req.files.map(file => `${process.env.SERVER_URL}/uploads/${file.filename}`);
             requestImages.push(...imageUrl);
         }
+        console.log('reqImages', requestImages);
+        if (suggestedImages) {
+            requestImages.push(suggestedImages);
+        }
+        // suggestedImages.forEach(image => {
+        //     requestImages.push(image); 
+        // });
 
-        suggestedImages.forEach(image => {
-            requestImages.push(image);
-        });
-
-        // console.log('reqImages', requestImages);
+        console.log('reqImagess', requestImages);
 
         const retailers = await Retailer.find({
             $and: [{ storeCategory: requestCategory }, { storeApproved: "approved" }, {
@@ -182,7 +185,7 @@ export const createRequest = async (req, res) => {
         //     uniqueTokens.push(retailer.uniqueToken);
         // });
 
-        const userRequest = await UserRequest.create({ customer: customerID, requestDescription: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice, spadePrice: spadePrice, appliedCouponCode: appliedCoupon, paymentStatus: "unpaid" });
+        const userRequest = await UserRequest.create({ customer: customerID, requestDescription: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice, spadePrice: spadePrice, paymentStatus: "unpaid" });
 
         if (!userRequest) {
             return res.status(404).json({ message: 'Request not created' });
