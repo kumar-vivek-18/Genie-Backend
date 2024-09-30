@@ -152,15 +152,15 @@ export const createRequest = async (req, res) => {
             const imageUrl = req.files.map(file => `${process.env.SERVER_URL}/uploads/${file.filename}`);
             requestImages.push(...imageUrl);
         }
-        console.log('reqImages', requestImages);
-        if (suggestedImages) {
-            requestImages.push(suggestedImages);
-        }
+        // console.log('reqImages', requestImages);
+        // if (suggestedImages) {
+        //     requestImages.push(suggestedImages);
+        // }
         // suggestedImages.forEach(image => {
         //     requestImages.push(image); 
         // });
 
-        console.log('reqImagess', requestImages);
+        // console.log('reqImagess', requestImages);
 
         const retailers = await Retailer.find({
             $and: [{ storeCategory: requestCategory }, { storeApproved: "approved" }, {
