@@ -153,14 +153,14 @@ export const createRequest = async (req, res) => {
             requestImages.push(...imageUrl);
         }
         // console.log('reqImages', requestImages);
-        // if (suggestedImages) {
-        //     requestImages.push(suggestedImages);
-        // }
+        if (suggestedImages) {
+            requestImages.push(suggestedImages);
+        }
         // suggestedImages.forEach(image => {
         //     requestImages.push(image); 
         // });
 
-        // console.log('reqImagess', requestImages);
+        console.log('reqImagess', requestImages);
 
         const retailers = await Retailer.find({
             $and: [{ storeCategory: requestCategory }, { storeApproved: "approved" }, {
