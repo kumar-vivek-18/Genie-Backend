@@ -232,7 +232,7 @@ export const createRequest = async (req, res) => {
 
         return res.status(201).json({ userRequest, uniqueTokens, userDetails });
     } catch (error) {
-        // console.error('Error in createRequest:', error);
+        console.error('Error in createRequest:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
