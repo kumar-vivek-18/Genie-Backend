@@ -154,7 +154,7 @@ export const createRequest = async (req, res) => {
         }
         // console.log('reqImages', requestImages);
         if (suggestedImages) {
-            requestImages.push(suggestedImages);
+            requestImages.push(...suggestedImages);
         }
         // suggestedImages.forEach(image => {
         //     requestImages.push(image); 
