@@ -187,6 +187,9 @@ export const getChats = async (req, res) => {
             ]
         }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean().sort({ updatedAt: -1 });
 
+        // console.log(UserChats[0]);
+        // console.log(JSON.stringify(UserChats[0], null, 2));
+
         // Iterate through each chat and populate users
         // await Promise.all(UserChats.map(async chat => {
         //     // Populate each user in the users array
