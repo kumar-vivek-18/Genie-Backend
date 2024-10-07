@@ -494,7 +494,7 @@ export const updatePaymentStatus = async (req, res) => {
 
 export const currentVersion = async (req, res) => {
     try {
-        const version = "1.18.0";
+        const version = "1.19.0";
         return res.status(200).json(version);
     } catch (error) {
         return res.status(500).json({ message: "Internal Server Error" });
