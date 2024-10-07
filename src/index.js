@@ -207,7 +207,7 @@ io.on("connection", (socket) => {
                 // console.log('User is not online', io.sockets.adapter.rooms.has(receiver.requestId.toString()));
                 // console.log('mess send at chatId', newMessageReceived.chat._id, receiver._id, receiver.requestId);
                 if (newMessageReceived.sender.type === 'Retailer' && newMessageReceived.bidAccepted !== "accepted" && newMessageReceived.bidAccepted !== "rejected") {
-                    if (io.sockets.adapter.rooms.has(receiver.requestId._id.toString())) {
+                    if (receiver?.requestId?._id && io.sockets.adapter.rooms.has(receiver.requestId._id.toString())) {
                         console.log('Send to requestDetail screen with Id ', io.sockets.adapter.rooms.has(receiver.requestId._id.toString()));
                         // console.log('receiver', receiver);
                         socket.to(receiver.requestId._id.toString()).emit('updated retailer', receiver);
