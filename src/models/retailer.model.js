@@ -49,7 +49,11 @@ const RetailerSchema = new Schema({
     },
     location: {
         type: String,
-        lowercase: true,
+        trim: true,
+        default: "",
+    },
+    fetchedLocation: {
+        type: String,
         trim: true,
         default: "",
     },
