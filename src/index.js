@@ -10,6 +10,7 @@ import couponRoutes from './routes/couponRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import ratingRoutes from './routes/ratingRoutes.js';
 import toolRoutes from './routes/b2bRoutes.js';
+import productRoutes from './routes/productRoutes.js';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -49,6 +50,7 @@ app.use('/rating', ratingRoutes);
 app.use('/b2b', toolRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/upload', uploadRoutes);
+app.use('/product', productRoutes);
 
 // const options = {
 //     key: fs.readFileSync(path.join(__dirname, '../privkey.pem')),
