@@ -55,7 +55,7 @@ export const removeProduct = async (req, res) => {
 
         // Check if productId is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(productId)) {
-            return res.status(400).json({ message: "Invalid Product Id format" });
+            return res.status(401).json({ message: "Invalid Product Id format" });
         }
 
         // Attempt to find and delete the product by its ID
