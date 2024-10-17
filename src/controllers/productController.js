@@ -82,7 +82,7 @@ export const getProductsByVendorId = async (req, res) => {
         if (!vendorId) return res.status(400).json({ message: "VendorId is required" });
 
         // Find products with the given vendorId
-        const products = await Product.find({ vendorId });
+        const products = await Product.find({ vendorId }).sort({ updatedAt: -1 }).lean();
 
         // If no products are found, return a 404 status
         if (!products || products.length === 0) {
@@ -108,7 +108,7 @@ export const getProductByCategory = async (req, res) => {
         if (!productCategory) return res.status(400).json({ message: "Product category is required" });
 
         // Find products with the given productCategory
-        const products = await Product.find({ productCategory });
+        const products = await Product.find({ productCategory }).sort({ updatedAt: -1 }).lean();
 
         // If no products are found, return a 404 status
         if (!products || products.length === 0) {
