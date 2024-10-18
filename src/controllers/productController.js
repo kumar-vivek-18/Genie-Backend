@@ -84,7 +84,7 @@ export const getProductsByVendorId = async (req, res) => {
         if (!vendorId) return res.status(400).json({ message: "VendorId is required" });
 
         // Find products with the given vendorId
-        const products = await Product.find({ vendorId }).sort({ updatedAt: -1 }).lean().skip(skipCnt).limit(10);
+        const products = await Product.find({ vendorId }).sort({ updatedAt: -1 }).lean().skip(skipCnt).limit(10).sort({ createdAt: -1 });
 
         // If no products are found, return a 404 status
         if (!products || products.length === 0) {
