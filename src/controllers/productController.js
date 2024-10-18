@@ -76,13 +76,15 @@ export const removeProduct = async (req, res) => {
 export const getProductsByVendorId = async (req, res) => {
     try {
         // Extract vendorId from the request body
-        const { vendorId } = req.query;
+        const { vendorId, page = 1 } = req.query;
 
         // Check if vendorId is provided
+        const pageNumber = parseInt(page, 10);
+        const skipCnt = (pageNumber - 1) * 10;
         if (!vendorId) return res.status(400).json({ message: "VendorId is required" });
 
         // Find products with the given vendorId
-        const products = await Product.find({ vendorId }).sort({ updatedAt: -1 }).lean();
+        const products = await Product.find({ vendorId }).sort({ updatedAt: -1 }).lean().skip(skipCnt).limit(10);
 
         // If no products are found, return a 404 status
         if (!products || products.length === 0) {
