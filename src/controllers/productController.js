@@ -102,13 +102,17 @@ export const getProductsByVendorId = async (req, res) => {
 export const getProductByCategory = async (req, res) => {
     try {
         // Extract productCategory from the request body
-        const { productCategory } = req.query;
+        const { productCategory, page = 1 } = req.query;
+
+        const pageNumber = parseInt(page, 10);
+        const limit = 10;
+        const skipCnt = (pageNumber - 1) * limit;
 
         // Check if productCategory is provided
         if (!productCategory) return res.status(400).json({ message: "Product category is required" });
 
         // Find products with the given productCategory
-        const products = await Product.find({ productCategory }).sort({ updatedAt: -1 }).lean();
+        const products = await Product.find({ productCategory }).sort({ updatedAt: -1 }).lean().skip(skipCnt).limit(10);
 
         // If no products are found, return a 404 status
         if (!products || products.length === 0) {
