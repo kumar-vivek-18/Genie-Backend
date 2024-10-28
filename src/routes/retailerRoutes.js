@@ -13,7 +13,7 @@ router.route('/logout').patch(protectRoute, logoutRetailer);
 router.route('/editretailer').patch(protectRoute, editRetailerDetails);
 router.route('/history').get(protectRoute, getRetailerHistory);
 router.route('/unique-token').get(protectRoute, getUniqueToken);
-router.route('/stores-near-me').get(protectRoute, getStoreCategoriesNearMe);
+router.route('/stores-near-me').get(getStoreCategoriesNearMe);
 router.route('/available-categories').get(availableCategories);
 router.route('/nearby-stores').get(nearBySellers);
 router.route('/current-version').get(currentVersion);
