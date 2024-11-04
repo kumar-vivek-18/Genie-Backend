@@ -4,6 +4,7 @@ import { Message } from '../models/message.model.js';
 import { Retailer } from '../models/retailer.model.js';
 import { UserRequest } from '../models/userRequest.model.js';
 import { User } from '../models/user.model.js';
+import { Product } from '../models/product.model.js';
 
 export const getUnApprovedRetailers = async (req, res) => {
     try {
