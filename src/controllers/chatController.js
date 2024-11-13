@@ -10,7 +10,6 @@ import mongoose from 'mongoose';
 export const productAvailable = async (req, res) => {
     try {
         const data = req.body;
-        // console.log('data', data);
         const createdChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages');
         if (!createdChat) return res.status(404).json({ message: "Invalid chat Id" });
 
