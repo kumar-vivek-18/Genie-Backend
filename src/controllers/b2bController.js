@@ -351,3 +351,27 @@ export const blockRetailers = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+
+export const deleteUserRequest = async (req, res) => {
+    try {
+        const { requestId } = req.query;
+
+        if (!requestId) {
+            return res.status(400).json({ message: 'Invalid request id' });
+        }
+        await Chat.deleteMany({ requestId });
+
+        // Delete the UserRequest
+        const deletedRequest = await UserRequest.findByIdAndDelete(requestId);
+
+        if (!deletedRequest) {
+            return res.status(404).json({ message: 'User request not found' });
+        }
+
+        return res.status(200).json({ message: 'User request and associated chats deleted successfully' });
+    } catch (error) {
+        // console.error('Error deleting user request and associated chats:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}

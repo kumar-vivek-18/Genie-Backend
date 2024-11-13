@@ -1,5 +1,5 @@
 import express from 'express';
-import { allApprovedRetailers, blockRetailers, getUnApprovedRetailers, rejectRetailers, verifyDocument, approveRetailers, getAllRequests, getAllChats, getChatMessages, getParticularChatInfo, getAllProduct, getProductImageByVendorId, getProductImageByCategory, removeProductImage } from '../controllers/b2bController.js';
+import { allApprovedRetailers, blockRetailers, getUnApprovedRetailers, rejectRetailers, verifyDocument, approveRetailers, getAllRequests, getAllChats, getChatMessages, getParticularChatInfo, getAllProduct, getProductImageByVendorId, getProductImageByCategory, removeProductImage, deleteUserRequest } from '../controllers/b2bController.js';
 import { availableCategories } from '../controllers/retailerController.js';
 
 const router = express.Router();
@@ -19,5 +19,6 @@ router.route('/get-productimg-byvendorid').get(getProductImageByVendorId)
 router.route('/get-productimg-bycategory').get(getProductImageByCategory)
 router.route('/remove-productimg').delete(removeProductImage)
 router.route('/get-all-categories').get(availableCategories)
+router.route('/delete-request').delete(deleteUserRequest)
 
 export default router;

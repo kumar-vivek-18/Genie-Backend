@@ -67,7 +67,7 @@ const io = new Server(server, {
     pingInterval: 25000,
     pingTimeout: 60000,
     cors: {
-        origin: process.env.CORS_ORIGIN || 'http://173.212.1937.109:5000',
+        origin: process.env.CORS_ORIGIN || 'http://173.212.193.109:5000',
         transports: ['websocket', 'polling'],
         methods: ["GET", "POST", "PATCH"],
         credentials: true
