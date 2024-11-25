@@ -244,7 +244,7 @@ export const availableCategories = async (req, res) => {
             { id: 26, title: 'Home & Function Decoration', subTitle: '' },
             { id: 27, title: 'Home Furnishing', subTitle: 'Blanket, Pillow, Curtains etc' },
             { id: 28, title: 'Home Furnishing', subTitle: 'Furniture etc' },
-            { id: 29, title: 'Kids Games,Toys & Accessories', subTitle: '' },
+            { id: 29, title: 'Gifts, Kids Games,Toys & Clothings', subTitle: '' },
             { id: 30, title: 'Kitchen Utensils & Kitchenware', subTitle: '' },
             { id: 31, title: 'Luxury Watches', subTitle: '' },
             { id: 32, title: 'Medical Store & Healthcare', subTitle: '' },
