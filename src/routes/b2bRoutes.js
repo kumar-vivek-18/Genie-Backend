@@ -21,5 +21,4 @@ router.route('/remove-productimg').delete(removeProductImage)
 router.route('/get-all-categories').get(availableCategories)
 router.route('/delete-request').delete(deleteUserRequest)
 
-
 export default router;
