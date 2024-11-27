@@ -2,9 +2,64 @@ import { response } from "express";
 import mongoose from "mongoose";
 import { Product } from "../models/product.model.js";
 
+import nodemailer from 'nodemailer';
+
+
+
+// Configure Nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+        user:"chandreshprajapaticppc@gmail.com", 
+        pass:"girj uazf iaxk uwlw"
+    }
+});
+
+// export const createConcer = async (req, res) => {
+//     try {
+//         console.log("user find");
+//         const { name, mobileNo, email, concern, countryCode,requestId } = req.body;
+//         const user = await Contact.findOne({ email: email, mobileNo: mobileNo });
+//         console.log("user find", user, mobileNo, email, concern, countryCode,requestId);
+
+//         let response;
+//         if (user) {
+//             user.concern.push(concern);
+//             await user.save();
+//             response = user;
+//         } else {
+//             const newConcern = await Contact.create({ name: name, countryCode: countryCode, mobileNo: mobileNo, email: email,requestId:requestId, concern: [concern] });
+//             response = newConcern;
+//         }
+
+//         // Prepare email data
+//         const mailOptions = {
+//             from:`${email}`,
+//             to: 'info@culturtap.com',
+//             subject: 'New Report Concern',
+//             text: `Name: ${name}\nCountry Code: ${countryCode}\nMobile No: ${mobileNo}\nEmail: ${email}\nRequestId: ${requestId}\nConcern: ${concern}`
+//         };
+
+//         // Send email
+//         transporter.sendMail(mailOptions, (error, info) => {
+//             if (error) {
+//                 console.error('Error sending email:', error);
+//                 return res.status(500).json({ message: 'Error sending email', error });
+//             } else {
+//                 console.log('Email sent:', info.response);
+//                 res.status(201).json(response);
+//             }
+//         });
+//     } catch (error) {
+//         res.status(400).json(error);
+//     }
+// };
+
+
 
 export const addProduct = async (req, res) => {
     const { vendorId, productDescription, productPrice, productCategory, productImage } = req.body;
+    console.log(vendorId)
     try {
         // Validate required fields
         if (!vendorId || !productDescription || !productCategory || !productPrice) {
@@ -33,6 +88,28 @@ export const addProduct = async (req, res) => {
         }
 
         // Return success response
+
+       
+
+        const mailOptions = {
+            from:`chandresh@gmail.com`,
+            to: 'chandreshprajapaticppc@gmail.com',
+            subject: 'New Product Added',
+            text: `Approve the new product`,
+           
+            html: '<p>Click <a href=`http://localhost:3000/products/${createdproduct._id}`>Verify</a> </p>'
+        };
+
+        // Send email
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+                return res.status(500).json({ message: 'Error sending email', error });
+            } else {
+                console.log('Email sent:', info.response);
+                res.status(201).json(response);
+            }
+        });
         return res.status(201).json(createProduct);
 
     } catch (error) {
@@ -44,6 +121,67 @@ export const addProduct = async (req, res) => {
     }
 };
 
+export const singleProduct = async (req, res) => {
+    try {
+        // Extract productId from the request body
+        const { productId } = req.query;
+
+        console.log(productId)
+
+        // Check if productId is provided
+        if (!productId) return res.status(400).json({ message: "Product Id is required" });
+
+        // Check if productId is a valid MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(401).json({ message: "Invalid Product Id format" });
+        }
+
+        // Attempt to find and delete the product by its ID
+        const product = await Product.findById(productId);
+
+        // If no product is found with the given ID
+        if (!product) return res.status(404).json({ message: "Product not found with this ID" });
+
+      
+        return res.status(200).json(product);
+        
+
+    } catch (error) {
+        // Return server error in case of an exception
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
+export const verifyProduct = async (req, res) => {
+    try {
+        // Extract productId from the request body
+        const { productId } = req.query;
+
+        console.log(productId)
+
+        // Check if productId is provided
+        if (!productId) return res.status(400).json({ message: "Product Id is required" });
+
+        // Check if productId is a valid MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(401).json({ message: "Invalid Product Id format" });
+        }
+
+        // Attempt to find and delete the product by its ID
+        const product = await Product.findByIdUpdate(productId,{productVerified:true});
+
+        // If no product is found with the given ID
+        if (!product) return res.status(404).json({ message: "Product not found with this ID" });
+
+      
+        return res.status(200).json(product);
+        
+
+    } catch (error) {
+        // Return server error in case of an exception
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
 
 export const removeProduct = async (req, res) => {
     try {

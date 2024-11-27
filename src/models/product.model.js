@@ -16,6 +16,10 @@ const productSchema = new Schema({
         trim: true,
         default: "",
     },
+    productVerified: {
+        type: Boolean,
+        default: false,
+    },
     productDescription: {
         type: String,
         trim: true,
