@@ -7,13 +7,13 @@ import nodemailer from 'nodemailer';
 
 
 // Configure Nodemailer
-const transporter = nodemailer.createTransport({
-    service: 'gmail', 
-    auth: {
-        user:"chandreshprajapaticppc@gmail.com", 
-        pass:"girj uazf iaxk uwlw"
-    }
-});
+// const transporter = nodemailer.createTransport({
+//     service: 'gmail', 
+//     auth: {
+//         user:"chandreshprajapaticppc@gmail.com", 
+//         pass:"girj uazf iaxk uwlw"
+//     }
+// });
 
 // export const createConcer = async (req, res) => {
 //     try {
