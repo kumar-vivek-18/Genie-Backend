@@ -91,25 +91,25 @@ export const addProduct = async (req, res) => {
 
        
 
-        const mailOptions = {
-            from:`chandresh@gmail.com`,
-            to: 'chandreshprajapaticppc@gmail.com',
-            subject: 'New Product Added',
-            text: `Approve the new product`,
+        // const mailOptions = {
+        //     from:`chandresh@gmail.com`,
+        //     to: 'chandreshprajapaticppc@gmail.com',
+        //     subject: 'New Product Added',
+        //     text: `Approve the new product`,
            
-            html: '<p>Click <a href=`http://localhost:3000/products/${createdproduct._id}`>Verify</a> </p>'
-        };
+        //     html: '<p>Click <a href=`http://localhost:3000/products/${createdproduct._id}`>Verify</a> </p>'
+        // };
 
-        // Send email
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-                return res.status(500).json({ message: 'Error sending email', error });
-            } else {
-                console.log('Email sent:', info.response);
-                res.status(201).json(response);
-            }
-        });
+        // // Send email
+        // transporter.sendMail(mailOptions, (error, info) => {
+        //     if (error) {
+        //         console.error('Error sending email:', error);
+        //         return res.status(500).json({ message: 'Error sending email', error });
+        //     } else {
+        //         console.log('Email sent:', info.response);
+        //         res.status(201).json(response);
+        //     }
+        // });
         return res.status(201).json(createProduct);
 
     } catch (error) {
