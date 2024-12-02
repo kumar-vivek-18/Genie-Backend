@@ -11,6 +11,9 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import ratingRoutes from './routes/ratingRoutes.js';
 import toolRoutes from './routes/b2bRoutes.js';
 import productRoutes from './routes/productRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import helpRoutes from './routes/helpRoutes.js';
+
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -51,6 +54,9 @@ app.use('/b2b', toolRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/upload', uploadRoutes);
 app.use('/product', productRoutes);
+app.use('/notification',notificationRoutes);
+app.use('/help',helpRoutes);
+
 
 // const options = {
 //     key: fs.readFileSync(path.join(__dirname, '../privkey.pem')),
