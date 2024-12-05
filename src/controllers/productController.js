@@ -269,4 +269,61 @@ export const getProductByCategory = async (req, res) => {
 }
 
 
+export const getAllProductsCategory = async (req, res) => {
+    try {
+        // Extract productCategory from the request body
+        const { productCategory } = req.query;
+
+       
+
+        // Check if productCategory is provided
+        if (!productCategory) return res.status(400).json({ message: "Product category is required" });
+
+        const products = await Product.find({ productCategory }).sort({ updatedAt: -1 });
+
+        // If no products are found, return a 404 status
+        if (!products || products.length === 0) {
+            return res.status(404).json({ message: "No products found in this category" });
+        }
+
+        // Return the list of products if found
+        return res.status(200).json(products);
+
+    } catch (error) {
+        // Handle and return internal server error
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+}
+
+export const updateProductCategory = async (req, res) => {
+    try {
+       
+        const { prevCategory, newCategory } = req.body;
+
+        if (!prevCategory || !newCategory) {
+            return res.status(400).json({ message: "Both prevCategory and newCategory are required" });
+        }
+
+        // Update all products with prevCategory to the newCategory
+        const updateResult = await Product.updateMany(
+            { productCategory: prevCategory }, // Filter: match previous category
+            { $set: { productCategory: newCategory } } // Update: set new category
+        );
+
+        // Check if any documents were modified
+        if (updateResult.modifiedCount === 0) {
+            return res.status(404).json({ message: "No products found with the previous category" });
+        }
+
+        // Return success response
+        return res.status(200).json({
+            message: "Product category updated successfully",
+            updatedCount: updateResult.modifiedCount
+        });
+
+    } catch (error) {
+        // Handle and return internal server error
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
 
