@@ -219,7 +219,7 @@ export const availableCategories = async (req, res) => {
             { id: 1, title: 'Fashion/Clothings', subTitle: 'Top, bottom, dresses',imgUri:"https://res.cloudinary.com/dkay5q6la/image/upload/v1733422452/fashion_top_cxrlm0.jpg" },
             { id: 2, title: 'Fashion Accessories', subTitle: 'Shoes, bags etc' ,imgUri:"https://res.cloudinary.com/dkay5q6la/image/upload/v1733422450/fashion_shoes_c0hrmq.jpg"},
             { id: 3, title: 'Fashion Accessories', subTitle: 'Sharee, suits, kurti & dress materials etc',imgUri:"https://res.cloudinary.com/dkay5q6la/image/upload/v1733421956/fashion_cesup3.jpg" },
-            { id: 4, title: 'Gifts, Kids Games,Toys & Clothings', subTitle: '' ,imgUri: "https://res.cloudinary.com/dkay5q6la/image/upload/v1733422449/gifts_eia9dk.jpg",},
+            { id: 4, title: 'Gifts, Kids Games,Toys & Accessories', subTitle: '' ,imgUri: "https://res.cloudinary.com/dkay5q6la/image/upload/v1733422449/gifts_eia9dk.jpg",},
             { id: 5, title: 'Consumer Electronics & Accessories', subTitle: 'Home appliances and equipment etc',imgUri:"https://res.cloudinary.com/dkay5q6la/image/upload/v1733422453/consumer_electronics_rplbgv.jpg" },
             { id: 6, title: 'Fashion Accessories', subTitle: 'Jewellery, Gold & Diamond',imgUri:"https://res.cloudinary.com/dkay5q6la/image/upload/v1733422452/fashion_accessories_iof7jd.jpg" },
             { id: 7, title: 'Agriculture equipments', subTitle: '' ,imgUri:""},
