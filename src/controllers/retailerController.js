@@ -221,34 +221,48 @@ export const getStoreCategoriesNearMe = async (req, res) => {
             return res.status(404).json("Invalid latitude or longitude");
         }
 
-        // Aggregate pipeline to get categories sorted by the number of stores
+        // Aggregate pipeline to get categories sorted
         const storeCategories = await Retailer.aggregate([
             {
                 $geoNear: {
                     near: { type: "Point", coordinates: [parseFloat(longitude), parseFloat(latitude)] },
                     distanceField: "distance",
                     spherical: true,
-                    maxDistance: 13000, // ~13km in meters
+                    maxDistance: 13000, // ~13km
                 },
             },
             {
                 $group: {
                     _id: "$storeCategory", // Group by storeCategory
-                    storeCount: { $sum: 1 }, // Count the number of stores per category
+                    storeCount: { $sum: 1 }, // Count stores per category
                 },
             },
             {
-                $sort: { storeCount: -1 }, // Sort categories in descending order based on store count
+                $addFields: {
+                    isInternalCategory: {
+                        $cond: {
+                            if: { $eq: ["$_id", "Z-Internal test culturtap ( not for commercial use )"] },
+                            then: 1,
+                            else: 0,
+                        },
+                    },
+                },
+            },
+            {
+                $sort: {
+                    isInternalCategory: 1, // Push "Z-Internal test culturtap" last
+                    storeCount: -1, // Then sort by store count descending
+                },
             },
             {
                 $project: {
-                    _id: 0, // Exclude MongoDB's default _id
-                    storeCategory: "$_id", // Rename _id to storeCategory
+                    _id: 0,
+                    storeCategory: "$_id", // Final format: categories in array
                 },
             },
         ]);
 
-        // Extract categories into a plain array
+        // Map into a simple array of category names
         const categoriesArray = storeCategories.map((item) => item.storeCategory);
 
         return res.status(200).json(categoriesArray);
@@ -257,6 +271,8 @@ export const getStoreCategoriesNearMe = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+
 
 
 
