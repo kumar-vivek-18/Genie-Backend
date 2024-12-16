@@ -193,25 +193,73 @@ export const getUniqueToken = async (req, res) => {
     }
 }
 
+// export const getStoreCategoriesNearMe = async (req, res) => {
+//     try {
+//         const { latitude, longitude } = req.query;
+//         if (!latitude || !longitude) return res.status(404).json("Invalid latitude or longitude");
+
+//         const storeCategories = await Retailer.distinct('storeCategory', {
+//             coords: {
+//                 $geoWithin: {
+//                     $centerSphere: [
+//                         [longitude, latitude], 13 / 6371
+//                     ]
+//                 }
+//             }
+//         })
+//         return res.status(200).json(storeCategories);
+//     } catch (error) {
+//         throw new Error(error.message);
+//     }
+// }
 export const getStoreCategoriesNearMe = async (req, res) => {
     try {
         const { latitude, longitude } = req.query;
-        if (!latitude || !longitude) return res.status(404).json("Invalid latitude or longitude");
 
-        const storeCategories = await Retailer.distinct('storeCategory', {
-            coords: {
-                $geoWithin: {
-                    $centerSphere: [
-                        [longitude, latitude], 13 / 6371
-                    ]
-                }
-            }
-        })
-        return res.status(200).json(storeCategories);
+        // Validate latitude and longitude
+        if (!latitude || !longitude) {
+            return res.status(404).json("Invalid latitude or longitude");
+        }
+
+        // Aggregate pipeline to get categories sorted by the number of stores
+        const storeCategories = await Retailer.aggregate([
+            {
+                $geoNear: {
+                    near: { type: "Point", coordinates: [parseFloat(longitude), parseFloat(latitude)] },
+                    distanceField: "distance",
+                    spherical: true,
+                    maxDistance: 13000, // ~13km in meters
+                },
+            },
+            {
+                $group: {
+                    _id: "$storeCategory", // Group by storeCategory
+                    storeCount: { $sum: 1 }, // Count the number of stores per category
+                },
+            },
+            {
+                $sort: { storeCount: -1 }, // Sort categories in descending order based on store count
+            },
+            {
+                $project: {
+                    _id: 0, // Exclude MongoDB's default _id
+                    storeCategory: "$_id", // Rename _id to storeCategory
+                },
+            },
+        ]);
+
+        // Extract categories into a plain array
+        const categoriesArray = storeCategories.map((item) => item.storeCategory);
+
+        return res.status(200).json(categoriesArray);
     } catch (error) {
-        throw new Error(error.message);
+        console.error("Error fetching store categories:", error.message);
+        return res.status(500).json({ message: error.message });
     }
-}
+};
+
+
+
 
 export const availableCategories = async (req, res) => {
     try {
