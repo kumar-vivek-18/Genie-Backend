@@ -356,7 +356,7 @@ export const getProductByQuery = async (req, res) => {
             };
         }
 
-        // Search for productGender in productDescription if provided
+        
         if (productGender) {
             searchCriteria.productDescription = {
                 ...searchCriteria.productDescription, // Preserve existing regex conditions
