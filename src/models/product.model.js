@@ -25,10 +25,21 @@ const productSchema = new Schema({
         trim: true,
         default: "",
     },
+    productBrand: {
+        type: String,
+        trim: true,
+        default: "",
+    },
+    productGender: {
+        type: String,
+        trim: true,
+        default: "",
+    },
     productPrice: {
         type: Number,
         default: 0,
     }
 }, { timestamps: true });
 
+productSchema.index({ productDescription: "text" });
 export const Product = mongoose.model('Product', productSchema);
