@@ -378,7 +378,7 @@ export const deleteUserRequest = async (req, res) => {
 
 export const getAdvertisement = async(req, res) => {
     try {
-      const advertisementText = "SAVE MORE, START BARGAINING! Visit our store soon"; // Static advertisement text
+      const advertisementText = "SAVE MORE, START BARGAINING!"; // Static advertisement text
   
       res.status(200).json(advertisementText); 
     } catch (error) {
