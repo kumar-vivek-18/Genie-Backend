@@ -375,3 +375,14 @@ export const deleteUserRequest = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+export const getAdvertisement = async(req, res) => {
+    try {
+      const advertisementText = "SAVE MORE, START BARGAINING! Visit our store soon"; // Static advertisement text
+  
+      res.status(200).json(advertisementText); 
+    } catch (error) {
+      console.error("Error fetching advertisement:", error);
+      res.status(500).json({ message: "Server error while fetching advertisement" });
+    }
+  };
