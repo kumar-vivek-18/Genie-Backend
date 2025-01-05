@@ -145,7 +145,7 @@ export const createRequest = async (req, res) => {
     try {
         const { customerID, request, requestCategory, expectedPrice, spadePrice, longitude, latitude, suggestedImages = [] } = req.body;
 
-        console.log(customerID, request, requestCategory, expectedPrice, spadePrice, longitude, latitude, suggestedImages);
+        // console.log(customerID, request, requestCategory, expectedPrice, spadePrice, longitude, latitude, suggestedImages);
 
         const requestImages = [];
         if (req.files && Array.isArray(req.files)) {
@@ -185,7 +185,7 @@ export const createRequest = async (req, res) => {
         //     uniqueTokens.push(retailer.uniqueToken);
         // });
 
-        const userRequest = await UserRequest.create({ customer: customerID, requestDescription: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice, spadePrice: spadePrice, paymentStatus: "unpaid" });
+        const userRequest = await UserRequest.create({ customer: customerID, requestDescription: request, requestCategory: requestCategory, requestImages: requestImages, expectedPrice: expectedPrice, spadePrice: spadePrice, paymentStatus: "paid" });
 
         if (!userRequest) {
             return res.status(404).json({ message: 'Request not created' });

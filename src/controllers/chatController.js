@@ -28,17 +28,19 @@ export const productAvailable = async (req, res) => {
         spade.activeRetailers = spade.activeRetailers + 1;
         await spade.save();
 
-        if (spade.activeRetailers === 2) {
-            const user = await User.findById(spade.customer);
-            if (!user)
-                return res.status(404).json({ message: 'User not found' });
+        // here making spade paid
 
-            if (user.freeSpades > 0)
-                user.freeSpades = user.freeSpades - 1;
-            else
-                user.unpaidSpades.push(spade);
-            await user.save();
-        }
+        // if (spade.activeRetailers === 2) {
+        //     const user = await User.findById(spade.customer);
+        //     if (!user)
+        //         return res.status(404).json({ message: 'User not found' });
+
+        //     if (user.freeSpades > 0)
+        //         user.freeSpades = user.freeSpades - 1;
+        //     else
+        //         user.unpaidSpades.push(spade);
+        //     await user.save();
+        // }
 
         return res.status(200).json(updatedChat);
 
