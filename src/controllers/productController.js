@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { Product } from "../models/product.model.js";
 
 import nodemailer from 'nodemailer';
+import { resourceLimits } from "worker_threads";
 
 
 
@@ -222,7 +223,7 @@ export const getProductsByVendorId = async (req, res) => {
         if (!vendorId) return res.status(400).json({ message: "VendorId is required" });
 
         // Find products with the given vendorId
-        const products = await Product.find({ vendorId }).sort({ updatedAt: -1 }).lean().skip(skipCnt).limit(10).sort({ createdAt: -1 });
+        const products = await Product.find({ vendorId }).sort({ updatedAt: -1 }).lean().skip(skipCnt).limit(limit).sort({ createdAt: -1 });
 
         // If no products are found, return a 404 status
         if (!products || products.length === 0) {
@@ -242,7 +243,7 @@ export const getProductsByVendorId = async (req, res) => {
 export const getProductByCategory = async (req, res) => {
     try {
         // Extract productCategory from the request body
-        const { productCategory, page = 1 ,limit=10} = req.query;
+        const { productCategory, page = 1 , limit=10} = req.query;
 
         const pageNumber = parseInt(page, 10);
        
@@ -252,7 +253,7 @@ export const getProductByCategory = async (req, res) => {
         if (!productCategory) return res.status(400).json({ message: "Product category is required" });
 
         // Find products with the given productCategory
-        const products = await Product.find({ productCategory }).sort({ updatedAt: -1 }).lean().skip(skipCnt).limit(10);
+        const products = await Product.find({ productCategory }).sort({ updatedAt: -1 }).lean().skip(skipCnt).limit(limit);
 
         // If no products are found, return a 404 status
         if (!products || products.length === 0) {
