@@ -430,4 +430,49 @@ export const searchProduct = async (req, res) => {
 };
 
 
+export const getVendorProductByQuery = async (req, res) => {
+    try {
+        const { query, vendorId, page = 1,limit=10 } = req.query;
+
+        const pageNumber = parseInt(page, 10);
+      
+        const skipCnt = (pageNumber - 1) * limit;
+
+        if (!vendorId) {
+            return res.status(400).json({ message: "VendorId is required" });
+        }
+
+        // Build the search criteria
+        let searchCriteria = { vendorId };
+
+        if (query) {
+            // Add fuzzy search using text index
+            searchCriteria.$text = { $search: query };
+        }
+
+       
+
+        // Find and paginate products based on the search criteria
+        const products = await Product.find(
+            searchCriteria,
+            query ? { score: { $meta: "textScore" } } : {} // Include text score only if query exists
+        )
+            .sort(query ? { score: { $meta: "textScore" }, updatedAt: -1 } : { updatedAt: -1 }) // Sort by text score and updatedAt if query exists
+            .lean()
+            .skip(skipCnt)
+            .limit(limit);
+
+        // If no products are found, return a 404 status
+        if (!products || products.length === 0) {
+            return res.status(404).json({ message: "No products found" });
+        }
+
+        // Return the list of products if found
+        return res.status(200).json(products);
+    } catch (error) {
+        // Handle and return internal server error
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
 
