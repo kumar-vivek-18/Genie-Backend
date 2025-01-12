@@ -4,6 +4,7 @@ import { Product } from "../models/product.model.js";
 
 import nodemailer from 'nodemailer';
 import { resourceLimits } from "worker_threads";
+import { subscribe } from "diagnostics_channel";
 
 
 
@@ -329,23 +330,110 @@ export const updateProductCategory = async (req, res) => {
 };
 
 
+// export const getProductByQuery = async (req, res) => {
+//     try {
+//         const { query, productCategory, productBrand, productGender, page = 1,limit=10 } = req.query;
+
+//         const pageNumber = parseInt(page, 10);
+      
+//         const skipCnt = (pageNumber - 1) * limit;
+
+//         if (!productCategory) {
+//             return res.status(400).json({ message: "Product category is required" });
+//         }
+
+//         // Build the search criteria
+//         let searchCriteria = { productCategory };
+
+//         if (query) {
+//             // Add fuzzy search using text index
+//             searchCriteria.$text = { $search: query };
+//         }
+
+//         // Search for productBrand in productDescription if provided
+//         if (productBrand) {
+//             searchCriteria.productDescription = {
+//                 $regex: productBrand,
+//                 $options: "i", // Case-insensitive regex search
+//             };
+//         }
+
+        
+//         if (productGender) {
+//             searchCriteria.productDescription = {
+//                 ...searchCriteria.productDescription, // Preserve existing regex conditions
+//                 $regex: productGender,
+//                 $options: "i", // Case-insensitive regex search
+//             };
+//         }
+
+//         // Find and paginate products based on the search criteria
+//         const products = await Product.find(
+//             searchCriteria,
+//             query ? { score: { $meta: "textScore" } } : {} // Include text score only if query exists
+//         )
+//             .sort(query ? { score: { $meta: "textScore" }, updatedAt: -1 } : { updatedAt: -1 }) // Sort by text score and updatedAt if query exists
+//             .lean()
+//             .skip(skipCnt)
+//             .limit(limit);
+
+//         // If no products are found, return a 404 status
+//         if (!products || products.length === 0) {
+//             return res.status(404).json({ message: "No products found" });
+//         }
+
+//         // Return the list of products if found
+//         return res.status(200).json(products);
+//     } catch (error) {
+//         // Handle and return internal server error
+//         return res.status(500).json({ message: "Internal server error", error: error.message });
+//     }
+// };
+
 export const getProductByQuery = async (req, res) => {
     try {
-        const { query, productCategory, productBrand, productGender, page = 1,limit=10 } = req.query;
+        const { 
+            query, 
+            productCategory, 
+            subCategory, 
+            subQuery, 
+            productBrand, 
+            page = 1, 
+            limit = 10 
+        } = req.query;
 
         const pageNumber = parseInt(page, 10);
-      
         const skipCnt = (pageNumber - 1) * limit;
 
+        // Validate required productCategory
         if (!productCategory) {
             return res.status(400).json({ message: "Product category is required" });
         }
 
+        // Convert subQuery to an array (if it's passed as a comma-separated string)
+        const subQueryArray = subQuery ? subQuery.split(',') : [];
+        // console.log(subQueryArray)
+
         // Build the search criteria
         let searchCriteria = { productCategory };
 
+        // Handle subCategory if provided
+        if (subCategory) {
+            searchCriteria.subCategory = {
+                $regex: subCategory,
+                $options: "i", // Case-insensitive search for subCategory
+            };
+        }
+
+        // Handle subQuery if provided (array of possible matches)
+        if (subQueryArray.length > 0) {
+            searchCriteria.productDescription = {
+                $regex: new RegExp("\\b(" + subQueryArray.join("|") + ")\\b", "i"), // Match whole words only
+            };
+        }
+
+        // Add fuzzy search using text index for the query
         if (query) {
-            // Add fuzzy search using text index
             searchCriteria.$text = { $search: query };
         }
 
@@ -357,37 +445,33 @@ export const getProductByQuery = async (req, res) => {
             };
         }
 
-        
-        if (productGender) {
-            searchCriteria.productDescription = {
-                ...searchCriteria.productDescription, // Preserve existing regex conditions
-                $regex: productGender,
-                $options: "i", // Case-insensitive regex search
-            };
-        }
-
-        // Find and paginate products based on the search criteria
+        // Execute the query with pagination
         const products = await Product.find(
             searchCriteria,
             query ? { score: { $meta: "textScore" } } : {} // Include text score only if query exists
         )
-            .sort(query ? { score: { $meta: "textScore" }, updatedAt: -1 } : { updatedAt: -1 }) // Sort by text score and updatedAt if query exists
+            .sort(
+                query 
+                    ? { score: { $meta: "textScore" }, updatedAt: -1 } 
+                    : { updatedAt: -1 } // Sort by text score and updatedAt
+            )
             .lean()
             .skip(skipCnt)
             .limit(limit);
 
-        // If no products are found, return a 404 status
+        // Handle no results
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "No products found" });
         }
 
-        // Return the list of products if found
+        // Return the list of products
         return res.status(200).json(products);
     } catch (error) {
         // Handle and return internal server error
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
+
 
 export const searchProduct = async (req, res) => {
     try {
