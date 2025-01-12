@@ -6,6 +6,7 @@ import { UserRequest } from '../models/userRequest.model.js';
 import { Chat } from '../models/chat.model.js';
 import jwt from 'jsonwebtoken';
 import { lchown } from 'fs/promises';
+import mongoose from 'mongoose';
 
 const generateAccessAndRefreshToken = async (retailerId) => {
     try {
@@ -103,6 +104,44 @@ export const getRetailer = async (req, res) => {
         throw new Error(error.message);
     }
 }
+
+
+
+export const getRetailerById = async (req, res) => {
+    try {
+        const { vendorId } = req.query;
+
+        // Check if vendorId is provided
+        if (!vendorId) {
+            return res.status(400).json({ message: "Retailer ID is required" });
+        }
+
+        // Validate if vendorId can be converted to a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(vendorId)) {
+            return res.status(400).json({ message: "Invalid Retailer ID format" });
+        }
+
+        // Convert the string vendorId to ObjectId
+        const objectId = new mongoose.Types.ObjectId(vendorId);
+
+        // Query the retailer using the converted ObjectId
+        const retailer = await Retailer.findOne({ _id: objectId }).lean();
+
+        // Check if the retailer exists
+        if (!retailer) {
+            return res.status(404).json({ message: "Retailer Not Found!" });
+        }
+
+        // Return the retailer data
+        return res.status(200).json(retailer);
+
+    } catch (error) {
+        // Handle any server errors
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
 
 export const logoutRetailer = async (req, res) => {
     try {

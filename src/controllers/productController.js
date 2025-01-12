@@ -214,11 +214,11 @@ export const removeProduct = async (req, res) => {
 export const getProductsByVendorId = async (req, res) => {
     try {
         // Extract vendorId from the request body
-        const { vendorId, page = 1 } = req.query;
+        const { vendorId, page = 1 ,limit=10} = req.query;
 
         // Check if vendorId is provided
         const pageNumber = parseInt(page, 10);
-        const skipCnt = (pageNumber - 1) * 10;
+        const skipCnt = (pageNumber - 1) * limit;
         if (!vendorId) return res.status(400).json({ message: "VendorId is required" });
 
         // Find products with the given vendorId
@@ -242,10 +242,10 @@ export const getProductsByVendorId = async (req, res) => {
 export const getProductByCategory = async (req, res) => {
     try {
         // Extract productCategory from the request body
-        const { productCategory, page = 1 } = req.query;
+        const { productCategory, page = 1 ,limit=10} = req.query;
 
         const pageNumber = parseInt(page, 10);
-        const limit = 10;
+       
         const skipCnt = (pageNumber - 1) * limit;
 
         // Check if productCategory is provided
@@ -330,10 +330,10 @@ export const updateProductCategory = async (req, res) => {
 
 export const getProductByQuery = async (req, res) => {
     try {
-        const { query, productCategory, productBrand, productGender, page = 1 } = req.query;
+        const { query, productCategory, productBrand, productGender, page = 1,limit=10 } = req.query;
 
         const pageNumber = parseInt(page, 10);
-        const limit = 10;
+      
         const skipCnt = (pageNumber - 1) * limit;
 
         if (!productCategory) {
@@ -390,10 +390,10 @@ export const getProductByQuery = async (req, res) => {
 
 export const searchProduct = async (req, res) => {
     try {
-        const { query, page = 1 } = req.query;
+        const { query, page = 1 ,limit=10} = req.query;
 
         const pageNumber = parseInt(page, 10);
-        const limit = 10;
+        
         const skipCnt = (pageNumber - 1) * limit;
 
         // Build the search criteria
