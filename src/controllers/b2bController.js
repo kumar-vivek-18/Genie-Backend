@@ -378,7 +378,7 @@ export const deleteUserRequest = async (req, res) => {
 
 export const getAdvertisement = async(req, res) => {
     try {
-      const advertisementText = "SAVE MORE, START BARGAINING!"; // Static advertisement text
+      const advertisementText = "SAVE MORE, START BARGAINING!"; 
   
       res.status(200).json(advertisementText); 
     } catch (error) {
@@ -386,3 +386,19 @@ export const getAdvertisement = async(req, res) => {
       res.status(500).json({ message: "Server error while fetching advertisement" });
     }
   };
+
+  export const getAdvertisementLatest = async (req, res) => {
+    try {
+       
+        const advertisement = {
+            title: "SAVE MORE, START BARGAINING!",
+            subtitle: "Find the best deals and discounts on your favorite products.",
+            image: "https://example.com/advertisement-image.jpg", // Replace with actual image URL
+        };
+
+        res.status(200).json(advertisement);
+    } catch (error) {
+        console.error("Error fetching advertisement:", error);
+        res.status(500).json({ message: "Server error while fetching advertisement" });
+    }
+};

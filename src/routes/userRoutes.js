@@ -3,7 +3,7 @@ const router = express.Router();
 import { getUser, registerUser, createRequest, editProfile, getSpades, getSpadesHistory, closeSpade, getUniqueToken, setSpadeMarkAsRead, closeAcitveSpade, logoutUser, refreshAccessToken, getUserDetails, getParticularSpade, updatePaymentStatus, closeParticularChat, currentVersion } from '../controllers/userController.js';
 import { protectRoute } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
-import { getAdvertisement } from '../controllers/b2bController.js';
+import { getAdvertisement, getAdvertisementLatest } from '../controllers/b2bController.js';
 
 router.route('/').get(getUser);
 router.route('/').post(registerUser);
@@ -23,4 +23,6 @@ router.route('/update-payment-status').patch(protectRoute, updatePaymentStatus);
 router.route('/close-particular-chat').patch(protectRoute, closeParticularChat);
 router.route('/current-app-version').get(currentVersion);
 router.route('/advert-text').get(getAdvertisement);
+router.route('/advertisement').get(getAdvertisementLatest);
+
 export default router;

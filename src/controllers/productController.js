@@ -534,9 +534,7 @@ export const getVendorProductByQuery = async (req, res) => {
             searchCriteria.$text = { $search: query };
         }
 
-       
-
-        // Find and paginate products based on the search criteria
+ 
         const products = await Product.find(
             searchCriteria,
             query ? { score: { $meta: "textScore" } } : {} // Include text score only if query exists
