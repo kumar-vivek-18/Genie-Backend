@@ -391,9 +391,10 @@ export const getAdvertisement = async(req, res) => {
     try {
        
         const advertisement = {
-            title: "SAVE MORE, START BARGAINING!",
-            subtitle: "Find the best deals and discounts on your favorite products.",
-            image: "https://example.com/advertisement-image.jpg", // Replace with actual image URL
+            
+            title: "Unlimited Free Bargaining",
+            subtitle: "",
+            image: "", 
         };
 
         res.status(200).json(advertisement);
