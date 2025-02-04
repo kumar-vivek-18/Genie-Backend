@@ -403,74 +403,65 @@ export const getProductByQuery = async (req, res) => {
         } = req.query;
 
         const pageNumber = parseInt(page, 10);
-        const skipCnt = (pageNumber - 1) * limit;
+        const limitNumber = parseInt(limit, 10);
+        const skipCnt = (pageNumber - 1) * limitNumber;
 
-        // Validate required productCategory
         if (!productCategory) {
             return res.status(400).json({ message: "Product category is required" });
         }
 
-        // Convert subQuery to an array (if it's passed as a comma-separated string)
         const subQueryArray = subQuery ? subQuery.split(',') : [];
-        // console.log(subQueryArray)
 
-        // Build the search criteria
         let searchCriteria = { productCategory };
 
-        // Handle subCategory if provided
         if (subCategory) {
             searchCriteria.subCategory = {
                 $regex: subCategory,
-                $options: "i", // Case-insensitive search for subCategory
+                $options: "i",
             };
         }
 
-        // Handle subQuery if provided (array of possible matches)
         if (subQueryArray.length > 0) {
-            searchCriteria.productDescription = {
-                $regex: new RegExp("\\b(" + subQueryArray.join("|") + ")\\b", "i"), // Match whole words only
-            };
+            searchCriteria.$or = [
+                { productDescription: { $regex: new RegExp("\\b(" + subQueryArray.join("|") + ")\\b", "i") } }
+            ];
         }
 
-        // Add fuzzy search using text index for the query
+        if (productBrand) {
+            searchCriteria.$or = searchCriteria.$or || [];
+            searchCriteria.$or.push({ productDescription: { $regex: productBrand, $options: "i" } });
+        }
+
         if (query) {
             searchCriteria.$text = { $search: query };
         }
 
-        // Search for productBrand in productDescription if provided
-        if (productBrand) {
-            searchCriteria.productDescription = {
-                $regex: productBrand,
-                $options: "i", // Case-insensitive regex search
-            };
-        }
-
-        // Execute the query with pagination
         const products = await Product.find(
             searchCriteria,
-            query ? { score: { $meta: "textScore" } } : {} // Include text score only if query exists
+            query ? { score: { $meta: "textScore" } } : {}
         )
             .sort(
                 query 
-                    ? { score: { $meta: "textScore" }, updatedAt: -1 } 
-                    : { updatedAt: -1 } // Sort by text score and updatedAt
+                    ? { score: { $meta: "textScore" }, createdAt: -1, _id: -1 }  // Sort by latest createdAt
+                    : { createdAt: -1, _id: -1 } // Default to newest first
             )
-            .lean()
             .skip(skipCnt)
-            .limit(limit);
+            .limit(limitNumber)
+            .lean();
 
-        // Handle no results
-        if (!products || products.length === 0) {
+        const uniqueProducts = Array.from(new Map(products.map(product => [product._id.toString(), product])).values());
+
+        if (!uniqueProducts.length) {
             return res.status(404).json({ message: "No products found" });
         }
 
-        // Return the list of products
-        return res.status(200).json(products);
+        return res.status(200).json(uniqueProducts);
     } catch (error) {
-        // Handle and return internal server error
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
+
+
 
 
 export const searchProduct = async (req, res) => {
