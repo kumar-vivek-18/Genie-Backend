@@ -166,7 +166,7 @@ export const getAllChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean().sort({ updatedAt: -1 });
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages bidPrice').lean().sort({ updatedAt: -1 });
 
         // Iterate through each chat and populate users
         // await Promise.all(UserChats.map(async chat => {
@@ -214,7 +214,7 @@ export const getChatMessages = async (req, res) => {
 export const getParticularChatInfo = async (req, res) => {
     try {
         const data = req.query;
-        const UserChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean();
+        const UserChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages bidPrice').lean();
         if (!UserChat) return res.status(404).json({ message: "User not found" });
         return res.status(200).json(UserChat);
     } catch (error) {

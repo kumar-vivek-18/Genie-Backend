@@ -10,7 +10,7 @@ import mongoose from 'mongoose';
 export const productAvailable = async (req, res) => {
     try {
         const data = req.body;
-        const createdChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages');
+        const createdChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages bidPrice');
         if (!createdChat) return res.status(404).json({ message: "Invalid chat Id" });
 
         const message = await Message.findOne({ chat: createdChat._id });
@@ -225,7 +225,7 @@ export const sendMessage = async (req, res) => {
         }
 
         const chatDetails = await Chat.findById(data.chat).populate('latestMessage');
-        if (!chatDetails) return res.status(404).json({ message: "Ivalid chat id" });
+        if (!chatDetails) return res.status(404).json({ message: "Invalid chat id" });
         // console.log(chatDetails.requestType, chatDetails.latestMessage);
         if (data.bidType !== 'update') {
             if (chatDetails?.requestType === "completed" || chatDetails?.requestType === "closed" || chatDetails?.requestType === "closedHistory" || chatDetails?.requestType === "notParticipated" || chatDetails?.requestType === "rejected" || chatDetails?.requestType === "cancelled") {
