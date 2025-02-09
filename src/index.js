@@ -208,7 +208,7 @@ io.on("connection", (socket) => {
                     newMessageReceived.chat._id,
                     { $inc: { unreadCount: 1 } },
                     { new: true }
-                ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude homeDelivery totalRating totalReview storeImages').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean();
+                ).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude homeDelivery totalRating totalReview storeImages').populate('latestMessage', 'sender message bidType bidAccepted bidImages bidPrice').lean();
 
                 // console.log('recievers', receiver);
 
@@ -255,7 +255,7 @@ io.on("connection", (socket) => {
 
         // console.log('new request', requestId);
         const fetchChats = async () => {
-            const chats = await Chat.find({ requestId: requestId }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude').populate('latestMessage', 'sender message bidType bidAccepted').lean();
+            const chats = await Chat.find({ requestId: requestId }).populate('requestId').populate('customerId').populate('retailerId', '_id uniqueToken storeCategory storeOwnerName storeName longitude lattitude').populate('latestMessage', 'sender message bidType bidAccepted bidPrice').lean();
 
 
             chats.forEach(async (chat) => {
