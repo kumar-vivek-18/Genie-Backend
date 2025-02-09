@@ -95,7 +95,7 @@ export const getRetailerNewChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted').lean().sort({ updatedAt: -1 });
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidPrice').lean().sort({ updatedAt: -1 });
 
         // await Promise.all(RetailerChats.map(async chat => {
         //     // Populate each user in the users array
@@ -132,7 +132,7 @@ export const getRetailerOngoingChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', ' sender message bidType bidAccepted').lean().sort({ updatedAt: -1 });
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', ' sender message bidType bidAccepted bidPrice').lean().sort({ updatedAt: -1 });
 
         // await Promise.all(RetailerChats.map(async chat => {
         //     // Populate each user in the users array
@@ -156,7 +156,7 @@ export const getRetailerOngoingChats = async (req, res) => {
 export const getParticularChat = async (req, res) => {
     try {
         const data = req.query;
-        const UserChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean();
+        const UserChat = await Chat.findById(data.id).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages bidPrice').lean();
         if (!UserChat) return res.status(404).json({ message: "User not found" });
         return res.status(200).json(UserChat);
     } catch (error) {
@@ -186,7 +186,7 @@ export const getChats = async (req, res) => {
                 }
 
             ]
-        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages').lean().sort({ updatedAt: -1 });
+        }).populate('requestId').populate('customerId').populate('retailerId').populate('latestMessage', 'sender message bidType bidAccepted bidImages bidPrice').lean().sort({ updatedAt: -1 });
 
         // console.log(UserChats[0]);
         // console.log(JSON.stringify(UserChats[0], null, 2));
