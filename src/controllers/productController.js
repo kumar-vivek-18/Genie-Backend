@@ -5,6 +5,7 @@ import { Product } from "../models/product.model.js";
 import nodemailer from 'nodemailer';
 import { resourceLimits } from "worker_threads";
 import { subscribe } from "diagnostics_channel";
+import { Retailer } from "../models/retailer.model.js";
 
 
 
@@ -330,65 +331,6 @@ export const updateProductCategory = async (req, res) => {
 };
 
 
-// export const getProductByQuery = async (req, res) => {
-//     try {
-//         const { query, productCategory, productBrand, productGender, page = 1,limit=10 } = req.query;
-
-//         const pageNumber = parseInt(page, 10);
-      
-//         const skipCnt = (pageNumber - 1) * limit;
-
-//         if (!productCategory) {
-//             return res.status(400).json({ message: "Product category is required" });
-//         }
-
-//         // Build the search criteria
-//         let searchCriteria = { productCategory };
-
-//         if (query) {
-//             // Add fuzzy search using text index
-//             searchCriteria.$text = { $search: query };
-//         }
-
-//         // Search for productBrand in productDescription if provided
-//         if (productBrand) {
-//             searchCriteria.productDescription = {
-//                 $regex: productBrand,
-//                 $options: "i", // Case-insensitive regex search
-//             };
-//         }
-
-        
-//         if (productGender) {
-//             searchCriteria.productDescription = {
-//                 ...searchCriteria.productDescription, // Preserve existing regex conditions
-//                 $regex: productGender,
-//                 $options: "i", // Case-insensitive regex search
-//             };
-//         }
-
-//         // Find and paginate products based on the search criteria
-//         const products = await Product.find(
-//             searchCriteria,
-//             query ? { score: { $meta: "textScore" } } : {} // Include text score only if query exists
-//         )
-//             .sort(query ? { score: { $meta: "textScore" }, updatedAt: -1 } : { updatedAt: -1 }) // Sort by text score and updatedAt if query exists
-//             .lean()
-//             .skip(skipCnt)
-//             .limit(limit);
-
-//         // If no products are found, return a 404 status
-//         if (!products || products.length === 0) {
-//             return res.status(404).json({ message: "No products found" });
-//         }
-
-//         // Return the list of products if found
-//         return res.status(200).json(products);
-//     } catch (error) {
-//         // Handle and return internal server error
-//         return res.status(500).json({ message: "Internal server error", error: error.message });
-//     }
-// };
 
 export const getProductByQuery = async (req, res) => {
     try {
@@ -460,6 +402,8 @@ export const getProductByQuery = async (req, res) => {
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
+
+
 
 
 
@@ -547,5 +491,101 @@ export const getVendorProductByQuery = async (req, res) => {
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
+
+
+export const getNearbyProductByQuery = async (req, res) => {
+    try {
+        const { 
+            query, 
+            productCategory, 
+            subCategory, 
+            subQuery, 
+            productBrand, 
+            page = 1, 
+            limit = 10,
+            latitude, // User's latitude
+            longitude // User's longitude
+        } = req.query;
+
+        if (!productCategory) {
+            return res.status(400).json({ message: "Product category is required" });
+        }
+
+        const pageNumber = parseInt(page, 10);
+        const limitNumber = parseInt(limit, 10);
+        const skipCnt = (pageNumber - 1) * limitNumber;
+
+        // Convert lat/lng to float
+        const userLatitude = parseFloat(latitude);
+        const userLongitude = parseFloat(longitude);
+
+        if (!userLatitude || !userLongitude) {
+            return res.status(400).json({ message: "Latitude and longitude are required" });
+        }
+
+        // Find retailers within 15 km
+        const nearbyRetailers = await Retailer.aggregate([
+            {
+                $geoNear: {
+                    near: {
+                        type: "Point",
+                        coordinates: [userLongitude, userLatitude], // MongoDB uses [longitude, latitude]
+                    },
+                    distanceField: "distance",
+                    maxDistance: 15000, // 15 km in meters
+                    spherical: true
+                }
+            }
+        ]);
+
+        // Extract retailer IDs
+        const retailerIds = nearbyRetailers.map(retailer => retailer._id);
+
+        if (retailerIds.length === 0) {
+            return res.status(404).json({ message: "No nearby stores found" });
+        }
+
+        let searchCriteria = { 
+            productCategory,
+            vendorId: { $in: retailerIds } // Filter by nearby retailers
+        };
+
+        if (subCategory) {
+            searchCriteria.subCategory = { $regex: subCategory, $options: "i" };
+        }
+
+        if (subQuery) {
+            const subQueryArray = subQuery.split(',');
+            searchCriteria.$or = [
+                { productDescription: { $regex: new RegExp("\\b(" + subQueryArray.join("|") + ")\\b", "i") } }
+            ];
+        }
+
+        if (productBrand) {
+            searchCriteria.$or = searchCriteria.$or || [];
+            searchCriteria.$or.push({ productDescription: { $regex: productBrand, $options: "i" } });
+        }
+
+        if (query) {
+            searchCriteria.$text = { $search: query };
+        }
+
+        // Fetch products with pagination
+        const products = await Product.find(searchCriteria)
+            .sort(query ? { score: { $meta: "textScore" }, createdAt: -1 } : { createdAt: -1 })
+            .skip(skipCnt)
+            .limit(limitNumber)
+            .lean();
+
+        if (!products.length) {
+            return res.status(404).json({ message: "No products found" });
+        }
+
+        return res.status(200).json(products);
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
 
 

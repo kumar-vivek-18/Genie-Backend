@@ -28,6 +28,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -45,6 +48,11 @@ app.use(cors({
 app.get('/', (req, res) => {
     res.send('Welcome to CulturTap');
 });
+
+
+
+
+
 app.use('/user', userRoutes);
 app.use('/retailer', retailerRoutes);
 app.use('/chat', chatRoutes);

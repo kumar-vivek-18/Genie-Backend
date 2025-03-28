@@ -373,9 +373,83 @@ export const availableCategories = async (req, res) => {
 }
 
 
+// export const nearBySellers = async (req, res) => {
+//     try {
+//         const { lat, lon, page = 1, limit = 10, query } = req.query;
+//         if (!lat || !lon) {
+//             return res.status(400).json({ message: 'Invalid coordinates' });
+//         }
+
+//         const pageNumber = parseInt(page, 10);
+//         const limitNumber = parseInt(limit, 10);
+//         const skip = (pageNumber - 1) * limitNumber;
+
+//         let sellers = [];
+//         if (!query) {
+//             sellers = await Retailer.find({
+//                 coords: {
+//                     $near: {
+//                         $geometry: {
+//                             type: "Point",
+//                             coordinates: [parseFloat(lon), parseFloat(lat)]
+//                         },
+//                         $maxDistance: 13000
+//                     }
+//                 }
+//             }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
+//                 .lean().limit(limitNumber).skip(skip);
+//         }
+//         else {
+//             sellers = await Retailer.find({
+//                 $and: [
+//                     {
+//                         $or: [
+//                             {
+//                                 storeName: {
+//                                     $regex: query,
+//                                     $options: 'i'
+//                                 },
+//                             },
+//                             {
+//                                 storeCategory: {
+//                                     $regex: query,
+//                                     $options: 'i'
+//                                 }
+//                             },
+//                         ]
+//                     },
+
+//                     {
+//                         coords: {
+//                             $near: {
+//                                 $geometry: {
+//                                     type: "Point",
+//                                     coordinates: [parseFloat(lon), parseFloat(lat)]
+//                                 },
+//                                 $maxDistance: 13000
+//                             }
+//                         }
+//                     }
+//                 ]
+//             }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
+//                 .lean().limit(limitNumber).skip(skip);
+//         }
+
+//         return res.status(200).json(sellers);
+//     }
+//     catch (error) {
+//         throw new Error(error.message);
+//     }
+// }
+
+const escapeRegex = (string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
 export const nearBySellers = async (req, res) => {
     try {
         const { lat, lon, page = 1, limit = 10, query } = req.query;
+
         if (!lat || !lon) {
             return res.status(400).json({ message: 'Invalid coordinates' });
         }
@@ -384,63 +458,54 @@ export const nearBySellers = async (req, res) => {
         const limitNumber = parseInt(limit, 10);
         const skip = (pageNumber - 1) * limitNumber;
 
-        let sellers = [];
-        if (!query) {
-            sellers = await Retailer.find({
-                coords: {
-                    $near: {
-                        $geometry: {
-                            type: "Point",
-                            coordinates: [parseFloat(lon), parseFloat(lat)]
-                        },
-                        $maxDistance: 13000
-                    }
+        const geoQuery = {
+            coords: {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [parseFloat(lon), parseFloat(lat)]
+                    },
+                    $maxDistance: 13000
                 }
-            }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
-                .lean().limit(limitNumber).skip(skip);
-        }
-        else {
+            }
+        };
+
+        const projection = '-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken';
+
+        let sellers;
+
+        if (!query) {
+            sellers = await Retailer.find(geoQuery)
+                .select(projection)
+                .lean()
+                .limit(limitNumber)
+                .skip(skip);
+        } else {
+            const escapedQuery = escapeRegex(query);
+
             sellers = await Retailer.find({
                 $and: [
                     {
                         $or: [
-                            {
-                                storeName: {
-                                    $regex: query,
-                                    $options: 'i'
-                                },
-                            },
-                            {
-                                storeCategory: {
-                                    $regex: query,
-                                    $options: 'i'
-                                }
-                            },
+                            { storeName: { $regex: escapedQuery, $options: 'i' } },
+                            { storeCategory: { $regex: escapedQuery, $options: 'i' } }
                         ]
                     },
-
-                    {
-                        coords: {
-                            $near: {
-                                $geometry: {
-                                    type: "Point",
-                                    coordinates: [parseFloat(lon), parseFloat(lat)]
-                                },
-                                $maxDistance: 13000
-                            }
-                        }
-                    }
+                    geoQuery
                 ]
-            }).select('-__v -createdAt -updatedAt -storeMobileNo -coords -storeApproved -panCard -uniqueToken -profileCompleted -freeSpades -documentVerified -refreshToken')
-                .lean().limit(limitNumber).skip(skip);
+            })
+                .select(projection)
+                .lean()
+                .limit(limitNumber)
+                .skip(skip);
         }
 
         return res.status(200).json(sellers);
+    } catch (error) {
+        // console.error('Error in nearBySellers:', error.message);
+        return res.status(500).json({ message: 'Server Error', error: error.message });
     }
-    catch (error) {
-        throw new Error(error.message);
-    }
-}
+};
 
 export const currentVersion = async (req, res) => {
     try {
